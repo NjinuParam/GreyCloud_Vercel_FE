@@ -89,7 +89,7 @@ import ChartsKnob from "../pages/Charts/charts-knob";
 import ReCharts from "../pages/Charts/ReCharts";
 
 // Maps
-import MapsGoogle from "../pages/Maps/MapsGoogle";
+// import MapsGoogle from "../pages/Maps/MapsGoogle";
 import MapsVector from "../pages/Maps/MapsVector";
 import MapsLeaflet from "../pages/Maps/MapsLeaflet";
 
@@ -139,7 +139,7 @@ import UiDropdown from "../pages/Ui/UiDropdown";
 import UiGeneral from "../pages/Ui/UiGeneral";
 import UiGrid from "../pages/Ui/UiGrid";
 import UiImages from "../pages/Ui/UiImages";
-import UiLightbox from "../pages/Ui/UiLightbox";
+// import UiLightbox from "../pages/Ui/UiLightbox";
 import UiModal from "../pages/Ui/UiModal";
 import UiProgressbar from "../pages/Ui/UiProgressbar";
 import UiTabsAccordions from "../pages/Ui/UiTabsAccordions";
@@ -241,7 +241,7 @@ const authProtectedRoutes = [
   { path: "/tables-dragndrop", component: <DragDropTables /> },
 
     // Maps
-    { path: "/maps-google", component: <MapsGoogle /> },
+    // { path: "/maps-google", component: <MapsGoogle /> },
     { path: "/maps-vector", component: <MapsVector /> },
     { path: "/maps-leaflet", component: <MapsLeaflet /> },
 
@@ -296,7 +296,7 @@ const authProtectedRoutes = [
     { path: "/ui-general", component: <UiGeneral /> },
     { path: "/ui-grid", component: <UiGrid /> },
     { path: "/ui-images", component: <UiImages /> },
-    { path: "/ui-lightbox", component: <UiLightbox /> },
+    // { path: "/ui-lightbox", component: <UiLightbox /> },
     { path: "/ui-modals", component: <UiModal /> },
     { path: "/ui-progressbars", component: <UiProgressbar /> },
     { path: "/ui-tabs-accordions", component: <UiTabsAccordions /> },
