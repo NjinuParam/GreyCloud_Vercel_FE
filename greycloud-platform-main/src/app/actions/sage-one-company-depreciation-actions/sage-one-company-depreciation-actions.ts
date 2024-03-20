@@ -39,7 +39,7 @@ export const getAllAssetGroups = action(EmptySchema, async () => {
 
     return proccessedData;
   } catch (error) {
-    console.error("Failed to asset group: ", error);
+    console.error("Failed to asset groups: ", error);
     throw error;
   }
 });

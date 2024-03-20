@@ -13,6 +13,9 @@ export default async function NavBar() {
     return null;
   }
 
+  const companyName = session?.companyProfile?.companiesList?.find(
+    (company) => company.companyId === session?.companyProfile?.loggedInCompanyId
+  )?.companyName;
   const adminNavBarText = formatRoleDisplayName(session?.role ?? "") + " Dashboard";
 
   return (
@@ -24,7 +27,10 @@ export default async function NavBar() {
       </CardHeader>
 
       <CardContent className="p-0">
-        <h1 className="text-lg dark:text-primary/70 text-primary/80 tracking-widest uppercase font-bold text-center">{adminNavBarText}</h1>
+        <div className="flex flex-row gap-2 items-center">
+          <h1 className="text-lg dark:text-primary/90 text-primary/100 tracking-widest uppercase font-bold text-center">{companyName}</h1>
+          <h1 className="text-lg dark:text-primary/70 text-primary/80 tracking-widest uppercase font-normal text-center">{adminNavBarText}</h1>
+        </div>
       </CardContent>
 
       <CardFooter className="flex flex-row gap-2 p-0">

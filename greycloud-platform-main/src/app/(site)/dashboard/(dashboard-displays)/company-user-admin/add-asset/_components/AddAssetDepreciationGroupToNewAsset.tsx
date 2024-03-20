@@ -9,7 +9,7 @@ export default function AddAssetDepreciationGroupToNewAsset() {
     <Dialog>
       <DialogTrigger>
         <Button type="button" variant={"secondary"}>
-          <Plus className="text-primary mr-2 size-5" /> Add New
+          <Plus className="text-primary mr-2 size-5" /> Add New Depreciation Group
         </Button>
       </DialogTrigger>
       <DialogContent className="w-full flex items-center justify-center">

@@ -35,7 +35,7 @@ export default function CompanyUserAddUserForm({ myCompany }: CompanyUserAddUser
       });
     },
     onExecute() {
-      toast.info("Creating Company User...");
+      toast.info("Creating Company User Profile...");
     },
   });
 
@@ -171,7 +171,7 @@ export default function CompanyUserAddUserForm({ myCompany }: CompanyUserAddUser
               type="submit"
               disabled={status === "executing"}
             >
-              {status === "executing" ? "Creating Account..." : "Create Account"}
+              {status === "executing" ? "Creating Profile..." : "Create Profile"}
             </Button>
           </div>
         </form>

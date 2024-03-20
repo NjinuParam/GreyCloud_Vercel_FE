@@ -1,6 +1,12 @@
 import * as z from "zod";
 import { formatRoleDisplayName } from "../utils";
 
+export const SageCompanyIdSchema = z.object({
+  SageCompanyId: z.coerce.number(),
+});
+
+export type SageCompanyIdType = z.infer<typeof SageCompanyIdSchema>;
+
 export const RolesAllSchema = z.union([z.literal("GreyCloud_Admin"), z.literal("Company_Admin"), z.literal("Company_User")]);
 export const RolesCompanySchema = z.union([z.literal("Company_Admin"), z.literal("Company_User")]);
 export const RolesGreyCloudSchema = z.literal("GreyCloud_Admin");
@@ -19,6 +25,19 @@ export const RolesCompanyOptions = RolesCompanySchema.options.map((option) => ({
   displayName: formatRoleDisplayName(option.value),
 }));
 
+export const CompanyResponseSchemaForUser = z.object({
+  companyName: z.string(),
+  companyId: z.string(),
+  email: z.string(),
+  apiKey: z.string(),
+  password: z.string(),
+  status: z.string(),
+  sageCompanyId: z.coerce.number(),
+  success: z.coerce.boolean(),
+});
+
+export type CompanyResponseTypeForUser = z.infer<typeof CompanyResponseSchemaForUser>;
+
 export const PlatformUserSchema = z.object({
   id: z.string().nullable().default(null),
   dateCreated: z.date().nullable().default(null),
@@ -28,10 +47,22 @@ export const PlatformUserSchema = z.object({
   surname: z.string().nullable().default(null),
   role: RolesAllSchema.default("Company_User"),
   companyId: z.string().nullable().default(null),
+  companyProfile: z
+    .object({
+      loggedInCompanyId: z.string().nullable().default(null),
+      companiesList: z.array(CompanyResponseSchemaForUser).nullable().default([]),
+    })
+    .default({ loggedInCompanyId: null, companiesList: [] }),
   isLoggedIn: z.boolean().default(false),
 });
 
 export type PlatformUserType = z.infer<typeof PlatformUserSchema>;
+
+export const SelectedCompanyIdSchema = z.object({
+  companyId: z.string(),
+});
+
+export type SelectedCompanyIdType = z.infer<typeof SelectedCompanyIdSchema>;
 
 export const isCompanyUser = (role: string | undefined): boolean => {
   if (!role) return false;
@@ -62,12 +93,6 @@ export const IdSchemaNumber = z.object({
 });
 
 export type IdType = z.infer<typeof IdSchemaString>;
-
-export const SageCompanyIdSchema = z.object({
-  SageCompanyId: z.coerce.number(),
-});
-
-export type SageCompanyIdType = z.infer<typeof SageCompanyIdSchema>;
 
 export const PasswordSchema = z
   .string()

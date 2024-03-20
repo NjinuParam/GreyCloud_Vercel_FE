@@ -14,9 +14,11 @@ export default async function AddAssetView() {
     return null;
   }
 
-  const { data: myCompany } = await getGreyCloudCompany({
-    id: session.companyId as string,
-  });
+  // const { data: myCompany } = await getGreyCloudCompany({
+  //   id: session.companyId as string,
+  // });
+
+  const myCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
 
   return (
     <Card className="flex flex-col w-[600px] mx-auto justify-between mt-8">

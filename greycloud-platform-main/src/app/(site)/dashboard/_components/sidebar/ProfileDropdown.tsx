@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { GreyCloudAllAdminsResponseType } from "@/lib/schemas/greycloud-admin";
 import { AllCompanyUserResponseType } from "@/lib/schemas/company-user";
 import { GreyCloudAdminCard } from "../grey-cloud-admin/GreyCloudAdminCards";
@@ -24,12 +24,13 @@ import { logoutCompanyUser } from "@/app/actions/sage-one-user-company-actions/s
 import { useAction } from "next-safe-action/hooks";
 import { logoutGreyCloudAdmin } from "@/app/actions/greycloud-admin-actions/greycloud-admin-actions";
 
-export default function ProfileDropdown(session: PlatformUserType) {
+export default function ProfileDropdown({ session, children }: { session: PlatformUserType; children?: ReactElement }) {
   const router = useRouter();
 
   const imageFallBackText = (session?.name?.charAt(0) ?? "U") + (session?.surname?.charAt(0) ?? "U");
   const [isViewProfile, setIsViewProfile] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
+  const [isSwitchCompany, setIsSwitchCompany] = useState(false);
 
   const { execute: logoutCUser } = useAction(logoutCompanyUser, {
     onSuccess() {
@@ -67,6 +68,8 @@ export default function ProfileDropdown(session: PlatformUserType) {
     },
   });
 
+  const dialogTitle = isViewProfile ? "View Profile" : isChangePassword ? "Change Password" : "Switch Company Profile";
+
   return (
     <>
       <Dialog>
@@ -89,6 +92,7 @@ export default function ProfileDropdown(session: PlatformUserType) {
                   onClick={() => {
                     setIsViewProfile(true);
                     setIsChangePassword(false);
+                    setIsSwitchCompany(false);
                   }}
                 >
                   View Profile
@@ -101,10 +105,25 @@ export default function ProfileDropdown(session: PlatformUserType) {
                   onClick={() => {
                     setIsChangePassword(true);
                     setIsViewProfile(false);
+                    setIsSwitchCompany(false);
                   }}
                   disabled={true}
                 >
                   Change Password
+                  <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DialogTrigger>
+
+              <DialogTrigger asChild>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setIsSwitchCompany(true);
+                    setIsChangePassword(false);
+                    setIsViewProfile(false);
+                  }}
+                  disabled={session?.companyProfile?.companiesList?.length === 1}
+                >
+                  Switch Company Profile
                   <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DialogTrigger>
@@ -115,6 +134,7 @@ export default function ProfileDropdown(session: PlatformUserType) {
             <DropdownMenuItem
               onClick={() => {
                 router.push("/login");
+
                 isCompanyUser(session.role) ? logoutCUser({}) : logoutGCAdmin({});
               }}
             >
@@ -124,9 +144,9 @@ export default function ProfileDropdown(session: PlatformUserType) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <DialogContent>
+        <DialogContent className="min-w-max">
           <DialogHeader>
-            <DialogTitle>{isViewProfile ? <>View Profile</> : isChangePassword ? <>Change Password</> : null}</DialogTitle>
+            <DialogTitle>{dialogTitle}</DialogTitle>
           </DialogHeader>
 
           {isViewProfile && (
@@ -140,6 +160,16 @@ export default function ProfileDropdown(session: PlatformUserType) {
           )}
 
           {isChangePassword && <>Working on the client</>}
+
+          {isSwitchCompany && (
+            <>
+              <div className="flex flex-col gap-4 text-center items-center">
+                <p className="text-muted-foreground text-2xl">Please select the Company Profile you want to log in with.</p>
+              </div>
+
+              {children}
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </>

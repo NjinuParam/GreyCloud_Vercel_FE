@@ -116,12 +116,6 @@ export const IdGetCompanyAssetByCompanyIdSchema = z.object({
 
 export type IdGetCompanyAssetType = z.infer<typeof IdGetCompanyAssetByCompanyIdSchema>;
 
-export const CompanyIdAndIdSchema = SageCompanyIdSchema.extend({
-  id: z.coerce.number(),
-});
-
-export type CompanyIdAndIdType = z.infer<typeof CompanyIdAndIdSchema>;
-
 export const SageOneAssetTypeSchema = z.object({
   description: z.string(),
   category: z.object({
@@ -166,6 +160,12 @@ export const SaveSageOneAssetSchema = SageCompanyIdSchema.extend({
 });
 
 export type SaveSageOneAssetType = z.infer<typeof SaveSageOneAssetSchema>;
+
+export const CompanyIdAndIdSchema = SageCompanyIdSchema.extend({
+  id: z.coerce.number(),
+});
+
+export type CompanyIdAndIdType = z.infer<typeof CompanyIdAndIdSchema>;
 
 export const SageOneAssetCategorySchema = z.object({
   description: z.string(),

@@ -10,9 +10,15 @@ import { SageCompanyResponseType } from "@/lib/schemas/company";
 export default async function AddDepreciationGroupView() {
   const session = await getIronSessionData();
 
+  const mySelectedCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+
+  // await getSpecificCompanyUser({
+  //   id: session.id as string,
+  // })
+
   const [myCompany, myProfile] = await Promise.all([
     await getGreyCloudCompany({
-      id: session.companyId as string,
+      id: mySelectedCompany?.companyId as string,
     }),
     await getSpecificCompanyUser({
       id: session.id as string,

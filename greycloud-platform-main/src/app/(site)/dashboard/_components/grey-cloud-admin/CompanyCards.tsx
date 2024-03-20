@@ -19,7 +19,6 @@ import { cn, formatDate } from "@/lib/utils";
 import UpdateSageCompanyForm from "./UpdateSageCompanyForm";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
-import { revalidatePath } from "next/cache";
 import { deleteGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greycloud-admin-actions";
 import { SageCompanyResponseType } from "@/lib/schemas/company";
 

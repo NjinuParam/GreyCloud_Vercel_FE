@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 import { zfd } from "zod-form-data";
-import { PasswordSchema, RolesCompanySchema } from "./common-schemas";
+import { CompanyResponseSchemaForUser, PasswordSchema, RolesCompanySchema } from "./common-schemas";
 
 export const CreateCompanyUserRequestModelSchema = zfd
   .formData({
@@ -126,6 +126,7 @@ export const LoginCompanyUserResponseSchema = z.object({
   id: z.string(),
   dateCreated: z.coerce.date(),
   dateModified: z.coerce.date(),
+  companyInfo: z.array(CompanyResponseSchemaForUser).default([]),
   companyId: z.string(),
   email: z.string().email(),
   name: z.string(),

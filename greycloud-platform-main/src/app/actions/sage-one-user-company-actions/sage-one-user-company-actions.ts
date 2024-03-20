@@ -3,7 +3,15 @@
 import { SAGE_ONE_USER_COMPANY } from "@/lib/api-endpoints/sage-one-user-company";
 import { getIronSessionData, logout } from "@/lib/auth/auth";
 import { ActionError, action } from "@/lib/safe-action";
-import { EmailOnlySchema, EmptySchema, IdForCompanySchemaString, IdSchemaString } from "@/lib/schemas/common-schemas";
+import {
+  CompanyResponseSchemaForUser,
+  EmailOnlySchema,
+  EmptySchema,
+  IdForCompanySchemaString,
+  IdSchemaString,
+  SelectedCompanyIdSchema,
+} from "@/lib/schemas/common-schemas";
+// import { CompanyResponseSchemaForUser } from "@/lib/schemas/company";
 import {
   AllCompanyUserResponseType,
   CompanyUserOfSpecificCompanyResponseSchema,
@@ -186,15 +194,35 @@ export const loginCompanyUser = action(LoginCompanyUserSchema, async ({ remember
     session.id = user.id;
     session.dateCreated = user.dateCreated;
     session.dateModified = user.dateModified;
+    session.companyProfile = {
+      loggedInCompanyId: null,
+      companiesList: user.companyInfo,
+    };
     session.isLoggedIn = true;
     session.companyId = user.companyId;
     await session.save();
+
+    console.log("User:", user);
 
     return user;
   } catch (error) {
     console.error("Failed to login user:", error);
     throw error;
   }
+});
+
+export const assignCompanyProfileToCompanyUser = action(SelectedCompanyIdSchema, async ({ companyId }) => {
+  const session = await getIronSessionData();
+  session.companyProfile = {
+    loggedInCompanyId: companyId,
+    companiesList: session.companyProfile.companiesList,
+  };
+
+  await session.save();
+  console.log("Session:", session);
+  const selectedCompany = session.companyProfile.companiesList?.find((company) => company.companyId === companyId);
+
+  return selectedCompany;
 });
 
 export const logoutCompanyUser = action(EmptySchema, async () => {

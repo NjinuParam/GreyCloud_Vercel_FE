@@ -32,7 +32,8 @@ export default function CompanyUserLoginForm() {
   const { execute, status } = useAction(loginCompanyUser, {
     onSuccess(data) {
       if (data) {
-        router.push("/dashboard");
+        // router.push("/dashboard");
+        router.push("/company-picker");
 
         toast.success(`Welcome, ${data.name}!`, {
           description: "You can now access the user dashboard.",

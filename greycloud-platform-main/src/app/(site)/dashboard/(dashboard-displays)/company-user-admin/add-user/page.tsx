@@ -6,8 +6,10 @@ import { getGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greyc
 export default async function AddUser() {
   const session = await getIronSessionData();
 
+  const mySelectedCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+
   const { data: myCompany } = await getGreyCloudCompany({
-    id: session.companyId as string,
+    id: mySelectedCompany?.companyId as string,
   });
 
   return (

@@ -1,4 +1,4 @@
-const BASE = "GreyCloud";
+const BASE = "GreyCloud/Admin";
 
 export const GREYCLOUD = {
   GET: {

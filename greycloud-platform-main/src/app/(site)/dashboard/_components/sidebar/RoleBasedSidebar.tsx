@@ -64,7 +64,7 @@ const menuItems = {
     {
       heading: "Users",
       links: [
-        { title: "Add User", path: "/dashboard/company-user-admin/add-user", icon: <UserPlus /> },
+        { title: "Add New Profile", path: "/dashboard/company-user-admin/add-user", icon: <UserPlus /> },
         { title: "Manage Users", path: "/dashboard/company-user-admin/manage-users", icon: <Users /> },
       ],
     },

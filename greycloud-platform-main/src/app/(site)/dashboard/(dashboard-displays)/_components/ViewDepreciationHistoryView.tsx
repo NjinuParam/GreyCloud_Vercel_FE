@@ -12,9 +12,11 @@ export default async function ViewDepreciationHistoryView() {
     return null;
   }
 
-  const { data: myCompany } = await getGreyCloudCompany({
-    id: session.companyId as string,
-  });
+  const myCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+
+  // const { data: myCompany } = await getGreyCloudCompany({
+  //   id: session.companyId as string,
+  // });
 
   // Fetch assets and depreciation history in parallel
   const [depreciationHistoryAll, assets] = await Promise.all([
