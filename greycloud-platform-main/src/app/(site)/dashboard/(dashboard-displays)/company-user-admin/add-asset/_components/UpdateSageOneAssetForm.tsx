@@ -1,23 +1,47 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { SageOneAssetTypeType, SaveSageOneAssetSchema, SaveSageOneAssetType } from "@/lib/schemas/company";
+import {
+  SageOneAssetTypeType,
+  SaveSageOneAssetSchema,
+  SaveSageOneAssetType,
+} from "@/lib/schemas/company";
 import { saveSageOneAsset } from "@/app/actions/sage-one-assets-actions/sage-one-assets-actions";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { GetCompanyDepreciationGroupResponseType } from "@/lib/schemas/depreciation";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PlatformUserType } from "@/lib/schemas/common-schemas";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type UpdateSageOneAssetFormProps = {
   asset: SageOneAssetTypeType;
@@ -26,7 +50,11 @@ export type UpdateSageOneAssetFormProps = {
   user?: PlatformUserType;
 };
 
-export default function UpdateSageOneAssetForm({ asset, depreciationGroups, sageCompanyId }: UpdateSageOneAssetFormProps) {
+export default function UpdateSageOneAssetForm({
+  asset,
+  depreciationGroups,
+  sageCompanyId,
+}: UpdateSageOneAssetFormProps) {
   const form = useForm<SaveSageOneAssetType>({
     resolver: zodResolver(SaveSageOneAssetSchema),
     defaultValues: {
@@ -84,14 +112,21 @@ export default function UpdateSageOneAssetForm({ asset, depreciationGroups, sage
         numericField3: Number(values.asset.numericField3),
         assetDepreciationGroupRequestModel: {
           ...values.asset.assetDepreciationGroupRequestModel,
-          active: Boolean(values.asset.assetDepreciationGroupRequestModel.active),
-          assetId: Number(values.asset.assetDepreciationGroupRequestModel.assetId),
+          active: Boolean(
+            values.asset.assetDepreciationGroupRequestModel.active
+          ),
+          assetId: Number(
+            values.asset.assetDepreciationGroupRequestModel.assetId
+          ),
         },
       },
     };
 
     execute(formattedValues);
   }
+
+  const [isRental, setIsRental] = useState(false);
+  const [billingType, setBillingType] = useState("");
 
   return (
     <>
@@ -120,7 +155,7 @@ export default function UpdateSageOneAssetForm({ asset, depreciationGroups, sage
                   <FormItem className="flex-1 grow min-w-full">
                     <FormLabel>Asset Category Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input disabled placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -148,7 +183,11 @@ export default function UpdateSageOneAssetForm({ asset, depreciationGroups, sage
                   <FormItem className="flex-1 grow min-w-full">
                     <FormLabel>Asset ID</FormLabel>
                     <FormControl>
-                      <Input placeholder={form.control._defaultValues.asset?.id?.toString()} {...field} disabled />
+                      <Input
+                        placeholder={form.control._defaultValues.asset?.id?.toString()}
+                        {...field}
+                        disabled
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -178,8 +217,18 @@ export default function UpdateSageOneAssetForm({ asset, depreciationGroups, sage
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
-                          <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -234,7 +283,13 @@ export default function UpdateSageOneAssetForm({ asset, depreciationGroups, sage
                   <FormItem>
                     <FormLabel>Purchase Price</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} type="number" min={0} step="0.01" />
+                      <Input
+                        placeholder=""
+                        {...field}
+                        type="number"
+                        min={0}
+                        step="0.01"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -248,7 +303,13 @@ export default function UpdateSageOneAssetForm({ asset, depreciationGroups, sage
                   <FormItem>
                     <FormLabel>Replacement Value</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} type="number" min={0} step="0.01" />
+                      <Input
+                        placeholder=""
+                        {...field}
+                        type="number"
+                        min={0}
+                        step="0.01"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -262,57 +323,155 @@ export default function UpdateSageOneAssetForm({ asset, depreciationGroups, sage
                   <FormItem>
                     <FormLabel>Current Value</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} type="number" min={0} step="0.01" />
+                      <Input
+                        placeholder=""
+                        {...field}
+                        type="number"
+                        min={0}
+                        step="0.01"
+                      />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="asset.assetDepreciationGroupRequestModel"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Depreciation Group</FormLabel>
-                    <Select
-                      onValueChange={(selectedDepGroupId) => {
-                        // Find the full depreciation group object based on the selected ID
-                        const selectedGroup = depreciationGroups.find((group) => group.depGroupId === selectedDepGroupId);
-
-                        // Update the form field with the selected group's full object
-                        // Ensure to preserve other properties of the assetDepreciationGroupRequestModel object if needed
-                        form.setValue("asset.assetDepreciationGroupRequestModel", {
-                          ...field.value, // Preserve other fields if necessary
-                          ...selectedGroup, // Spread the selected group's properties
-                          depGroupId: selectedDepGroupId, // Ensure the depGroupId is set correctly
-                        });
-                      }}
-                      // defaultValue={field.value.depGroupId}
-                      defaultValue={form.control._defaultValues.asset?.assetDepreciationGroupRequestModel?.depGroupId}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Depreciation Group" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {depreciationGroups?.map((option) => (
-                          <SelectItem key={option.depGroupId} value={option.depGroupId}>
-                            {option.depName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
+            <div>
+              <div className="items-top flex space-x-2">
+                <Checkbox
+                  id="terms1"
+                  onCheckedChange={(e) => {
+                    if (e.valueOf().toString() == "true") {
+                      setIsRental(true);
+                    } else {
+                      setIsRental(false);
+                    }
+                  }}
+                />
+
+                <div className="flex flex-col w-full">
+                  <div className="grid gap-1.5 leading-none">
+                    <label
+                      htmlFor="terms1"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Rental
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      Mark this asset as a rental.
+                    </p>
+                  </div>
+
+                  {isRental ? (
+                    <div className="mt-4 flex gap-4">
+                      <Select onValueChange={(e) => setBillingType(e)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Billing type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Billing type</SelectLabel>
+                            <SelectItem value="daily">Daily</SelectItem>
+                            <SelectItem value="onceoff">Once Off</SelectItem>
+                            <SelectItem value="onceoffusage">
+                              Once Off + Usage
+                            </SelectItem>
+                            <SelectItem value="usage">Usage</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+
+                      {billingType === "daily" ? (
+                        <div className="w-full">
+                          <Input
+                            className="w-full"
+                            type="number"
+                            placeholder="Price"
+                          />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+
+                      {billingType === "onceoff" ? (
+                        <div className="w-full">
+                          <Input
+                            className="w-full"
+                            type="number"
+                            placeholder="Price"
+                          />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+
+                      {billingType === "onceoffusage" ? (
+                        <div className="flex flex-row gap-4 w-full">
+                          <Input
+                            className="w-full"
+                            type="number"
+                            placeholder="Price"
+                          />
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Usage type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Usage type</SelectLabel>
+                                <SelectItem value="km">KM</SelectItem>
+                                <SelectItem value="hours">Hours</SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            className="w-full"
+                            type="number"
+                            placeholder="Usage type price"
+                          />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+
+                      {billingType === "usage" ? (
+                        <div className="flex flex-row gap-4 w-full">
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Usage type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Usage type</SelectLabel>
+                                <SelectItem value="km">KM</SelectItem>
+                                <SelectItem value="hours">Hours</SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            className="w-full"
+                            type="number"
+                            placeholder="Usage type price"
+                          />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div className="w-full pt-2">
               <Button
-                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                className={cn(
+                  "w-full font-bold",
+                  status === "executing" ? "animate-pulse" : null
+                )}
                 size={"lg"}
                 type="submit"
                 disabled={status === "executing"}

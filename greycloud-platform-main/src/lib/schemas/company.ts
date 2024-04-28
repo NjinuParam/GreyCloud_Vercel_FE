@@ -10,7 +10,8 @@ export const CreateCompanyRequestModelSchema = z.object({
     .string()
     .min(8, { message: "Password must be at least 8 characters long." })
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
-      message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.",
+      message:
+        "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.",
     }),
   apiKey: z.string().min(1, { message: "API key is required." }),
   sageCompanyId: z.string().min(1, { message: "Sage Company ID is required." }),
@@ -19,9 +20,13 @@ export const CreateCompanyRequestModelSchema = z.object({
   contactNumber: z.string().min(1, { message: "Contact number is required." }),
 });
 
-export const CreateCompanyRequestModelSchemaForForm = zfd.formData(CreateCompanyRequestModelSchema);
+export const CreateCompanyRequestModelSchemaForForm = zfd.formData(
+  CreateCompanyRequestModelSchema
+);
 
-export type CreateCompanyRequestModelType = z.infer<typeof CreateCompanyRequestModelSchema>;
+export type CreateCompanyRequestModelType = z.infer<
+  typeof CreateCompanyRequestModelSchema
+>;
 
 export const CompanyResponseSchema = CreateCompanyRequestModelSchema.omit({
   password: true,
@@ -108,13 +113,17 @@ export const SageCompanyAccountResponseSchema = z.object({
   inventoryTypeId: z.coerce.number(),
 });
 
-export type SageCompanyAccountResponseType = z.infer<typeof SageCompanyAccountResponseSchema>;
+export type SageCompanyAccountResponseType = z.infer<
+  typeof SageCompanyAccountResponseSchema
+>;
 
 export const IdGetCompanyAssetByCompanyIdSchema = z.object({
   SageCompanyId: z.coerce.number(),
 });
 
-export type IdGetCompanyAssetType = z.infer<typeof IdGetCompanyAssetByCompanyIdSchema>;
+export type IdGetCompanyAssetType = z.infer<
+  typeof IdGetCompanyAssetByCompanyIdSchema
+>;
 
 export const SageOneAssetTypeSchema = z.object({
   description: z.string(),
@@ -174,20 +183,26 @@ export const SageOneAssetCategorySchema = z.object({
   created: z.coerce.date(),
 });
 
-export type SageOneAssetCategoryType = z.infer<typeof SageOneAssetCategorySchema>;
+export type SageOneAssetCategoryType = z.infer<
+  typeof SageOneAssetCategorySchema
+>;
 
 export const SaveSageOneAssetCategorySchema = SageCompanyIdSchema.extend({
   assetCategory: SageOneAssetCategorySchema,
 });
 
-export type SaveSageOneAssetCategoryType = z.infer<typeof SaveSageOneAssetCategorySchema>;
+export type SaveSageOneAssetCategoryType = z.infer<
+  typeof SaveSageOneAssetCategorySchema
+>;
 
 export const SageOneAssetLocationSchema = SageCompanyIdSchema.extend({
   id: z.coerce.number(),
   description: z.string(),
 });
 
-export type SageOneAssetLocationType = z.infer<typeof SageOneAssetLocationSchema>;
+export type SageOneAssetLocationType = z.infer<
+  typeof SageOneAssetLocationSchema
+>;
 
 export const SageOneAssetNoteSchema = z.object({
   assetId: z.coerce.number(),
@@ -206,7 +221,9 @@ export const SaveSageOneAssetNoteSchema = SageCompanyIdSchema.extend({
   assetNote: SageOneAssetNoteSchema,
 });
 
-export type SaveSageOneAssetNoteType = z.infer<typeof SaveSageOneAssetNoteSchema>;
+export type SaveSageOneAssetNoteType = z.infer<
+  typeof SaveSageOneAssetNoteSchema
+>;
 
 export const SageOneCompanySchemaWithStatus = z.object({
   includeStatus: z.coerce.boolean(),
@@ -216,7 +233,9 @@ export const SageOneCompanyCompanyIdStringSchema = z.object({
   companyId: z.string(),
 });
 
-export type SageOneCompanyCompanyIdStringType = z.infer<typeof SageOneCompanyCompanyIdStringSchema>;
+export type SageOneCompanyCompanyIdStringType = z.infer<
+  typeof SageOneCompanyCompanyIdStringSchema
+>;
 
 export const SageCompanyUserSchema = z.object({
   id: z.string(),
@@ -239,13 +258,17 @@ export const CreateSageCompanyUserSchema = SageCompanyUserSchema.omit({
   dateModified: true,
 });
 
-export type CreateSageCompanyUserType = z.infer<typeof CreateSageCompanyUserSchema>;
+export type CreateSageCompanyUserType = z.infer<
+  typeof CreateSageCompanyUserSchema
+>;
 
 export const UpdateSageCompanyUserSchema = CreateSageCompanyUserSchema.extend({
   id: z.string(),
 });
 
-export type UpdateSageCompanyUserType = z.infer<typeof UpdateSageCompanyUserSchema>;
+export type UpdateSageCompanyUserType = z.infer<
+  typeof UpdateSageCompanyUserSchema
+>;
 
 export const UpdateSageCompanyUserPassswordSchema = z.object({
   id: z.string(),

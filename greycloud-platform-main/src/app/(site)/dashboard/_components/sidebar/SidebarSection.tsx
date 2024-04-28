@@ -1,10 +1,18 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export const SidebarSection = ({ section, isActive }: { section: any; isActive: (path: string) => boolean }) => {
+export const SidebarSection = ({
+  section,
+  isActive,
+}: {
+  section: any;
+  isActive: (path: string) => boolean;
+}) => {
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-xs uppercase tracking-widest text-primary">{section.heading}</h2>
+      <h2 className="text-xs uppercase tracking-widest text-primary">
+        {section.heading}
+      </h2>
       <ul className="flex flex-col gap-2">
         {section.links.map((link: any) => (
           <li
@@ -15,7 +23,10 @@ export const SidebarSection = ({ section, isActive }: { section: any; isActive: 
             )}
           >
             {link.icon}
-            <Link href={link.path} className={isActive(link.path) ? "font-bold" : ""}>
+            <Link
+              href={link.path}
+              className={isActive(link.path) ? "font-bold" : ""}
+            >
               {link.title}
             </Link>
           </li>

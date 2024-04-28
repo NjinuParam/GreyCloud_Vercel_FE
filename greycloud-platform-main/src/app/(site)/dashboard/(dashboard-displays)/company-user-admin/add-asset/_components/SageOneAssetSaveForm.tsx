@@ -1,23 +1,45 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { SaveSageOneAssetSchema, SaveSageOneAssetType } from "@/lib/schemas/company";
+import {
+  SaveSageOneAssetSchema,
+  SaveSageOneAssetType,
+} from "@/lib/schemas/company";
 import { saveSageOneAsset } from "@/app/actions/sage-one-assets-actions/sage-one-assets-actions";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { GetCompanyDepreciationGroupResponseType } from "@/lib/schemas/depreciation";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import ButtonSubmitForm from "@/app/(auth)/login/_components/ButtonSubmitForm";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type SageOneAssetSaveFormProps = {
   children?: React.ReactNode;
@@ -25,7 +47,11 @@ type SageOneAssetSaveFormProps = {
   SageCompanyId: number;
 };
 
-export default function SageOneAssetSaveForm({ depreciationGroups, SageCompanyId, children }: SageOneAssetSaveFormProps) {
+export default function SageOneAssetSaveForm({
+  depreciationGroups,
+  SageCompanyId,
+  children,
+}: SageOneAssetSaveFormProps) {
   const form = useForm<SaveSageOneAssetType>({
     resolver: zodResolver(SaveSageOneAssetSchema),
     defaultValues: {
@@ -103,7 +129,7 @@ export default function SageOneAssetSaveForm({ depreciationGroups, SageCompanyId
 
   // Define a submit handler:
   function onSubmit(values: SaveSageOneAssetType) {
-    const formattedValues: SaveSageOneAssetType = {
+    const formattedValues = {
       ...values,
       SageCompanyId: Number(values.SageCompanyId),
       asset: {
@@ -116,14 +142,20 @@ export default function SageOneAssetSaveForm({ depreciationGroups, SageCompanyId
         numericField3: Number(values.asset.numericField3),
         assetDepreciationGroupRequestModel: {
           ...values.asset.assetDepreciationGroupRequestModel,
-          active: Boolean(values.asset.assetDepreciationGroupRequestModel.active),
+          active: Boolean(
+            values.asset.assetDepreciationGroupRequestModel.active
+          ),
           assetId: 0,
         },
       },
+      quantity: qty,
     };
 
     execute(formattedValues);
   }
+
+  const [qty, setQty] = useState(1);
+  const [isCollection, setIsCollection] = useState("");
 
   return (
     <>
@@ -196,8 +228,18 @@ export default function SageOneAssetSaveForm({ depreciationGroups, SageCompanyId
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
-                          <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -207,7 +249,9 @@ export default function SageOneAssetSaveForm({ depreciationGroups, SageCompanyId
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
                           initialFocus
                         />
                       </PopoverContent>
@@ -280,7 +324,13 @@ export default function SageOneAssetSaveForm({ depreciationGroups, SageCompanyId
                   <FormItem>
                     <FormLabel>Current Value</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} type="number" min={0} step="0.01" />
+                      <Input
+                        placeholder=""
+                        {...field}
+                        type="number"
+                        min={0}
+                        step="0.01"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -297,15 +347,20 @@ export default function SageOneAssetSaveForm({ depreciationGroups, SageCompanyId
                       <Select
                         onValueChange={(selectedDepGroupId) => {
                           // Find the full depreciation group object based on the selected ID
-                          const selectedGroup = depreciationGroups.find((group) => group.depGroupId === selectedDepGroupId);
+                          const selectedGroup = depreciationGroups.find(
+                            (group) => group.depGroupId === selectedDepGroupId
+                          );
 
                           // Update the form field with the selected group's full object
                           // Ensure to preserve other properties of the assetDepreciationGroupRequestModel object if needed
-                          form.setValue("asset.assetDepreciationGroupRequestModel", {
-                            ...field.value, // Preserve other fields if necessary
-                            ...selectedGroup, // Spread the selected group's properties
-                            depGroupId: selectedDepGroupId, // Ensure the depGroupId is set correctly
-                          });
+                          form.setValue(
+                            "asset.assetDepreciationGroupRequestModel",
+                            {
+                              ...field.value, // Preserve other fields if necessary
+                              ...selectedGroup, // Spread the selected group's properties
+                              depGroupId: selectedDepGroupId, // Ensure the depGroupId is set correctly
+                            }
+                          );
                         }}
                         defaultValue={field.value.depGroupId}
                       >
@@ -316,7 +371,10 @@ export default function SageOneAssetSaveForm({ depreciationGroups, SageCompanyId
                         </FormControl>
                         <SelectContent>
                           {depreciationGroups?.map((option) => (
-                            <SelectItem key={option.depGroupId} value={option.depGroupId}>
+                            <SelectItem
+                              key={option.depGroupId}
+                              value={option.depGroupId}
+                            >
                               {option.depName}
                             </SelectItem>
                           ))}
@@ -330,9 +388,40 @@ export default function SageOneAssetSaveForm({ depreciationGroups, SageCompanyId
                 {children}
               </div>
             </div>
+            {/* TODO: Add a suspend button on manage asset modal */}
 
+            <div className="w-full">
+              <Checkbox
+                onCheckedChange={(e) => setIsCollection(e.valueOf().toString())}
+                id="isCollection"
+              />
+              <label
+                htmlFor="isCollection"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-2"
+              >
+                This is a collection asset
+              </label>
+            </div>
+            {isCollection == "true" ? (
+              <div className="w-full">
+                <Label htmlFor="qty">Quantity</Label>
+                <Input
+                  value={qty}
+                  onChange={(e) => setQty(parseInt(e.target.value))}
+                  type="number"
+                  id="qty"
+                  placeholder="Quantity"
+                />
+              </div>
+            ) : (
+              <></>
+            )}
             <div className="w-full pt-4">
-              <ButtonSubmitForm executingString="Saving Asset..." idleString="Save Asset" status={status} />
+              <ButtonSubmitForm
+                executingString="Saving Asset..."
+                idleString="Save Asset"
+                status={status}
+              />
             </div>
           </form>
         </Form>

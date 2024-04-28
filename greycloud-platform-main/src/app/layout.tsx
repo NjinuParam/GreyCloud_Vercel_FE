@@ -10,7 +10,8 @@ const fontSans = FontSans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Grey Cloud Technology",
-  description: "Achieving cyber security maturity through a systematic risk-based approach.",
+  description:
+    "Achieving cyber security maturity through a systematic risk-based approach.",
 };
 
 export default function RootLayout({
@@ -20,10 +21,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-        <body className={cn("flex min-h-screen flex-col items-center justify-center", fontSans.className)}>
+      <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
+        <body
+          className={cn(
+            "flex min-h-screen flex-col items-center justify-center",
+            fontSans.className
+          )}
+        >
           <main>{children}</main>
-          <Toaster richColors />
+          <Toaster />
         </body>
       </ThemeProvider>
     </html>

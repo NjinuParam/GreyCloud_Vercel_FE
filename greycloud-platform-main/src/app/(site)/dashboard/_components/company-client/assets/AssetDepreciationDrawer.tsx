@@ -3,16 +3,31 @@
 import { Button } from "@/components/ui/button";
 import { UpdateSageOneAssetFormProps } from "../../../(dashboard-displays)/company-user-admin/add-asset/_components/UpdateSageOneAssetForm";
 import { DataTable } from "@/components/ui/data-table";
-import { AssetDepreciationHistoryTableTypes, assetDepreciationHistoryColumns } from "../../grey-cloud-admin/DataTableColumns";
+import {
+  AssetDepreciationHistoryTableTypes,
+  assetDepreciationHistoryColumns,
+} from "../../grey-cloud-admin/DataTableColumns";
 import { getSpecificAssetDepreciationHistory } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Dialog } from "@radix-ui/react-dialog";
-import { DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-export default function AssetDepreciationDialog({ asset, depreciationGroups, sageCompanyId }: UpdateSageOneAssetFormProps) {
-  const [transformedData, setTransformedData] = useState<AssetDepreciationHistoryTableTypes[]>([]);
+export default function AssetDepreciationDialog({
+  asset,
+  depreciationGroups,
+  sageCompanyId,
+}: UpdateSageOneAssetFormProps) {
+  const [transformedData, setTransformedData] = useState<
+    AssetDepreciationHistoryTableTypes[]
+  >([]);
 
   const { execute, status } = useAction(getSpecificAssetDepreciationHistory, {
     onSuccess(data) {
@@ -22,7 +37,8 @@ export default function AssetDepreciationDialog({ asset, depreciationGroups, sag
         });
       } else {
         toast.success("Depreciation History fetched.", {
-          description: "The depreciation history for this asset was fetched successfully.",
+          description:
+            "The depreciation history for this asset was fetched successfully.",
         });
 
         // Transform the depreciation history data
@@ -56,14 +72,21 @@ export default function AssetDepreciationDialog({ asset, depreciationGroups, sag
       </DialogTrigger>
       <DialogContent className="min-w-[1000px] w-full">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-center">View Asset Depreciation</DialogTitle>
+          <DialogTitle className="text-2xl text-center">
+            View Asset Depreciation
+          </DialogTitle>
         </DialogHeader>
 
         {transformedData.length > 0 ? (
-          <DataTable columns={assetDepreciationHistoryColumns} data={transformedData} />
+          <DataTable
+            columns={assetDepreciationHistoryColumns}
+            data={transformedData}
+          />
         ) : (
           <DialogDescription>
-            <p className="mx-auto text-center">Click button below to fetch asset depreciation.</p>
+            <p className="mx-auto text-center">
+              Click button below to fetch asset depreciation.
+            </p>
           </DialogDescription>
         )}
 
