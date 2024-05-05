@@ -155,7 +155,7 @@ export default function UpdateSageOneAssetForm({
                   <FormItem className="flex-1 grow min-w-full">
                     <FormLabel>Asset Category Description</FormLabel>
                     <FormControl>
-                      <Input disabled placeholder="" {...field} />
+                      <Input placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

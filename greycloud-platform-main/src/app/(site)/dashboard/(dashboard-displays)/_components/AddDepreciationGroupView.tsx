@@ -101,7 +101,7 @@ function AddDepreciationGroup() {
       </CardHeader>
       <CardContent>
         <form>
-          <div className="grid w-full items-center gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Amount</Label>
               <Input
@@ -137,38 +137,49 @@ function AddDepreciationGroup() {
                 </SelectContent>
               </Select>
             </div>
+            {type === "2" ? (
+              <>
+                <div className="flex flex-col space-y-1.5">
+                  <Select onValueChange={(e) => setUsageType(e)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Usage Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Usage Type</SelectLabel>
+                        <SelectItem value="0">KM</SelectItem>
+                        <SelectItem value="1">Hours </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex flex-col space-y-1.5">
+                  <Select onValueChange={(e) => setPeriod(e)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Period</SelectLabel>
+                        <SelectItem value="0">Monthly</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
 
             <div className="flex flex-col space-y-1.5">
-              <Select onValueChange={(e) => setUsageType(e)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Usage Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Usage Type</SelectLabel>
-                    <SelectItem value="0">KM</SelectItem>
-                    <SelectItem value="1">Hours </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col space-y-1.5">
-              <Select onValueChange={(e) => setPeriod(e)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Period" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Period</SelectLabel>
-                    <SelectItem value="0">Monthly</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col space-y-1.5">
-              <Select onValueChange={(e) => setCategory(e)}>
+              <Select
+                onValueChange={(e) => {
+                  console.log(e);
+                  const cat = categories.find((x) => x.description == e).id;
+                  setCategory(cat);
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
@@ -176,7 +187,7 @@ function AddDepreciationGroup() {
                   <SelectGroup>
                     <SelectLabel>Category</SelectLabel>
                     {categories.map((c: any) => (
-                      <SelectItem key={c.id} value={c.id}>
+                      <SelectItem key={c.id} value={c.description}>
                         {c.description}
                       </SelectItem>
                     ))}

@@ -190,7 +190,7 @@ function CreateOrderForm({
                 name="endDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Delivery Date</FormLabel>
+                    <FormLabel>End Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -277,6 +277,38 @@ function CreateOrderForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Deposit</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Deposit" type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="totalUsage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Deposit</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Total Usage"
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="deposit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Usage</FormLabel>
                     <FormControl>
                       <Input placeholder="Deposit" type="number" {...field} />
                     </FormControl>
