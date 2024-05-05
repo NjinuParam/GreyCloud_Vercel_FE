@@ -446,12 +446,6 @@ function CreateOrderForm({
                       </SelectContent>
                     </Select>
 
-                    <Input
-                      type="number"
-                      onChange={(e) => setQty(parseInt(e.target.value))}
-                      placeholder="Quanity"
-                    />
-
                     <Button
                       onClick={() => {
                         const theAsset = assets.find(
@@ -459,7 +453,7 @@ function CreateOrderForm({
                         );
 
                         const theItem = {
-                          qty: qty,
+                          qty: 1,
                           serialNumber: theAsset.serialNumber,
                           description: theAsset.description,
                           value: theAsset.currentValue,

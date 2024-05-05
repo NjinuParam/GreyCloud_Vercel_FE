@@ -35,8 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import { orders } from "../../../../../../../../mock";
+import { getIronSessionData } from "@/lib/auth/auth";
 
 export const columns: ColumnDef<any>[] = [
   {
@@ -86,11 +85,9 @@ export const columns: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: "mobile",
-    header: () => <div>Mobile</div>,
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("mobile")}</div>
-    ),
+    accessorKey: "email",
+    header: () => <div>Email</div>,
+    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
     accessorKey: "startDate",
@@ -145,8 +142,46 @@ export default function ShowOrder() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const endpoint = `${apiUrl}SageOneOrder/SalesOrderNew/GetAll`;
+  const [orders, setOrders] = React.useState([]);
+  const [ordersFormated, setOrdersFormated] = React.useState([]);
+  React.useEffect(() => {
+    getIronSessionData().then((comp: any) => {
+      let currentCompanyId = comp.companyId;
+      let sageCompanyId = comp.companyProfile.companiesList.find(
+        (c) => c.companyId == currentCompanyId
+      ).sageCompanyId;
+      getOrders(sageCompanyId);
+    });
+  }, []);
+
+  const getOrders = async (sageCompId: number) => {
+    try {
+      const response = await fetch(endpoint + `/${sageCompId}`);
+      const res = await response.json();
+      setOrders(res);
+      let fOrders = [];
+
+      res.forEach((o) => {
+        let fo = {
+          id: o.id,
+          customer: o.customer.name,
+          address: `${o.postalAddress01}, ${o.postalAddress02}`,
+          email: o.customer.email,
+          startDate: o.startDate,
+          endDate: o.endDate,
+        };
+
+        fOrders.push(fo);
+      });
+      setOrdersFormated(fOrders);
+      console.log("ORDERS", res);
+    } catch (e) {}
+  };
+
   const table = useReactTable({
-    data: orders,
+    data: ordersFormated,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
