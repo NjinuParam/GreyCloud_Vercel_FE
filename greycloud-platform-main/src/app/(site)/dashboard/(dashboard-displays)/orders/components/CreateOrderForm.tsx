@@ -48,7 +48,10 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/use-toast";
 import AutoComplete from "react-google-autocomplete";
-import { SAGE_ONE_CUSTOMER_NEW } from "@/lib/api-endpoints/sage-one-customer";
+import {
+  SAGE_ONE_CUSTOMER,
+  SAGE_ONE_CUSTOMER_NEW,
+} from "@/lib/api-endpoints/sage-one-customer";
 
 import {
   Table,
@@ -60,6 +63,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getIronSessionData } from "@/lib/auth/auth";
 
 const FormSchema = z.object({
   startDate: z.date({
@@ -83,7 +87,6 @@ function CreateOrderForm({
   customers: any[];
   assets: any;
 }) {
-  console.log(customers, assets);
   const [isLoading, setIsLoading] = useState(false);
   const [dis, setDiscount] = useState(0);
   const [items, setItems] = useState<
@@ -96,7 +99,11 @@ function CreateOrderForm({
     }[]
   >([]);
   const [selectedItem, setSelectedItem] = useState(0);
+  const [custs, setCusts] = useState([]);
   const [qty, setQty] = useState(0);
+  const [selectedCustomerAddresses, setSelectedCustomerAddresses] = useState(
+    []
+  );
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { toast } = useToast();
 
@@ -116,6 +123,26 @@ function CreateOrderForm({
 
     let tot = price - discPr;
     setTotal(tot);
+  };
+
+  const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.GET.CUSTOMER_GET_FOR_COMPANY}`;
+  React.useEffect(() => {
+    getIronSessionData().then((comp: any) => {
+      let currentCompanyId = comp.companyId;
+      let sageCompanyId = comp.companyProfile.companiesList.find(
+        (c) => c.companyId == currentCompanyId
+      ).sageCompanyId;
+      getCustomers(sageCompanyId);
+    });
+  }, []);
+
+  const getCustomers = async (compId: string) => {
+    try {
+      const response = await fetch(endpoint + `/${compId}`);
+      const res = await response.json();
+      setCusts(res.results);
+      console.log("CUSTOMERSSSS", res.results);
+    } catch (e) {}
   };
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -234,7 +261,54 @@ function CreateOrderForm({
                   <FormItem>
                     <FormLabel>Customer</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(e) => {
+                        field.onChange;
+
+                        const theCustomer = custs.find((c) => c.name == e);
+                        setSelectedCustomerAddresses([]);
+                        let addresses = [];
+                        if (theCustomer?.deliveryAddress01 !== "") {
+                          addresses.push(theCustomer?.deliveryAddress01);
+                        }
+
+                        if (theCustomer?.deliveryAddress02 !== "") {
+                          addresses.push(theCustomer?.deliveryAddress02);
+                        }
+
+                        if (theCustomer?.deliveryAddress03 !== "") {
+                          addresses.push(theCustomer?.deliveryAddress03);
+                        }
+
+                        if (theCustomer?.deliveryAddress04 !== "") {
+                          addresses.push(theCustomer?.deliveryAddress04);
+                        }
+
+                        if (theCustomer?.deliveryAddress05 !== "") {
+                          addresses.push(theCustomer?.deliveryAddress05);
+                        }
+
+                        if (theCustomer?.postalAddress01 !== "") {
+                          addresses.push(theCustomer?.postalAddress01);
+                        }
+
+                        if (theCustomer?.postalAddress02 !== "") {
+                          addresses.push(theCustomer?.postalAddress02);
+                        }
+
+                        if (theCustomer?.postalAddress03 !== "") {
+                          addresses.push(theCustomer?.postalAddress03);
+                        }
+
+                        if (theCustomer?.postalAddress04 !== "") {
+                          addresses.push(theCustomer?.postalAddress04);
+                        }
+
+                        if (theCustomer?.postalAddress05 !== "") {
+                          addresses.push(theCustomer?.postalAddress05);
+                        }
+
+                        setSelectedCustomerAddresses(addresses);
+                      }}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -243,7 +317,9 @@ function CreateOrderForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="0">(None)</SelectItem>
+                        {custs.map((c) => (
+                          <SelectItem value={c.name}>{c.name}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -290,7 +366,7 @@ function CreateOrderForm({
                 name="totalUsage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Deposit</FormLabel>
+                    <FormLabel>Total Usage</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Total Usage"
@@ -333,7 +409,9 @@ function CreateOrderForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="0">(None)</SelectItem>
+                        {selectedCustomerAddresses.map((a) => (
+                          <SelectItem value={a}>{a}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
