@@ -36,102 +36,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getIronSessionData } from "@/lib/auth/auth";
-
-export const columns: ColumnDef<any>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "customer",
-    header: "Customer",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("customer")}</div>
-    ),
-  },
-  {
-    accessorKey: "address",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Address
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("address")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: () => <div>Email</div>,
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "startDate",
-    header: () => <div>Start Date</div>,
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("startDate")}</div>
-    ),
-  },
-  {
-    accessorKey: "endDate",
-    header: () => <div>End Date</div>,
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("endDate")}</div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>
-              <a
-                href="https://avis-dev-storage.s3.af-south-1.amazonaws.com/6612e2be514b7be8fc71c691_Invoice.pdf"
-                download
-              >
-                Download Invoice
-              </a>
-            </DropdownMenuLabel>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export default function ShowOrder() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -156,6 +70,24 @@ export default function ShowOrder() {
     });
   }, []);
 
+  const completeOrder = async (orderId: string, assets: any[]) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}SageOneOrder/SalesOrderNew/Complete/${orderId}`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(assets),
+        }
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const getOrders = async (sageCompId: number) => {
     try {
       const response = await fetch(endpoint + `/${sageCompId}`);
@@ -176,9 +108,179 @@ export default function ShowOrder() {
         fOrders.push(fo);
       });
       setOrdersFormated(fOrders);
-      console.log("ORDERS", res);
     } catch (e) {}
   };
+
+  const columns: ColumnDef<any>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "customer",
+      header: "Customer",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("customer")}</div>
+      ),
+    },
+    {
+      accessorKey: "address",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Address
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("address")}</div>
+      ),
+    },
+    {
+      accessorKey: "email",
+      header: () => <div>Email</div>,
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("email")}</div>
+      ),
+    },
+    {
+      accessorKey: "startDate",
+      header: () => <div>Start Date</div>,
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("startDate")}</div>
+      ),
+    },
+    {
+      accessorKey: "endDate",
+      header: () => <div>End Date</div>,
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("endDate")}</div>
+      ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const order = row.original;
+
+        const assets = orders.find((x) => x.id === order.id)?.assets;
+
+        let ass: any[] = [];
+        assets.forEach((a) => {
+          if (a.assetDetail.billingType) {
+            ass.push({
+              assetId: a.assetId,
+              returned: true,
+              usage: a.assetDetail.billingType.usageType
+                ? a.assetDetail.billingType.amount
+                : 0,
+            });
+          }
+        });
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>
+                <a
+                  href="https://avis-dev-storage.s3.af-south-1.amazonaws.com/6612e2be514b7be8fc71c691_Invoice.pdf"
+                  download
+                >
+                  Download Invoice
+                </a>
+              </DropdownMenuLabel>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <DropdownMenuLabel className="cursor-pointer">
+                    Complete Order
+                  </DropdownMenuLabel>
+                </DialogTrigger>
+                <DialogContent className="">
+                  <DialogHeader>
+                    <DialogTitle>Complete Order</DialogTitle>
+                    <DialogDescription>
+                      Please fill in the form below to complete the order
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    {ass.map((a, i) => (
+                      <div className="w-full flex flex-row justify-between items-center">
+                        <div>
+                          <p>
+                            {
+                              assets.find((x) => x.assetId == a.assetId)
+                                .assetDetail.description
+                            }
+                          </p>
+                          {a.usage !== 0 ? (
+                            <div>
+                              <Input
+                                className="mt-4"
+                                type="number"
+                                placeholder="Usage"
+                                value={a.usage}
+                                onChange={(e) => {
+                                  ass[i].usage = e.target.value;
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                        <Button variant={"secondary"}>
+                          Asset Did Not Return
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      type="submit"
+                      onClick={() => {
+                        completeOrder(order.id, assets);
+                      }}
+                    >
+                      Complete Order
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
   const table = useReactTable({
     data: ordersFormated,
