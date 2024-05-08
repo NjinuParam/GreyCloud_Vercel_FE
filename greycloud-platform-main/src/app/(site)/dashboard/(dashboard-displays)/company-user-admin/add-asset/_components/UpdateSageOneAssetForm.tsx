@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/select";
 import { PlatformUserType } from "@/lib/schemas/common-schemas";
 import { Checkbox } from "@/components/ui/checkbox";
+import { getIronSessionData } from "@/lib/auth/auth";
 
 export type UpdateSageOneAssetFormProps = {
   asset: SageOneAssetTypeType;
@@ -125,8 +126,33 @@ export default function UpdateSageOneAssetForm({
     execute(formattedValues);
   }
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  useEffect(() => {
+    getIronSessionData().then((comp: any) => {
+      let currentCompanyId = comp.companyId;
+
+      let sageId = comp.companyProfile.companiesList.find(
+        (x) => x.companyId == currentCompanyId
+      )?.sageCompanyId;
+
+      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
+        .then((res) =>
+          res.json().then((data) => {
+            setCategories(data.results);
+            setTimeout(() => {
+              setCategory(asset.category.id.toString());
+            }, 1000);
+          })
+        )
+        .catch((e) => console.log(e));
+    });
+  }, []);
+
   const [isRental, setIsRental] = useState(false);
   const [billingType, setBillingType] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState("0");
 
   return (
     <>
@@ -148,7 +174,7 @@ export default function UpdateSageOneAssetForm({
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="asset.category.description"
                 render={({ field }) => (
@@ -160,7 +186,31 @@ export default function UpdateSageOneAssetForm({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
+
+              <div className="flex flex-col mt-8">
+                <Select
+                  onValueChange={(e) => {
+                    const cat = categories.find((x) => x.description == e).id;
+                    setCategory(cat);
+                    asset.category = cat;
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Category</SelectLabel>
+                      {categories.map((c: any) => (
+                        <SelectItem key={c.id} value={c.description}>
+                          {c.description}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
 
               <FormField
                 control={form.control}
