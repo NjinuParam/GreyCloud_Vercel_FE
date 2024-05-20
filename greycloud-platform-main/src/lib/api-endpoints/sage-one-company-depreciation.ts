@@ -8,6 +8,7 @@ export const SAGE_ONE_DEPRECIATION = {
     GET_COMPANY_DEPRECIATION_GROUP_BY_ID: `${BASE}/Get-Company-Depreciation-Group`,
     GET_ASSET_DEPRECIATION_HISTORY_ALL: `${BASE}/Get-Asset-Depreciation-History-All`,
     GET_ASSET_DEPRECIATION_HISTORY_BY_ID: `${BASE}/Get-Asset-Depreciation-History`,
+    GET_ASSET_DEPRECIATION_FUTURE_BY_ID: `${BASE}/CalculateDepreciation`,
   },
   PATCH: {
     ASSET_GROUP_UPDATE: `${BASE}/Update-AssetGroup`,

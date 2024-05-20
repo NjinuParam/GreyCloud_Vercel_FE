@@ -244,10 +244,35 @@ export const addAssetDepreciationHistory = action(AddAssetDepreciationHistorySch
 });
 
 export const getSpecificAssetDepreciationHistory = action(GetSpecificAssetDepreciationHistorySchema, async ({ assetid }) => {
-  const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_ASSET_DEPRECIATION_HISTORY_BY_ID}/${assetid}`;
+  const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_ASSET_DEPRECIATION_FUTURE_BY_ID}/${assetid}`;
 
   try {
     const response = await fetch(endpoint, { next: { tags: ["asset-depreciation-history"] } });
+    console.log("response11", response);  
+    console.log("ep", endpoint);  
+    if (!response.ok) {
+
+      throw new ActionError(`Error: ${response.status}`);
+    }
+
+    debugger;
+ 
+    const data: AssetDepreciationHistoryResponseType[] = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Failed to asset depreciation history: ", error);
+    throw error;
+  }
+});
+
+export const getFutureAssetDepreciationHistory = action(GetSpecificAssetDepreciationHistorySchema, async ({ assetid }) => {
+  const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_ASSET_DEPRECIATION_FUTURE_BY_ID}/${assetid}`;
+
+  try {
+    const response = await fetch(endpoint, { next: { tags: ["asset-depreciation-future"] } });
+    debugger;
+    console.log("response", response);  
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -260,6 +285,9 @@ export const getSpecificAssetDepreciationHistory = action(GetSpecificAssetDeprec
     throw error;
   }
 });
+
+
+
 
 export const getAllAssetDepreciationHistory = action(GetAllAssetDepreciationHistorySchema, async ({ sageCompanyId }) => {
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_ASSET_DEPRECIATION_HISTORY_ALL}/${sageCompanyId}`;

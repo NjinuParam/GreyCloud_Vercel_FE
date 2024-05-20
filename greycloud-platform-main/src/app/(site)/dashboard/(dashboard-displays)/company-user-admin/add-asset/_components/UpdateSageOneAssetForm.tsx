@@ -73,6 +73,7 @@ export default function UpdateSageOneAssetForm({
   });
 
   const { execute, status } = useAction(saveSageOneAsset, {
+  
     onSuccess(data, _, reset) {
       if (data) {
         toast.success(`Asset saved!`, {
@@ -100,6 +101,7 @@ export default function UpdateSageOneAssetForm({
 
   // Define a submit handler:
   function onSubmit(values: SaveSageOneAssetType) {
+    debugger;
     const formattedValues: SaveSageOneAssetType = {
       ...values,
       SageCompanyId: Number(values.SageCompanyId),
@@ -123,6 +125,7 @@ export default function UpdateSageOneAssetForm({
       },
     };
 
+    debugger;
     execute(formattedValues);
   }
 
@@ -156,7 +159,7 @@ export default function UpdateSageOneAssetForm({
 
   return (
     <>
-      <Form {...form}>
+      {/* <Form {...form}> */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-6 justify-center mb-4">
@@ -531,7 +534,7 @@ export default function UpdateSageOneAssetForm({
             </div>
           </form>
         </Form>
-      </Form>
+      {/* </Form> */}
     </>
   );
 }

@@ -7,7 +7,7 @@ import {
   AssetDepreciationHistoryTableTypes,
   assetDepreciationHistoryColumns,
 } from "../../grey-cloud-admin/DataTableColumns";
-import { getSpecificAssetDepreciationHistory } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
+import { getFutureAssetDepreciationHistory, getSpecificAssetDepreciationHistory } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -28,6 +28,7 @@ export default function AssetDepreciationDialog({
   const [transformedData, setTransformedData] = useState<
     AssetDepreciationHistoryTableTypes[]
   >([]);
+
 
   const { execute, status } = useAction(getSpecificAssetDepreciationHistory, {
     onSuccess(data) {
@@ -97,6 +98,14 @@ export default function AssetDepreciationDialog({
           onClick={() => execute({ assetid: asset.id })}
         >
           Fetch Depreciation History
+        </Button>
+        <Button
+          variant={"outline"}
+          disabled={transformedData.length > 0 || status === "executing"}
+          className="text-primary w-full"
+          onClick={() => execute({ assetid: asset.id })}
+        >
+          View Future Depreciation {asset.id}
         </Button>
       </DialogContent>
     </Dialog>
