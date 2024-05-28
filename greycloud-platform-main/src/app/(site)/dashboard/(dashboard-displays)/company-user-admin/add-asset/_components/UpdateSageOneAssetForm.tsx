@@ -101,7 +101,7 @@ export default function UpdateSageOneAssetForm({
 
   // Define a submit handler:
   function onSubmit(values: SaveSageOneAssetType) {
-    debugger;
+  
     const formattedValues: SaveSageOneAssetType = {
       ...values,
       SageCompanyId: Number(values.SageCompanyId),
@@ -125,7 +125,7 @@ export default function UpdateSageOneAssetForm({
       },
     };
 
-    debugger;
+  
     execute(formattedValues);
   }
 

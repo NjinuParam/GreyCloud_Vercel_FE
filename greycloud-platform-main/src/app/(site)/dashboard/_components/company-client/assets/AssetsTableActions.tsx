@@ -7,6 +7,7 @@ import { AssetCard } from "./AssetCard";
 import { EnrichedAssetType } from "./assets-columns";
 
 export default function AssetsTableActions({ asset }: { asset: EnrichedAssetType }) {
+
   return (
     <div>
       <div className="flex gap-2">

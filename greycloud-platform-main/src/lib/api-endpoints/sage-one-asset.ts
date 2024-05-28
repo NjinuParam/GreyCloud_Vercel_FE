@@ -2,7 +2,7 @@ const BASE = "SageOneAsset";
 
 export const SAGE_ONE_ASSET = {
   GET: {
-    ASSET_GET: `${BASE}/Asset/Get`,
+    ASSET_GET: `${BASE}/Asset/GetNew`,
     ASSET_CATEGORY_GET: `${BASE}/AssetCategory/Get`,
     ASSET_LOCATION_GET: `${BASE}/AssetLocation/Get`,
     ASSET_NOTE_GET: `${BASE}/AssetNote/Get`,

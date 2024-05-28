@@ -255,7 +255,7 @@ export const getSpecificAssetDepreciationHistory = action(GetSpecificAssetDeprec
       throw new ActionError(`Error: ${response.status}`);
     }
 
-    debugger;
+  
  
     const data: AssetDepreciationHistoryResponseType[] = await response.json();
 
@@ -271,7 +271,7 @@ export const getFutureAssetDepreciationHistory = action(GetSpecificAssetDeprecia
 
   try {
     const response = await fetch(endpoint, { next: { tags: ["asset-depreciation-future"] } });
-    debugger;
+  
     console.log("response", response);  
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);

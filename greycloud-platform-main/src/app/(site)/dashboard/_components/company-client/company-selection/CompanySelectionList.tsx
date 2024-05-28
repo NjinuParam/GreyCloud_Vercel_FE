@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export const CompanySelectionList = async () => {
   const session = await getIronSessionData();
-  console.log("COMPANIES", session.companyProfile.companiesList);
 
   if (!session.isLoggedIn) {
     return redirect("/login");

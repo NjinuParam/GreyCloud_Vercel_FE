@@ -45,10 +45,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
+import { Badge } from "@/components/ui/badge";
 import AutoComplete from "react-google-autocomplete";
 import { Label } from "@/components/ui/label";
-
+import { cn, formatDate } from "@/lib/utils";
 export default function ShowOrder() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -61,9 +61,12 @@ export default function ShowOrder() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const endpoint = `${apiUrl}SageOneOrder/SalesOrderNew/GetAll`;
   const [orders, setOrders] = React.useState([]);
+  // const [assets, setAssets] = React.useState([]);
   const [ordersFormated, setOrdersFormated] = React.useState<any[]>([]);
   const [ordersFiltered, setOrdersFiltered] = React.useState<any[]>([]);
   const [selectedFilter, setSelectedFilter] = React.useState(-1);
+
+  const [loading, setLoading] = React.useState(true);
 
   const [startOrderAssets, setStartOrderAssets] = React.useState<any[]>([]);
   const [completeOrderAssets, setCompleteOrderAssets] = React.useState<any[]>([]);
@@ -113,8 +116,10 @@ export default function ShowOrder() {
 
   const getOrders = async (sageCompId: number) => {
     try {
+      setLoading(true)
       const response = await fetch(endpoint + `/${sageCompId}`);
       const res = await response.json();
+      debugger;
       setOrders(res);
       let fOrders = [] as any[];
 
@@ -122,7 +127,7 @@ export default function ShowOrder() {
         let fo = {
           id: o.id,
           customer: o.customer.name,
-          address: `${o.postalAddress01}, ${o.postalAddress02}`,
+          address: `${o.postalAddress01}`,
           email: o.customer.email,
           startDate: o.startDate,
           endDate: o.endDate,
@@ -133,19 +138,36 @@ export default function ShowOrder() {
       });
       setOrdersFormated(fOrders);
       setOrdersFiltered(fOrders);
-    } catch (e) {}
+      setLoading(false)
+    } catch (e) {
+      setLoading(false)
+    }
   };
 
   
-function updateStartOrderAssets(payload:any){
+async function updateStartOrderAssets(payload:any,orderId:string){
 
-  debugger;
+  try {
+    const response = await fetch(
+      `${apiUrl}SageOneOrder/SalesOrderNew/Start/${orderId}`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+  } catch (e) {
+    console.log(e);
+  }
+debugger;
  // setStartOrderAssets([...startOrderAssets, assetUsage])
 }
 
 
 function initStartOrderModal(order:any, assets: any[]){
-debugger;
   const req =assets.map((asset:any)=>{
     return {
       assetId: asset.assetId,
@@ -215,7 +237,19 @@ usage:string
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue("address")}</div>
+        <div className="">{row.getValue("address")}</div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: () => <div>Order Status</div>,
+      cell: ({ row }) => (
+        <div className="">
+           <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`, row.getValue("status")!="1" && `bg-green-100 text-green-700`)}>
+           {row.getValue("status")=="0"? "New Order" : row.getValue("status")=="1" ? "Awaiting Delivery" : row.getValue("status")=="2" ? "Ongoing" : row.getValue("status")=="3" ? "Completed": row.getValue("status")=="4" ? "Overdue": "Cancelled"}
+          </Badge>
+          
+          </div>
       ),
     },
     {
@@ -229,14 +263,14 @@ usage:string
       accessorKey: "startDate",
       header: () => <div>Start Date</div>,
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue("startDate")}</div>
+        <div className="">{formatDate(row.getValue("startDate"))}</div>
       ),
     },
     {
       accessorKey: "endDate",
       header: () => <div>End Date</div>,
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue("endDate")}</div>
+        <div className="">{formatDate(row.getValue("endDate"))}</div>
       ),
     },
     {
@@ -244,23 +278,21 @@ usage:string
       enableHiding: false,
       cell: ({ row }) => {
         const order = row.original;
-
-        const assets = orders.find((x) => x.id === order.id)?.assets;
-
+        const assets = orders.find((x:any) => x.id === order.id)?.assets;
+debugger;
         let ass: any[] = [];
-        assets.forEach((a) => {
-          if (a.assetDetail.billingType) {
+        assets.forEach((a:any) => {
+          if (a?.assetDetail?.billingType) {
             ass.push({
               assetId: a.assetId,
               returned: true,
-              usage: a.assetDetail.billingType.usageType
-                ? a.assetDetail.billingType.amount
+              usage: a.assetDetail?.billingType?.usageType
+                ? a?.assetDetail?.billingType?.amount
                 : 0,
                 startUsage: a.startUsage??0
             });
           }
         });
-
 
         return (
           <DropdownMenu>
@@ -283,7 +315,7 @@ usage:string
 
               <Dialog>
                 <DialogTrigger asChild>
-                  {order.status ==1 && 
+                  {(order.status ==1 || order.status ==2 || order.status ==4) && 
                     <DropdownMenuLabel className="cursor-pointer">
                     Complete Order
                   </DropdownMenuLabel>
@@ -313,17 +345,18 @@ usage:string
                               
                           </h2>
                           <p>
-                            <small>
+                           { (a.billingType?.type==2 || a.billingType==3) && <small>
                             Starting usage: {
                               a.startUsage
                             } {  assets.find((x) => x.assetId == a.assetId)
                               .assetDetail.billingType.usageType}
                             </small>
+                            }
                           </p>
                           <br/>
                           {a.usage !== 0 ? (
                             <div>
-                                <label>Set final usage</label>
+                                <label><small>Set final usage</small></label>
                               <Input
                                className="mt-4"
                                 type="number"
@@ -350,7 +383,75 @@ usage:string
                             //  defaultValue={a.postalAddress01??""}
                                 apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
                                 onPlaceSelected={(place:any) => {
-                                  debugger;
+                                
+                                
+                                  ass[i].address = place?.formatted_address;
+                                  ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
+                                                                  
+                                }}
+                                options={{
+                                  types: ["geocode", "establishment"],//Must add street addresses not just cities
+                                  componentRestrictions: { country: "za" },
+                                }}
+                              />
+                       
+
+                      </div>
+                      
+                                          </>
+                    ))}
+                       {ass.map((a, i) => (
+                      <>
+                      <div  style={{paddingBottom: "20px", paddingTop:"20px"}} className="w-full flex flex-row justify-between items-center">
+                        <div className="w-full">
+                        <h2 style={{fontWeight:"bold"}} >
+                            {
+                              assets.find((x:any) => x.assetId == a.assetId).assetDetail.description
+                            }
+                             <label style={{marginLeft:"15%"}}> <Checkbox checked={true}></Checkbox><small style={{marginLeft:"2%", fontWeight:"normal"}}>Mark as returned  </small></label>
+                              
+                          </h2>
+                          <p>
+                          { (a.billingType?.type==2 || a.billingType==3) && 
+                            <small>
+                            Starting usage: {
+                              a.startUsage
+                            } {  assets.find((x:any) => x.assetId == a.assetId)
+                              .assetDetail.billingType.usageType}
+                            </small>
+                          }
+                          </p>
+                          <br/>
+                          {a.usage !== 0 ? (
+                            <div>
+                                <label><small>Set final usage</small></label>
+                              <Input
+                               className="mt-4"
+                                type="number"
+                                placeholder="Usage"
+                                value={a.usage}
+                                onChange={(e) => {
+                                  ass[i].usage = e.target.value;
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                       
+                       
+                      </div>
+                      <div style={{ borderBottom: "1px solid silver",  paddingBottom: "40px"}}>
+                    
+                    <small> Please enter drop off address or select from your <a style={{color:"blue", cursor:"pointer"}}> saved addresses</a> </small>
+                          
+                            <AutoComplete
+                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
+                            //  defaultValue={a.postalAddress01??""}
+                                apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                                onPlaceSelected={(place:any) => {
+                                
                                 
                                   ass[i].address = place?.formatted_address;
                                   ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
@@ -382,7 +483,7 @@ usage:string
               </Dialog>
               <Dialog>
                 <DialogTrigger asChild>
-                  {order.status ==0 && 
+                  {order.status ==1 && 
                     <DropdownMenuLabel onClick={()=>initStartOrderModal(order, ass)} className="cursor-pointer">
                     Start Order
                   </DropdownMenuLabel>
@@ -418,15 +519,16 @@ usage:string
                             <small>
                             Last recorded usage: {
                               a.startUsage
-                            } {  assets.find((x) => x.assetId == a.assetId)
+                            } {  assets.find((x:any) => x.assetId == a.assetId)
                               .assetDetail.billingType.usageType}
                             </small>
                           </p>):<></>
                           }
                           <br/>
                           {a.usage !== 0 ? (
-                            <div>
-                                <label><small>Enter intital usage</small></label>
+                        <div className="grid w-full items-center grid-cols-2 gap-4">
+                           <div className=" justify-between items-center">
+                                <label><small>Enter initial usage</small></label>
                               <Input
                                 className="mt-4"
                                 type="number"
@@ -436,6 +538,7 @@ usage:string
                                   ass[i].usage = e.target.value;
                                 }}
                               />
+                            </div>
                             </div>
                           ) : (
                             <></>
@@ -453,7 +556,7 @@ usage:string
                               //  defaultValue={a.postalAddress01??""}
                                   apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
                                   onPlaceSelected={(place:any) => {
-                                    debugger;
+                                  
                                   
                                     ass[i].address = place?.formatted_address;
                                     ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
@@ -476,99 +579,7 @@ usage:string
                                 defaultValue={order.address??""}
                                   apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
                                   onPlaceSelected={(place:any) => {
-                                    debugger;
-                                    console.log(place);
-                                    ass[i].address = place?.formatted_address;
-                                    ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
-                                                                    
-                                  }}
-                                  options={{
-                                    types: ["geocode", "establishment"],//Must add street addresses not just cities
-                                    componentRestrictions: { country: "za" },
-                                  }}
-                                />
-                         
-
-                        </div>
-
-                        </>
-                    ))}
-                     {ass.map((a, i) => (
-                      <>
-                      <div  style={{paddingTop: "20px"}} className="w-full flex flex-row justify-between items-center">
-                        <div className="w-full">
-                          <h2 style={{fontWeight:"bold"}}>
-                            {
-                              assets.find((x:any) => x.assetId == a.assetId).assetDetail.description
-                            }
-                             <label style={{marginLeft:"15%"}}> <Checkbox checked={true}></Checkbox><small style={{marginLeft:"2%", fontWeight:"normal"}}>Mark as delivered  </small></label>
-                              
-                          </h2>
-                       
-                          <br/>
-                          {a.usage !== 0 ?  (<p>
-                            <small>
-                            Last recorded usage: {
-                              a.startUsage
-                            } {  assets.find((x) => x.assetId == a.assetId)
-                              .assetDetail.billingType.usageType}
-                            </small>
-                          </p>):<></>
-                          }
-                          <br/>
-                          {a.usage !== 0 ? (
-                            <div>
-                                <label><small>Enter intital usage</small></label>
-                              <Input
-                                className="mt-4"
-                                type="number"
-                                placeholder="Usage"
-                                value={a.usage}
-                                onChange={(e) => {
-                                  ass[i].usage = e.target.value;
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <></>
-                          )}
-                        </div>
-                       
-                       
-                      </div>
-                      <div>
-                    
-                      <small> Please enter pickup address or select from your <a style={{color:"blue", cursor:"pointer"}}> saved addresses</a> </small>
-                            
-                              <AutoComplete
-                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
-                              //  defaultValue={a.postalAddress01??""}
-                                  apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                                  onPlaceSelected={(place:any) => {
-                                    debugger;
                                   
-                                    ass[i].address = place?.formatted_address;
-                                    ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
-                                                                    
-                                  }}
-                                  options={{
-                                    types: ["geocode", "establishment"],//Must add street addresses not just cities
-                                    componentRestrictions: { country: "za" },
-                                  }}
-                                />
-                         
-
-                        </div>
-                        <div  style={{ borderBottom: "1px solid silver",  paddingBottom: "40px"}}>
-                    
-                      <small> Destination address  </small>
-                            
-                              <AutoComplete
-                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
-                                defaultValue={order.address??""}
-                                  apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                                  onPlaceSelected={(place:any) => {
-                                    debugger;
                                     console.log(place);
                                     ass[i].address = place?.formatted_address;
                                     ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
@@ -585,12 +596,13 @@ usage:string
 
                         </>
                     ))}
+                 
                   </div>
                   <DialogFooter>
                     <Button
-                      type="submit"
+                      // type="submit"
                       onClick={() => {
-                        updateStartOrderAssets(ass);
+                        updateStartOrderAssets(ass, order.id);
                       }}
                     >
                     Start order
@@ -654,17 +666,7 @@ usage:string
                   >
                     All orders
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    key="1"
-                    className="capitalize"
-                    // checked={column.getIsVisible()}
-                    checked={selectedFilter == 1}
-                    onCheckedChange={(value) =>
-                    filterOrders(1)
-                    }
-                  >
-                  Ongoing Orders
-                  </DropdownMenuCheckboxItem>
+             
                 <DropdownMenuCheckboxItem
                     key="0"
                     className="capitalize"
@@ -673,30 +675,79 @@ usage:string
                     onCheckedChange={(value) =>
                       filterOrders(0)
                     }
-                  >
+                  > 
+                    <Badge variant="outline" className={cn(`bg-green-100 text-green-700`)}>
                     New Orders
+                    </Badge>
+                  
                   </DropdownMenuCheckboxItem>
-                 
+                  <DropdownMenuCheckboxItem
+                    key="2"
+                    className="capitalize"
+                    checked = {selectedFilter == 1}
+                    // checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      filterOrders(1)
+                    }
+                  >
+                  <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`)}>
+                    Awaiting delivery
+                  </Badge>
+               
+                  </DropdownMenuCheckboxItem>
+
+                  <DropdownMenuCheckboxItem
+                    key="1"
+                    className="capitalize"
+                    checked = {selectedFilter == 2}
+                    // checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      filterOrders(2)
+                    }
+                  >
+                  <Badge variant="outline" className={cn(`max-w-fit mt-1  bg-orange-100 text-orange-700`)}>
+                    Ongoing orders
+                  </Badge>
+               
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    key="1"
+                    className="capitalize"
+                    checked = {selectedFilter == 4}
+                    // checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      filterOrders(4)
+                    }
+                  >
+                  <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`)}>
+                    Overdue orders
+                  </Badge>
+                  </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     key="1"
                     className="capitalize"
                     checked = {selectedFilter == 3}
                     // checked={column.getIsVisible()}
                     onCheckedChange={(value) =>
-                      filterOrders(2)
-                    }
-                  >
-                Completed Orders
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    key="1"
-                    className="capitalize"
-                    // checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
                       filterOrders(3)
                     }
                   >
-                  Cancelled Orders
+                    <Badge variant="outline" className={cn(`max-w-fit mt-1`)}>
+                    Completed orders
+                  </Badge>
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    key="1"
+                    checked = {selectedFilter == 5}
+                    className="capitalize"
+                    // checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      filterOrders(5)
+                    }
+                  >
+                  <Badge variant="outline" className={cn(`max-w-fit mt-1 `)}>
+                    Cancelled orders
+                  </Badge>
                   </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -770,7 +821,7 @@ usage:string
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                    { loading? "Fetching orders..." : "No results."}
                 </TableCell>
               </TableRow>
             )}

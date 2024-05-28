@@ -6,7 +6,7 @@ export const SAGE_ONE_ORDER = {
     SALES_ORDER_EXPORT: `${BASE}/SalesOrder/Export`,
   },
   POST: {
-    SALES_ORDER_SAVE: `${BASE}/SalesOrder/Save`,
+    SALES_ORDER_SAVE: `${BASE}/SalesOrderNew/Save`,
     SALES_ORDER_EMAIL: `${BASE}/SalesOrder/Email`,
   },
   DELETE: {

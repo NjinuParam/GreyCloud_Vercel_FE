@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import ButtonSubmitForm from "@/app/(auth)/login/_components/ButtonSubmitForm";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -23,11 +24,11 @@ import {
 } from "@/components/ui/select";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { CalendarIcon, PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -63,6 +64,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useRouter } from "next/navigation";
 import { getIronSessionData } from "@/lib/auth/auth";
 
 const FormSchema = z.object({
@@ -72,12 +74,10 @@ const FormSchema = z.object({
   endDate: z.date({
     required_error: "An end date is required.",
   }),
-  customerId: z.string({
-    required_error: "A customer is required.",
-  }),
-  assetId: z.string({
-    required_error: "An asset is required.",
-  }),
+
+  deposit: z.string({
+  
+  })
 });
 
 function CreateOrderForm({
@@ -101,19 +101,26 @@ function CreateOrderForm({
   const [selectedItem, setSelectedItem] = useState(0);
   const [custs, setCusts] = useState([]);
   const [qty, setQty] = useState(0);
+  const [newAddress, setNewAddress] = useState(false);
   const [selectedCustomerAddresses, setSelectedCustomerAddresses] = useState(
     []
   );
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   const [price, setPrice] = useState(0);
+  const [customerId, setCustomerId] = useState("");
   const [discountPrice, setDiscountPrice] = useState(0);
   const [total, setTotal] = useState(0);
+
+  const [address1, setAddress1] = useState("");
+  const [address2, setAddress2] = useState("");
+
+  const [companyId, setCompanyId] = useState("");
 
   const getFinalData = () => {
     let price = items.reduce((accum, item) => accum + item.total, 0);
@@ -130,8 +137,9 @@ function CreateOrderForm({
     getIronSessionData().then((comp: any) => {
       let currentCompanyId = comp.companyId;
       let sageCompanyId = comp.companyProfile.companiesList.find(
-        (c) => c.companyId == currentCompanyId
+        (c:any) => c.companyId == currentCompanyId
       ).sageCompanyId;
+setCompanyId(sageCompanyId);
       getCustomers(sageCompanyId);
     });
   }, []);
@@ -141,17 +149,44 @@ function CreateOrderForm({
       const response = await fetch(endpoint + `/${compId}`);
       const res = await response.json();
       setCusts(res.results);
-      console.log("CUSTOMERSSSS", res.results);
     } catch (e) {}
   };
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER_NEW.POST.CUSTOMER_SAVE}`;
+
+
+    const update= {...data, assets: items, 
+  
+      depositAmount: parseFloat(data.deposit),
+        discountAmount:discountPrice,
+         customerId:`${customerId}`, 
+         SageCompanyId: companyId,
+         postalAddress01: address1,
+        postalAddress02: address2};
+    debugger;
+    const endpoint = `${apiUrl}SageOneOrder/SalesOrderNew/Save`;
+
+
     try {
-      toast({
-        title: "Success!",
-        description: "Order Saved!",
+      toast.info("Creating order...");
+      const response = await fetch(endpoint, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.     
+        headers: {
+          "Content-Type": "application/json",
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(update), // body data type must match "Content-Type" header
       });
+
+
+      const res = await response.json();
+      debugger;
+      toast.success(`Order created!`, {
+        description: "The order was created successfully.",
+      });
+      router.push("/dashboard/orders/show");
     } catch (e) {
       console.log(e);
     }
@@ -201,7 +236,7 @@ function CreateOrderForm({
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
+                            date < new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
                         />
@@ -242,9 +277,9 @@ function CreateOrderForm({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
+                          // disabled={(date) =>
+                          //   date > new Date() || date < new Date("1900-01-01")
+                          // }
                           initialFocus
                         />
                       </PopoverContent>
@@ -262,9 +297,13 @@ function CreateOrderForm({
                     <FormLabel>Customer</FormLabel>
                     <Select
                       onValueChange={(e) => {
+                        debugger;
+                      
                         field.onChange;
 
                         const theCustomer = custs.find((c) => c.name == e);
+                        setCustomerId(theCustomer.id);
+                        debugger;
                         setSelectedCustomerAddresses([]);
                         let addresses = [];
                         if (theCustomer?.deliveryAddress01 !== "") {
@@ -309,7 +348,7 @@ function CreateOrderForm({
 
                         setSelectedCustomerAddresses(addresses);
                       }}
-                      defaultValue={field.value}
+                     
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -335,7 +374,7 @@ function CreateOrderForm({
                     <FormLabel>Discount %</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Discount %"
+                        placeholder="0%"
                         type="number"
                         onChange={(e) => {
                           setDiscount(parseInt(e.target.value));
@@ -347,6 +386,7 @@ function CreateOrderForm({
                   </FormItem>
                 )}
               />
+               
               <FormField
                 control={form.control}
                 name="deposit"
@@ -354,51 +394,44 @@ function CreateOrderForm({
                   <FormItem>
                     <FormLabel>Deposit</FormLabel>
                     <FormControl>
-                      <Input placeholder="Deposit" type="number" {...field} />
+                      <Input  defaultValue={"0"} placeholder="R 0.00" type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <div>
+          
+                  <small> Please enter drop off address or select from your 
+                  <a style={{color:"blue", cursor:"pointer"}} onClick={()=>setNewAddress(!newAddress)}> saved addresses</a> 
+                  </small>
+                {!newAddress?<>
+                
+                  <AutoComplete
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
+              //  defaultValue={a.postalAddress01??""}
+                  apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                  onPlaceSelected={(place:any) => {
+                  
+                    setAddress1(place?.formatted_address);
+                    setAddress2(`${place.geometry.location.lat()},${place.geometry.location.lng()}`);
+                  debugger;
+                    // ass[i].address = place?.formatted_address;
+                    // ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
+                                                    
+                  }}
+                  options={{
+                    types: ["geocode", "establishment"],//Must add street addresses not just cities
+                    componentRestrictions: { country: "za" },
+                  }}
+                />
 
-              <FormField
-                control={form.control}
-                name="totalUsage"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Total Usage</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Total Usage"
-                        type="number"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="deposit"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Start Usage</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Deposit" type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
+                </> : <>  <FormField
                 control={form.control}
                 name="address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address</FormLabel>
+                    {/* <FormLabel>Address</FormLabel> */}
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -417,13 +450,18 @@ function CreateOrderForm({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /></>}
+            </div>
+
+
+          
+
             </div>
 
             <div className="my-4">
               <Popover>
                 <PopoverTrigger>
-                  <div className="flex flex-row gap-2 border-2 p-2 rounded-sm cursor-pointer">
+                  <div className="flex flex-row gap-2 p-2 rounded-sm cursor-pointer">
                     <PlusIcon></PlusIcon>
                     Add Asset
                   </div>
@@ -437,7 +475,7 @@ function CreateOrderForm({
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Assets</SelectLabel>
-                          {assets.map((asset) => (
+                          {assets?.map((asset:any) => (
                             <SelectItem value={asset.id}>
                               {asset.description}
                             </SelectItem>
@@ -448,22 +486,24 @@ function CreateOrderForm({
 
                     <Button
                       onClick={() => {
+                        debugger;
                         const theAsset = assets.find(
-                          (x) => x.id == selectedItem
+                          (x:any) => x.id == selectedItem
                         );
 
                         const theItem = {
                           qty: 1,
+                          assetId: theAsset.id,
                           serialNumber: theAsset.serialNumber,
                           description: theAsset.description,
-                          value: theAsset.currentValue,
-                          total: theAsset.currentValue * qty,
+                          value: theAsset.billingType.amount,
+                          total: theAsset.billingType.amount * 1,
                         };
                         setItems([...items, theItem]);
                         getFinalData();
                       }}
                     >
-                      Add
+                      Add asset
                     </Button>
                   </div>
                 </PopoverContent>
@@ -496,7 +536,7 @@ function CreateOrderForm({
                     <TableCell colSpan={4}>Summary</TableCell>
                     <TableCell className="text-right">
                       <div>
-                        <p>Price: R{price}</p>
+                        <p>Sub Total: R{price}</p>
                         <p>Discount: R{discountPrice.toFixed(2)}</p>
                         {/* <p>VAT: ? </p> */}
                         <p>Total: R{total.toFixed(2)}</p>
@@ -509,9 +549,11 @@ function CreateOrderForm({
           </CardContent>
 
           <CardFooter>
-            <Button type="submit" variant={"outline"}>
-              {isLoading ? "Saving..." : "Create Order"}
-            </Button>
+          <ButtonSubmitForm
+                executingString="Saving Asset..."
+                idleString="Save Asset"
+                status={status}
+              />
           </CardFooter>
         </form>
       </Form>

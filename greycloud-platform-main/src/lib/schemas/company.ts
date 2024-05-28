@@ -157,6 +157,13 @@ export const SageOneAssetTypeSchema = z.object({
   dateField1: z.coerce.date(),
   dateField2: z.coerce.date(),
   dateField3: z.coerce.date(),
+  billingType: z.object({
+    type:  z.coerce.number(),
+    amount:  z.coerce.number(),
+    usageType:  z.string(),
+    usageRate:  z.coerce.number(),
+    
+  }).nullable(),
   id: z.coerce.number(),
 });
 

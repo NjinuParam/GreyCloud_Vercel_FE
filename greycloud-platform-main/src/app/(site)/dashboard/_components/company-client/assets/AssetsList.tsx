@@ -3,6 +3,7 @@ import { getSageOneCompanyAssets } from "@/app/actions/sage-one-assets-actions/s
 import { getAllCompanyDepreciationGroups } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
 import { getIronSessionData } from "@/lib/auth/auth";
 import AssetTableContainer from "./AssetTableContainer";
+// import { useEffect } from "react";
 
 export const AssetsList = async () => {
   const session = await getIronSessionData();
@@ -13,12 +14,14 @@ export const AssetsList = async () => {
 
   const myCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
 
+debugger;
   const [assets, depreciationGroups] = await Promise.all([
     await getSageOneCompanyAssets({
       SageCompanyId: Number(myCompany?.sageCompanyId),
     }),
     await getAllCompanyDepreciationGroups({}),
   ]);
+
 
   return (
     <>

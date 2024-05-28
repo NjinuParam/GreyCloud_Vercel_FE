@@ -17,13 +17,16 @@ export type AssetTableProps = {
 
 export default function AssetTableContainer({ assets, depreciationGroups, sageCompanyId, companyId }: AssetTableProps) {
   // Enrich each asset with additional context
+  
   const enrichedAssets = assets.map((asset) => ({
     ...asset,
     depreciationGroups,
     sageCompanyId,
     companyId,
+    
   }));
 
+  debugger;
   return (
     <div className="min-w-full">
       <DataTable columns={assetTableColumns} data={enrichedAssets} />

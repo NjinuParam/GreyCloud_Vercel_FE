@@ -74,16 +74,16 @@ const menuItems = {
           path: "/dashboard/company-user-admin/add-asset-category",
           icon: <FolderPlus />,
         },
-        {
-          title: "Add Asset Location",
-          path: "/dashboard/company-user-admin/add-asset-location",
-          icon: <MapPin />,
-        },
-        {
-          title: "Add Asset Note",
-          path: "/dashboard/company-user-admin/add-asset-note",
-          icon: <Notebook />,
-        },
+        // {
+        //   title: "Add Asset Location",
+        //   path: "/dashboard/company-user-admin/add-asset-location",
+        //   icon: <MapPin />,
+        // },
+        // {
+        //   title: "Add Asset Note",
+        //   path: "/dashboard/company-user-admin/add-asset-note",
+        //   icon: <Notebook />,
+        // },
       ],
     },
     {
@@ -100,27 +100,28 @@ const menuItems = {
           icon: <Folder />,
         },
         {
-          title: "Manage Asset Groups",
-          path: "/dashboard/company-user-admin/manage-asset-groups",
-          icon: <Layers />,
-        },
-      ],
-    },
-    {
-      heading: "Depreciation History",
-      links: [
-        {
-          title: "Add History",
-          path: "/dashboard/company-user-admin/add-depreciation-history",
-          icon: <FolderPlus />,
-        },
-        {
           title: "View History",
           path: "/dashboard/company-user-admin/manage-depreciation-history",
           icon: <Briefcase />,
         },
+        // {
+        //   title: "Manage Asset Groups",
+        //   path: "/dashboard/company-user-admin/manage-asset-groups",
+        //   icon: <Layers />,
+        // },
       ],
     },
+    // {
+    //   heading: "Depreciation History",
+    //   links: [
+    //     // {
+    //     //   title: "Add History",
+    //     //   path: "/dashboard/company-user-admin/add-depreciation-history",
+    //     //   icon: <FolderPlus />,
+    //     // },
+       
+    //   ],
+    // },
     {
       heading: "Users",
       links: [
@@ -156,16 +157,16 @@ const menuItems = {
           path: "/dashboard/company-user/add-asset-category",
           icon: <FolderPlus />,
         },
-        {
-          title: "Add Asset Location",
-          path: "/dashboard/company-user/add-asset-location",
-          icon: <MapPin />,
-        },
-        {
-          title: "Add Asset Note",
-          path: "/dashboard/company-user/add-asset-note",
-          icon: <Notebook />,
-        },
+        // {
+        //   title: "Add Asset Location",
+        //   path: "/dashboard/company-user/add-asset-location",
+        //   icon: <MapPin />,
+        // },
+        // {
+        //   title: "Add Asset Note",
+        //   path: "/dashboard/company-user/add-asset-note",
+        //   icon: <Notebook />,
+        // },
       ],
     },
     {
@@ -212,28 +213,18 @@ const menuItems = {
           icon: <Folder />,
         },
         {
-          title: "Manage Asset Groups",
-          path: "/dashboard/company-user/manage-asset-groups",
-          icon: <Layers />,
-        },
-      ],
-    },
-    {
-      heading: "Depreciation History",
-      links: [
-        {
-          title: "Add History",
-          path: "/dashboard/company-user/add-depreciation-history",
-          icon: <FolderPlus />,
-        },
-        {
           title: "View History",
           path: "/dashboard/company-user/manage-depreciation-history",
           icon: <Briefcase />,
         },
+        // {
+        //   title: "Manage Asset Groups",
+        //   path: "/dashboard/company-user/manage-asset-groups",
+        //   icon: <Layers />,
+        // },
       ],
     },
-
+  
     {
       heading: "Company",
       links: [

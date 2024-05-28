@@ -10,6 +10,7 @@ export type EnrichedAssetType = SageOneAssetTypeType & {
   depreciationGroups: GetCompanyDepreciationGroupResponseType[];
   sageCompanyId: number;
   companyId: string;
+  billingType:any
 };
 
 export const assetTableColumns: ColumnDef<EnrichedAssetType>[] = [

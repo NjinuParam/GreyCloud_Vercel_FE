@@ -15,8 +15,8 @@ import {
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "../../../../../../components/ui/button";
+import { Checkbox } from "../../../../../../components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -25,8 +25,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "../../../../../../components/ui/dropdown-menu";
+import { Input } from "../../../../../../components/ui/input";
 import {
   Table,
   TableBody,
@@ -34,13 +34,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../../../../../../components/ui/table";
 
 import {
   SAGE_ONE_CUSTOMER,
   SAGE_ONE_CUSTOMER_NEW,
-} from "@/lib/api-endpoints/sage-one-customer";
-import { getIronSessionData } from "@/lib/auth/auth";
+} from "../../../../../../lib/api-endpoints/sage-one-customer";
+import { getIronSessionData } from "../../../../../../lib/auth/auth";
 
 export const columns: ColumnDef<any>[] = [
   {
