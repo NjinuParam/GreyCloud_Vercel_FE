@@ -61,7 +61,7 @@ export default function SageOneAssetSaveForm({
     defaultValues: {
       SageCompanyId: Number(SageCompanyId),
       asset: {
-        description: "Sample Product",
+        description: "Product Name",
         category: {
           description: "Electronics",
           id: 8184,
@@ -70,9 +70,10 @@ export default function SageOneAssetSaveForm({
         },
         location: {
           id: 10220,
-          description: "Living Room",
+          description: "Product Description",
         },
         datePurchased: new Date(),
+        depreciationStart: new Date(),
         serialNumber: "ABC_123",
         boughtFrom: "Electronics Store",
         purchasePrice: 500,
@@ -90,7 +91,7 @@ export default function SageOneAssetSaveForm({
         dateField1: new Date(),
         dateField2: new Date(),
         dateField3: new Date(),
-        id: 0,
+        id: "",
         assetDepreciationGroupRequestModel: {
           active: depreciationGroups[0].active,
           assetId: 0,
@@ -115,7 +116,7 @@ export default function SageOneAssetSaveForm({
       let currentCompanyId = comp.companyId;
 
       let sageId = comp.companyProfile.companiesList.find(
-        (x) => x.companyId == currentCompanyId
+        (x:any) => x.companyId == currentCompanyId
       )?.sageCompanyId;
       fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
         .then((res) => res.json().then((data) => { setCategories(data.results); debugger; }))
@@ -222,7 +223,7 @@ export default function SageOneAssetSaveForm({
   const [billingType, setBillingType] = useState("");
   const [usageType, setUsageType] = useState("");
   const [isRental, setIsRental] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<any[]>([]);
 
   const [usageOrDailyAmount, setUsageOrDailyAmount] = useState(0);
   const [onceOffAmount, setOnceOffAmount] = useState(0);
@@ -252,7 +253,7 @@ export default function SageOneAssetSaveForm({
                 name="asset.description"
                 render={({ field }) => (
                   <FormItem className="flex-1 grow min-w-full">
-                    <FormLabel>Asset Description</FormLabel>
+                    <FormLabel>Asset Name</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} />
                     </FormControl>
@@ -267,7 +268,7 @@ export default function SageOneAssetSaveForm({
 
                     onValueChange={(e) => {
                       console.log(e);
-                      const cat = categories.find((x:any) => x.description == e).id;
+                      const cat = categories && categories.find((x:any) => x.description == e).id;
                       setCategory(cat);
                     }}
                   >
@@ -306,7 +307,7 @@ export default function SageOneAssetSaveForm({
                 name="asset.location.description"
                 render={({ field }) => (
                   <FormItem className="flex-1 grow min-w-full">
-                    <FormLabel>Location Description</FormLabel>
+                    <FormLabel>Asset Description</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} />
                     </FormControl>
@@ -358,7 +359,7 @@ export default function SageOneAssetSaveForm({
               />
                 <FormField
                 control={form.control}
-                name="asset.datePurchased"
+                name="asset.depreciationStart"
                 render={({ field }) => (
                   <FormItem className="flex flex-col w-full grow min-w-full">
                     <FormLabel>Depreciation Start Date</FormLabel>

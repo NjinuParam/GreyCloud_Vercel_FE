@@ -31,7 +31,7 @@ function Settings() {
       getCompanySettings(currentCompanyId);
 
       let name = comp.companyProfile.companiesList.find(
-        (x) => x.companyId == currentCompanyId
+        (x:any) => x.companyId == currentCompanyId
       )?.companyName;
 
       setCompanyName(name);

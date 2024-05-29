@@ -64,7 +64,7 @@ export default function UpdateSageOneAssetForm({
         ...asset,
         assetDepreciationGroupRequestModel: {
           active: depreciationGroups[0].active,
-          assetId: asset.id,
+          assetId: Number(asset.id),
           creatingUser: depreciationGroups[0].creatingUser,
           depGroupId: depreciationGroups[0].depGroupId,
         },
@@ -118,9 +118,9 @@ export default function UpdateSageOneAssetForm({
           active: Boolean(
             values.asset.assetDepreciationGroupRequestModel.active
           ),
-          assetId: Number(
+          assetId: 
             values.asset.assetDepreciationGroupRequestModel.assetId
-          ),
+          ,
         },
       },
     };
@@ -136,7 +136,7 @@ export default function UpdateSageOneAssetForm({
       let currentCompanyId = comp.companyId;
 
       let sageId = comp.companyProfile.companiesList.find(
-        (x) => x.companyId == currentCompanyId
+        (x:any) => x.companyId == currentCompanyId
       )?.sageCompanyId;
 
       fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
@@ -154,7 +154,7 @@ export default function UpdateSageOneAssetForm({
 
   const [isRental, setIsRental] = useState(false);
   const [billingType, setBillingType] = useState("");
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [category, setCategory] = useState("0");
 
   return (
@@ -194,7 +194,7 @@ export default function UpdateSageOneAssetForm({
               <div className="flex flex-col mt-8">
                 <Select
                   onValueChange={(e) => {
-                    const cat = categories.find((x) => x.description == e).id;
+                    const cat = categories && categories.find((x) => x.description == e).id;
                     setCategory(cat);
                     asset.category = cat;
                   }}

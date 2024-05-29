@@ -140,6 +140,7 @@ export const SageOneAssetTypeSchema = z.object({
     })
     .nullable(),
   datePurchased: z.coerce.date(),
+  depreciationStart: z.coerce.date(),
   serialNumber: z.string(),
   boughtFrom: z.string(),
   purchasePrice: z.coerce.number(),
@@ -164,7 +165,7 @@ export const SageOneAssetTypeSchema = z.object({
     usageRate:  z.coerce.number(),
     
   }).nullable(),
-  id: z.coerce.number(),
+  id: z.coerce.string(),
 });
 
 export type SageOneAssetTypeType = z.infer<typeof SageOneAssetTypeSchema>;

@@ -46,7 +46,7 @@ export default function AssetDepreciationDialog({
         const newTransformedData = data?.map((depHistory) => ({
           ...depHistory,
           assetName: asset ? asset.description : "Unknown Asset",
-          companyName: sageCompanyId.toString(),
+          companyName: sageCompanyId?.toString(),
         })) as AssetDepreciationHistoryTableTypes[];
 
         setTransformedData(newTransformedData);
@@ -105,7 +105,7 @@ export default function AssetDepreciationDialog({
           className="text-primary w-full"
           onClick={() => execute({ assetid: asset.id })}
         >
-          View Future Depreciation {asset.id}
+          View Future Depreciation 
         </Button>
       </DialogContent>
     </Dialog>

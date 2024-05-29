@@ -103,7 +103,7 @@ export const AddAssetDepreciationHistoryResponseSchema = z.object({
 export type AssetDepreciationHistoryResponseType = z.infer<typeof AddAssetDepreciationHistoryResponseSchema>;
 
 export const GetSpecificAssetDepreciationHistorySchema = z.object({
-  assetid: z.coerce.number(),
+  assetid: z.coerce.string(),
 });
 
 export type GetSpecificAssetDepreciationHistoryType = z.infer<typeof GetSpecificAssetDepreciationHistorySchema>;

@@ -65,6 +65,7 @@ export default function ShowOrder() {
   const [ordersFormated, setOrdersFormated] = React.useState<any[]>([]);
   const [ordersFiltered, setOrdersFiltered] = React.useState<any[]>([]);
   const [selectedFilter, setSelectedFilter] = React.useState(-1);
+const [addressToggles, setAddressToggles] = React.useState<any>({});
 
   const [loading, setLoading] = React.useState(true);
 
@@ -75,7 +76,7 @@ export default function ShowOrder() {
     getIronSessionData().then((comp: any) => {
       let currentCompanyId = comp.companyId;
       let sageCompanyId = comp.companyProfile.companiesList.find(
-        (c) => c.companyId == currentCompanyId
+        (c:any) => c.companyId == currentCompanyId
       ).sageCompanyId;
       getOrders(sageCompanyId);
     });
@@ -96,6 +97,15 @@ export default function ShowOrder() {
     setOrdersFiltered(_filtered);
     setSelectedFilter(state);
   }
+
+  function toggleThis(index:number){
+    debugger;
+    setAddressToggles({...addressToggles, i:true})
+  
+  }
+ 
+
+
   const completeOrder = async (orderId: string, assets: any[]) => {
     try {
       const response = await fetch(
@@ -278,8 +288,8 @@ usage:string
       enableHiding: false,
       cell: ({ row }) => {
         const order = row.original;
-        const assets = orders.find((x:any) => x.id === order.id)?.assets;
-debugger;
+        const _assets = orders.find((x:any) => x.id === order.id) as any;
+        const assets = _assets?.assets;
         let ass: any[] = [];
         assets.forEach((a:any) => {
           if (a?.assetDetail?.billingType) {
@@ -348,7 +358,7 @@ debugger;
                            { (a.billingType?.type==2 || a.billingType==3) && <small>
                             Starting usage: {
                               a.startUsage
-                            } {  assets.find((x) => x.assetId == a.assetId)
+                            } {  assets.find((x:any) => x.assetId == a.assetId)
                               .assetDetail.billingType.usageType}
                             </small>
                             }
@@ -376,8 +386,10 @@ debugger;
                       </div>
                       <div style={{ borderBottom: "1px solid silver",  paddingBottom: "40px"}}>
                     
-                    <small> Please enter drop off address or select from your <a style={{color:"blue", cursor:"pointer"}}> saved addresses</a> </small>
-                          
+                    <small> Please enter drop off address or select from your <small onClick={(e)=>{debugger; toggleThis(i)}} style={{color:"blue", cursor:"pointer"}}> saved addresses</small> </small>
+                          {
+                            addressToggles[i]?<>
+Test      </>:<>
                             <AutoComplete
                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
                             //  defaultValue={a.postalAddress01??""}
@@ -394,6 +406,9 @@ debugger;
                                   componentRestrictions: { country: "za" },
                                 }}
                               />
+                            </>
+                          }
+                          
                        
 
                       </div>

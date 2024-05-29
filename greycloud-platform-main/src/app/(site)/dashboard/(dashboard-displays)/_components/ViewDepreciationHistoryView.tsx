@@ -26,7 +26,7 @@ export default async function ViewDepreciationHistoryView() {
 
   // Transform the depreciation history data
   const transformedData = depreciationHistoryAll.data?.map((depHistory) => {
-    const asset = assets.data?.find((a) => a.id === depHistory.assetId);
+    const asset = assets.data?.find((a:any) => a.id === depHistory.assetId);
     return {
       ...depHistory,
       assetName: asset ? asset.description : "Unknown Asset",

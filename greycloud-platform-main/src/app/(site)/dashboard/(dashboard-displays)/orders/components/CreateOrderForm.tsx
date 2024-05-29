@@ -75,9 +75,16 @@ const FormSchema = z.object({
     required_error: "An end date is required.",
   }),
 
-  deposit: z.string({
+  deposit: z.number({
   
-  })
+  }),
+  discount: z.number({
+  
+  }),
+
+  customerId: z.string({
+    required_error: "A customer is required.",
+  }).nullable(),
 });
 
 function CreateOrderForm({
@@ -101,8 +108,9 @@ function CreateOrderForm({
   const [selectedItem, setSelectedItem] = useState(0);
   const [custs, setCusts] = useState([]);
   const [qty, setQty] = useState(0);
+  const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState(false);
-  const [selectedCustomerAddresses, setSelectedCustomerAddresses] = useState(
+  const [selectedCustomerAddresses, setSelectedCustomerAddresses] = useState<any[]>(
     []
   );
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -141,6 +149,7 @@ function CreateOrderForm({
       ).sageCompanyId;
 setCompanyId(sageCompanyId);
       getCustomers(sageCompanyId);
+      GetAddresses(sageCompanyId)
     });
   }, []);
 
@@ -152,12 +161,40 @@ setCompanyId(sageCompanyId);
     } catch (e) {}
   };
 
+  async function GetAddresses(_sageCompanyId:any){
+    const endpoint = `${apiUrl}Address/Get/${_sageCompanyId}`;
+
+
+    try {
+      
+      const response = await fetch(endpoint, {
+        method: "GET", // *GET, POST, PUT, DELETE, etc.     
+        headers: {
+          "Content-Type": "application/json",
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+       
+      });
+
+
+      const res = await response.json();
+      debugger;
+      setAddresses(res);
+      debugger;
+     
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
 
 
     const update= {...data, assets: items, 
   
-      depositAmount: parseFloat(data.deposit),
+      depositAmount: data?.deposit??0,
         discountAmount:discountPrice,
          customerId:`${customerId}`, 
          SageCompanyId: companyId,
@@ -301,8 +338,8 @@ setCompanyId(sageCompanyId);
                       
                         field.onChange;
 
-                        const theCustomer = custs.find((c) => c.name == e);
-                        setCustomerId(theCustomer.id);
+                        const theCustomer = custs.find((c:any) => c?.name == e) as any;
+                        setCustomerId(theCustomer?.id??"");
                         debugger;
                         setSelectedCustomerAddresses([]);
                         let addresses = [];
@@ -356,8 +393,8 @@ setCompanyId(sageCompanyId);
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {custs.map((c) => (
-                          <SelectItem value={c.name}>{c.name}</SelectItem>
+                        {custs.map((c:any) => (
+                          <SelectItem value={c?.name}>{c?.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -394,7 +431,7 @@ setCompanyId(sageCompanyId);
                   <FormItem>
                     <FormLabel>Deposit</FormLabel>
                     <FormControl>
-                      <Input  defaultValue={"0"} placeholder="R 0.00" type="number" {...field} />
+                      <Input  defaultValue={0} placeholder="R 0.00" type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -426,31 +463,34 @@ setCompanyId(sageCompanyId);
                   }}
                 />
 
-                </> : <>  <FormField
+                </> : <>  
+                {/* <FormField
                 control={form.control}
+                className="py-2"
                 name="address"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem> */}
                     {/* <FormLabel>Address</FormLabel> */}
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      // onValueChange={field.onChange}
+                      // defaultValue={field.value}
                     >
-                      <FormControl>
+                      {/* <FormControl> */}
                         <SelectTrigger>
                           <SelectValue placeholder="Address" />
                         </SelectTrigger>
-                      </FormControl>
+                      {/* </FormControl> */}
                       <SelectContent>
-                        {selectedCustomerAddresses.map((a) => (
-                          <SelectItem value={a}>{a}</SelectItem>
+                        {addresses.map((a:any) => (
+                          <SelectItem value={a.addressLine}>{a.addressLine}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /></>}
+                    {/* <FormMessage /> */}
+                  {/* </FormItem> */}
+                {/* )} */}
+              {/* /> */}
+              </>}
             </div>
 
 
@@ -552,7 +592,8 @@ setCompanyId(sageCompanyId);
           <ButtonSubmitForm
                 executingString="Saving Asset..."
                 idleString="Save Asset"
-                status={status}
+                
+                status={"idle"}
               />
           </CardFooter>
         </form>

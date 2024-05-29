@@ -30,16 +30,16 @@ function AddDepreciationGroup() {
       console.log("USER", comp);
       let currentCompanyId = comp.companyId;
       const sageCompanyId = comp.companyProfile.companiesList.find(
-        (x) => x.companyId == comp.companyId
+        (x:any) => x.companyId == comp.companyId
       ).sageCompanyId;
       setCompanyId(sageCompanyId);
 
       let name = comp.companyProfile.companiesList.find(
-        (x) => x.companyId == currentCompanyId
+        (x:any) => x.companyId == currentCompanyId
       )?.companyName;
 
       let sageId = comp.companyProfile.companiesList.find(
-        (x) => x.companyId == currentCompanyId
+        (x:any) => x.companyId == currentCompanyId
       )?.sageCompanyId;
 
       setUserId(comp.email);
@@ -52,7 +52,7 @@ function AddDepreciationGroup() {
     });
   }, []);
 
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [category, setCategory] = useState("0");
   const [companyName, setCompanyName] = useState("");
   const [userId, setUserId] = useState("");
@@ -108,7 +108,7 @@ function AddDepreciationGroup() {
                 id="name"
                 placeholder="Amount"
                 value={depAmount}
-                onChange={(e) => setDepAmount(parseFloat(e.target.value))}
+                onChange={(e:any) => setDepAmount(parseFloat(e.target.value))}
               />
             </div>
 
@@ -118,7 +118,7 @@ function AddDepreciationGroup() {
                 id="name"
                 placeholder="Name"
                 value={depName}
-                onChange={(e) => setDepName(e.target.value)}
+                onChange={(e:any) => setDepName(e.target.value)}
               />
             </div>
 
@@ -176,7 +176,7 @@ function AddDepreciationGroup() {
               <Select
                 onValueChange={(e) => {
                   console.log(e);
-                  const cat = categories.find((x) => x.description == e).id;
+                  const cat = categories!=undefined && categories?.find((x) => x.description == e).id;
                   setCategory(cat);
                 }}
               >

@@ -42,7 +42,7 @@ import {
 } from "../../../../../../lib/api-endpoints/sage-one-customer";
 import { getIronSessionData } from "../../../../../../lib/auth/auth";
 
-export const columns: ColumnDef<any>[] = [
+const columns: ColumnDef<any>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -125,7 +125,7 @@ export default function ShowCustomer() {
     getIronSessionData().then((comp: any) => {
       let currentCompanyId = comp.companyId;
       let sageCompanyId = comp.companyProfile.companiesList.find(
-        (c) => c.companyId == currentCompanyId
+        (c:any) => c.companyId == currentCompanyId
       ).sageCompanyId;
       getCustomers(sageCompanyId);
     });
