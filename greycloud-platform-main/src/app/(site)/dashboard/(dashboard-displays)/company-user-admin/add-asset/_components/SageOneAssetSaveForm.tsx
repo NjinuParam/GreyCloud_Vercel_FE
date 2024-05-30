@@ -42,6 +42,8 @@ import { SelectGroup } from "@radix-ui/react-select";
 import ButtonSubmitForm from "@/app/(auth)/login/_components/ButtonSubmitForm";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
+import router from "next/router";
 
  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -158,7 +160,7 @@ export default function SageOneAssetSaveForm({
   
    async function createAsset(input:any){
     toast.info("Saving asset...");
-
+    input.id=0;
     const response = await fetch(`https://grey-cloud-be.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=1`, {
       method: "POST",
       headers: {
@@ -168,9 +170,11 @@ export default function SageOneAssetSaveForm({
     });
 
     if (response) {
+      debugger;
       toast.success(`Asset saved!`, {
         description: "The asset was stored successfully.",
       });
+      // router.push("/dashboard/company-user/manage-assets");
     } else {
       toast.error("Failed to store asset.", {
         description: "Please try again.",

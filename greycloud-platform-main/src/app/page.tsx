@@ -7,7 +7,7 @@ export default function Home() {
       <Logo />
 
       <div className="flex flex-col gap-16 items-center">
-        <h1 className="text-8xl text-foreground font-bold text-pretty max-w-xl text-center ">Grey Cloud Technology</h1>
+        <h1 className="text-8xl text-foreground font-bold text-pretty max-w-xl text-center ">Systa.io</h1>
 
         <ContinueToLoginButton />
       </div>

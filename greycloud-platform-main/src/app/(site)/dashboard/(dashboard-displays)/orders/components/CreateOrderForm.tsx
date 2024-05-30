@@ -103,6 +103,7 @@ function CreateOrderForm({
       serialNumber: string;
       value: number;
       total: number;
+      billingType: any;
     }[]
   >([]);
   const [selectedItem, setSelectedItem] = useState(0);
@@ -130,8 +131,9 @@ function CreateOrderForm({
 
   const [companyId, setCompanyId] = useState("");
 
-  const getFinalData = () => {
-    let price = items.reduce((accum, item) => accum + item.total, 0);
+  const getFinalData = (_items:any[]) => {
+    debugger;
+    let price = _items.reduce((accum, item) => accum + item.total, 0);
     setPrice(price);
     let discPr = price * (dis / 100);
     setDiscountPrice(discPr);
@@ -272,6 +274,7 @@ setCompanyId(sageCompanyId);
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
+                          onChange={  getFinalData(items)}
                           disabled={(date) =>
                             date < new Date() || date < new Date("1900-01-01")
                           }
@@ -314,6 +317,7 @@ setCompanyId(sageCompanyId);
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
+                          onChange={  getFinalData(items)}
                           // disabled={(date) =>
                           //   date > new Date() || date < new Date("1900-01-01")
                           // }
@@ -415,7 +419,7 @@ setCompanyId(sageCompanyId);
                         type="number"
                         onChange={(e) => {
                           setDiscount(parseInt(e.target.value));
-                          getFinalData();
+                          getFinalData(items);
                         }}
                       />
                     </FormControl>
@@ -530,17 +534,22 @@ setCompanyId(sageCompanyId);
                         const theAsset = assets.find(
                           (x:any) => x.id == selectedItem
                         );
+                        const sDate = new Date(form.getValues("startDate"));
+                        const eDate = new Date(form.getValues("endDate"));
+                        const days = Math.abs(eDate.getTime() - sDate.getTime()) / (1000 * 60 * 60 * 24); 
 
+                        debugger;
                         const theItem = {
                           qty: 1,
                           assetId: theAsset.id,
                           serialNumber: theAsset.serialNumber,
                           description: theAsset.description,
                           value: theAsset.billingType.amount,
-                          total: theAsset.billingType.amount * 1,
+                          total: theAsset.billingType.amount * days,
+                          billingType: theAsset.billingType,
                         };
                         setItems([...items, theItem]);
-                        getFinalData();
+                        getFinalData([...items, theItem]);
                       }}
                     >
                       Add asset
@@ -553,7 +562,7 @@ setCompanyId(sageCompanyId);
                   <TableRow>
                     <TableHead>Asset</TableHead>
                     <TableHead>Serial Number</TableHead>
-                    <TableHead>Quantity</TableHead>
+                    <TableHead>Billing type</TableHead>
                     <TableHead>Price</TableHead>
                     <TableHead className="text-right">Total</TableHead>
                   </TableRow>
@@ -565,7 +574,7 @@ setCompanyId(sageCompanyId);
                         {itm.description}
                       </TableCell>
                       <TableCell>{itm.serialNumber}</TableCell>
-                      <TableCell>{itm.qty}</TableCell>
+                      <TableCell>{itm.billingType.amount}</TableCell>
                       <TableCell>R{itm.value}</TableCell>
                       <TableCell className="text-right">R{itm.total}</TableCell>
                     </TableRow>

@@ -22,7 +22,7 @@ export default function Register() {
     <Card className="w-[600px] flex flex-col p-0 overflow-hidden">
       <CardHeader className="flex flex-col gap-2 bg-gradient-to-b from-primary/5 dark:from-primary/10 to-transparent w-full px-8 pt-10 pb-4 mb-4 relative">
         <CardTitle className="text-3xl">{isCompUser ? "Client Register" : "GreyCloud Register"}</CardTitle>
-        <CardDescription className="text-base max-w-[60%]">Register for an account to access the Grey Cloud Technology platform.</CardDescription>
+        <CardDescription className="text-base max-w-[60%]">Register for an account to access the Systa.io platform.</CardDescription>
 
         <Image className="absolute size-36 right-8 top-4 flex items-center justify-center" src={AuthSVG} alt="Picture of auth." />
       </CardHeader>

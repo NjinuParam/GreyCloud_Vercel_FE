@@ -9,7 +9,7 @@ import { ThemeProvider } from "./components/theme-provider";
 const fontSans = FontSans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Grey Cloud Technology",
+  title: "Systa.io",
   description:
     "Achieving cyber security maturity through a systematic risk-based approach.",
 };

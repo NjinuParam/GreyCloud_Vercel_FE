@@ -33,7 +33,7 @@ export default function Login() {
         <Card className="w-full flex flex-col p-0 overflow-hidden">
           <CardHeader className="flex flex-col gap-2 bg-gradient-to-b from-primary/5 dark:from-primary/10 to-transparent w-full px-8 pt-10 pb-4 mb-4 relative">
             <CardTitle className="text-3xl">Sign In</CardTitle>
-            <CardDescription className="text-base max-w-[60%]">Continue to Grey Cloud Technology external platform.</CardDescription>
+            <CardDescription className="text-base max-w-[60%]">Continue to Systa.io external platform.</CardDescription>
 
             <Image className="absolute size-32 right-8 top-4 flex items-center justify-center fill-primary" src={AuthSVG} alt="Picture of auth." />
           </CardHeader>
@@ -83,7 +83,7 @@ export default function Login() {
         <Card className="w-full flex flex-col p-0 overflow-hidden border-primary/30">
           <CardHeader className="flex flex-col gap-2 bg-gradient-to-b from-primary/5 dark:from-primary/10 to-transparent w-full px-8 pt-10 pb-4 mb-4 relative">
             <CardTitle className="text-3xl">Grey Cloud Admin</CardTitle>
-            <CardDescription className="text-base max-w-[60%]">Sign in to continue to Grey Cloud Technology Admin platform.</CardDescription>
+            <CardDescription className="text-base max-w-[60%]">Sign in to continue to Systa.io Admin platform.</CardDescription>
 
             <Image className="absolute size-32 right-8 top-4 flex items-center justify-center fill-primary" src={AuthSVG} alt="Picture of auth." />
           </CardHeader>
