@@ -325,7 +325,7 @@ usage:string
 
               <Dialog>
                 <DialogTrigger asChild>
-                  {(order.status ==1 || order.status ==2 || order.status ==4) && 
+                  {( order.status ==4) && 
                     <DropdownMenuLabel className="cursor-pointer">
                     Complete Order
                   </DropdownMenuLabel>
