@@ -66,6 +66,7 @@ import {
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { getIronSessionData } from "@/lib/auth/auth";
+import { it } from "node:test";
 
 const FormSchema = z.object({
   startDate: z.date({
@@ -190,6 +191,33 @@ setCompanyId(sageCompanyId);
       console.log(e);
     }
   }
+
+
+  function getTotal(_asset:any){
+
+    const sDate = new Date(form.getValues("startDate"));
+    const eDate = new Date(form.getValues("endDate"));
+    const days = Math.abs(eDate.getTime() - sDate.getTime()) / (1000 * 60 * 60 * 24);
+    debugger;
+
+    if(_asset.billingType.type == 1){
+      return _asset.billingType.amount;
+    }
+    if(_asset.billingType.type == 0 ){
+      return _asset.billingType.amount * days;
+      
+    }
+    if(_asset.billingType.type == 2){
+      return  _asset.billingType.amount;
+      
+    }
+    if(_asset.billingType.type == 3){
+      return 0;
+      
+    }
+
+  }
+
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
 
@@ -545,7 +573,8 @@ setCompanyId(sageCompanyId);
                           serialNumber: theAsset.serialNumber,
                           description: theAsset.description,
                           value: theAsset.billingType.amount,
-                          total: theAsset.billingType.amount * days,
+                          // total: theAsset.billingType.amount * days,
+                          total: getTotal(theAsset),
                           billingType: theAsset.billingType,
                         };
                         setItems([...items, theItem]);
@@ -574,8 +603,8 @@ setCompanyId(sageCompanyId);
                         {itm.description}
                       </TableCell>
                       <TableCell>{itm.serialNumber}</TableCell>
-                      <TableCell>{itm.billingType.amount}</TableCell>
-                      <TableCell>R{itm.value}</TableCell>
+                      <TableCell>{itm.billingType.type==0?"Daily": itm.billingType.type==1?"Once off": itm.billingType.type==2?"Once off + Usage":"Usage" }</TableCell>
+                      <TableCell>R{itm.value} {itm.billingType.type==0?" per day": itm.billingType.type==1?" once off": itm.billingType.type==2?` once off + ${itm.billingType.usageType==0?' per km':'per hour'}`:`${itm.billingType.usageType==0? 'per km':'per hour'}`} </TableCell>
                       <TableCell className="text-right">R{itm.total}</TableCell>
                     </TableRow>
                   ))}
