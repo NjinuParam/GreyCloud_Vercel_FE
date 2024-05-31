@@ -109,6 +109,7 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
 
   const completeOrder = async (orderId: string, assets: any[]) => {
     try {
+      toast.info("Processing...");
       const response = await fetch(
         `${apiUrl}SageOneOrder/SalesOrderNew/Complete/${orderId}`,
         {
@@ -117,10 +118,19 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(assets),
+          body: JSON.stringify({assets:assets}),
         }
+        
       );
+      toast.success(`Order updated!`, {
+        description: "The order was updated successfully.",
+      });
+      debugger;
+      getOrders(14999);
     } catch (e) {
+      toast.error(`Error occured!`, {
+        description: "Please try again.",
+      });
       console.log(e);
     }
   };
@@ -263,7 +273,7 @@ usage:string
       header: () => <div>Order Status</div>,
       cell: ({ row }) => (
         <div className="">
-           <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`, row.getValue("status")!="1" && `bg-green-100 text-green-700`)}>
+           <Badge variant="outline" className={row.getValue("status")=="0" ? `max-w-fit mt-1 bg-green-100 text-green-700`: row.getValue("status")=="4" ?`max-w-fit mt-1 bg-red-100 text-red-700`:  `max-w-fit mt-1 bg-green-100 text-green-700`}>
            {row.getValue("status")=="0"? "New Order" : row.getValue("status")=="1" ? "Awaiting Delivery" : row.getValue("status")=="2" ? "Ongoing" : row.getValue("status")=="3" ? "Completed": row.getValue("status")=="4" ? "Overdue": "Cancelled"}
           </Badge>
           
@@ -406,7 +416,7 @@ Test      </>:<>
                                 
                                 
                                   ass[i].address = place?.formatted_address;
-                                  ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
+                                  ass[i].gps = `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`
                                                                   
                                 }}
                                 options={{
