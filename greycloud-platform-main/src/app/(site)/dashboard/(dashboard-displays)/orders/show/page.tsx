@@ -13,6 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { toast } from "sonner";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -156,7 +157,7 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
 
   
 async function updateStartOrderAssets(payload:any,orderId:string){
-
+  toast.info("Processing...");
   try {
     const response = await fetch(
       `${apiUrl}SageOneOrder/SalesOrderNew/Start/${orderId}`,
@@ -166,10 +167,17 @@ async function updateStartOrderAssets(payload:any,orderId:string){
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({assets:payload}),
       }
     );
+    toast.success(`Order updated!`, {
+      description: "The order was updated successfully.",
+    });
+    getOrders(14999);
   } catch (e) {
+    toast.error(`Error occured!`, {
+      description: "Please try again.",
+    });
     console.log(e);
   }
 debugger;
@@ -386,7 +394,7 @@ usage:string
                       </div>
                       <div style={{ borderBottom: "1px solid silver",  paddingBottom: "40px"}}>
                     
-                    <small> Please enter drop off address or select from your <small onClick={(e)=>{debugger; toggleThis(i)}} style={{color:"blue", cursor:"pointer"}}> saved addresses</small> </small>
+                    <small> Please enter drop off address or select from your <small onClick={(e)=>{ toggleThis(i)}} style={{color:"blue", cursor:"pointer"}}> saved addresses</small> </small>
                           {
                             addressToggles[i]?<>
 Test      </>:<>
@@ -459,7 +467,7 @@ Test      </>:<>
                       </div>
                       <div style={{ borderBottom: "1px solid silver",  paddingBottom: "40px"}}>
                     
-                    <small> Please enter drop off address or select from your <a style={{color:"blue", cursor:"pointer"}}> saved addresses</a> </small>
+                    <small> Please enter drop off address or select from your <a  onClick={(e)=>{ toggleThis(i)}}  style={{color:"blue", cursor:"pointer"}}> saved addresses</a> </small>
                           
                             <AutoComplete
                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
@@ -564,7 +572,7 @@ Test      </>:<>
                       </div>
                       <div>
                     
-                      <small> Please enter pickup address or select from your <a style={{color:"blue", cursor:"pointer"}}> saved addresses</a> </small>
+                      <small> Please enter pickup address or select from your <a  onClick={(e)=>{ debugger;}}  style={{color:"blue", cursor:"pointer"}}> saved addresses</a> </small>
                             
                               <AutoComplete
                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
