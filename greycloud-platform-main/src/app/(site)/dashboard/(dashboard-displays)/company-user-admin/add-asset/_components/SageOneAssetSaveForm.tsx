@@ -63,7 +63,7 @@ export default function SageOneAssetSaveForm({
     defaultValues: {
       SageCompanyId: Number(SageCompanyId),
       asset: {
-        description: "Product Name",
+        description: "",
         category: {
           description: "Electronics",
           id: 8184,
@@ -72,33 +72,37 @@ export default function SageOneAssetSaveForm({
         },
         location: {
           id: 10220,
-          description: "Product Description",
+          description: "",
         },
         datePurchased: new Date(),
         depreciationStart: new Date(),
-        serialNumber: "ABC_123",
-        boughtFrom: "Electronics Store",
-        purchasePrice: 500,
-        currentValue: 350,
-        replacementValue: 600,
-        textField1: "Additional Info 1",
-        textField2: "Additional Info 2",
-        textField3: "Additional Info 3",
+        serialNumber: "",
+        boughtFrom: "",
+        purchasePrice: 0,
+        usage:0,
+        currentValue: 0,
+        replacementValue: 0,
+        textField1: "",
+        textField2: "",
+        textField3: "",
         numericField1: 10,
         numericField2: 20,
         numericField3: 30,
         yesNoField1: true,
         yesNoField2: false,
+        locName:"",
         yesNoField3: true,
         dateField1: new Date(),
+        recoverableAmount:1,
+        currentUsage:0,
         dateField2: new Date(),
         dateField3: new Date(),
         id: "",
         assetDepreciationGroupRequestModel: {
-          active: depreciationGroups[0].active,
+          active: depreciationGroups[0]?.active,
           assetId: 0,
-          creatingUser: depreciationGroups[0].creatingUser,
-          depGroupId: depreciationGroups[0].depGroupId,
+          creatingUser: depreciationGroups[0]?.creatingUser,
+          depGroupId: depreciationGroups[0]?.depGroupId,
         },
         billingType:{
           type:  0,
@@ -128,6 +132,7 @@ export default function SageOneAssetSaveForm({
 
 
   const { execute, status } = useAction(saveSageOneAsset, {
+ 
     onSuccess(data, input, reset) {
       if (data) {
         toast.success(`Asset saved!`, {
@@ -159,6 +164,7 @@ export default function SageOneAssetSaveForm({
 
   
    async function createAsset(input:any){
+    debugger;
     toast.info("Saving asset...");
     input.id=0;
     const response = await fetch(`https://grey-cloud-be.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=1`, {
@@ -184,16 +190,18 @@ export default function SageOneAssetSaveForm({
 
 
   // Define a submit handler:
-  function onSubmit(values: SaveSageOneAssetType) {
-  
+  function onSubmit(values: any) {
+  debugger;
     const formattedValues = {
       ...values,
       SageCompanyId: Number(values.SageCompanyId),
       asset: {
         ...values.asset,
         purchasePrice: Number(values.asset.purchasePrice),
-        currentValue: Number(values.asset.currentValue),
+        currentValue: Number(values.asset.purchasePrice),
+        usage: Number(values.asset.usage),
         replacementValue: Number(values.asset.replacementValue),
+        recoverableAmount: Number(values.asset.recoverableAmount),
         numericField1: Number(values.asset.numericField1),
         numericField2: Number(values.asset.numericField2),
         numericField3: Number(values.asset.numericField3),
@@ -292,20 +300,7 @@ export default function SageOneAssetSaveForm({
                   </Select>
                 </div>
               </div>
-              {/* <FormField
-                control={form.control}
-                name="asset.category.description"
-                render={({ field }) => (
-                  <FormItem className="flex-1 grow min-w-full">
-                    <FormLabel>Asset Category Description</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
-
+           
               <FormField
                 control={form.control}
                 name="asset.location.description"
@@ -436,7 +431,7 @@ export default function SageOneAssetSaveForm({
                 name="asset.purchasePrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Purchase Price</FormLabel>
+                    <FormLabel>Purchase Price (R)</FormLabel>
                     <FormControl>
                       <Input {...field} type="number" min={0} step="0.01" />
                     </FormControl>
@@ -450,7 +445,7 @@ export default function SageOneAssetSaveForm({
                 name="asset.replacementValue"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Replacement Value</FormLabel>
+                    <FormLabel>Replacement Value (R)</FormLabel>
                     <FormControl>
                       <Input {...field} type="number" min={0} step="0.01" />
                     </FormControl>
@@ -458,6 +453,34 @@ export default function SageOneAssetSaveForm({
                   </FormItem>
                 )}
               />
+            <FormField
+                control={form.control}
+                name="asset.recoverableAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Recoverable Amount (R)</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="number"  min={1} step="1" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+            <FormField
+                control={form.control}
+                name="asset.usage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Usage (units)</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="number"  min={0} step="1" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
 
         
             </div>
@@ -552,7 +575,7 @@ export default function SageOneAssetSaveForm({
                           onChange={(e:any) => setUsageOrDailyAmount(e.target.value)}
                             className="w-full"
                             type="number"
-                            placeholder="Price per day"
+                            placeholder="Price (per day)"
                           />
                         </div>
                       ) : (
@@ -601,7 +624,7 @@ export default function SageOneAssetSaveForm({
                             onChange={(e:any) => setUsageOrDailyAmount(e.target.value)}
                               className="w-full"
                               type="number"
-                              placeholder="Price (usage)"
+                              placeholder="Price (per unit)"
                             />
                           </div>
                         </div>
@@ -641,6 +664,7 @@ export default function SageOneAssetSaveForm({
               </div>
             </div>
             <div className="w-full pt-4">
+              <button type="submit" className="btn btn-primary">Sub</button>
               <ButtonSubmitForm
                 executingString="Saving Asset..."
                 idleString="Save Asset"

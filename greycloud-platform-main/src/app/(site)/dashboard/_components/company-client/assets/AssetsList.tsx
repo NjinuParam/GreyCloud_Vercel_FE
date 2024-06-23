@@ -14,7 +14,7 @@ export const AssetsList = async () => {
 
   const myCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
 
-debugger;
+
   const [assets, depreciationGroups] = await Promise.all([
     await getSageOneCompanyAssets({
       SageCompanyId: Number(myCompany?.sageCompanyId),
@@ -22,7 +22,7 @@ debugger;
     await getAllCompanyDepreciationGroups({}),
   ]);
 
-
+debugger;
   return (
     <>
       {/* <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 w-full h-full overflow-y-scroll"> */}

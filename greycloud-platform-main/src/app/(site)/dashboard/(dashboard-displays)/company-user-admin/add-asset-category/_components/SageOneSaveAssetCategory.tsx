@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
@@ -28,38 +28,62 @@ export default function SageOneAssetCategorySaveForm() {
     },
   });
 
-  const { execute, status } = useAction(saveSageOneAssetCategory, {
-    onSuccess(data, input, reset) {
-      if (data) {
-        toast.success(`Asset saved!`, {
-          description: "The asset category was stored successfully.",
-        });
-      } else {
-        toast.error("Failed to store asset category.", {
-          description: "Please try again.",
-        });
-      }
+  const [loading, setLoading] = useState<boolean>(false);
 
-      reset();
-    },
+  // const { execute, status } = useAction(saveSageOneAssetCategory, {
+  //   onSuccess(data, input, reset) {
+  //     if (data) {
+  //       toast.success(`Asset saved!`, {
+  //         description: "The asset category was stored successfully.",
+  //       });
+  //     } else {
+  //       toast.error("Failed to store asset category.", {
+  //         description: "Please try again.",
+  //       });
+  //     }
 
-    onError(error, input, reset) {
-      toast.error("An error has occured:", {
-        description: JSON.stringify(error, null, 2),
+  //     reset();
+  //   },
+
+  //   onError(error, input, reset) {
+  //     toast.error("An error has occured:", {
+  //       description: JSON.stringify(error, null, 2),
+  //     });
+  //   },
+
+  //   onSettled(result, input, reset) {
+  //     reset();
+  //   },
+
+  //   onExecute(input) {
+  //     toast.info("Saving asset category...");
+  //   },
+  // });
+
+  async function createAssetCategory(data:any, companyId:string="14999") {
+
+    try {
+      
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+      await fetch(`${apiUrl}SageOneAsset/AssetCategory/Save?CompanyId=${companyId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-    },
-
-    onSettled(result, input, reset) {
-      reset();
-    },
-
-    onExecute(input) {
-      toast.info("Saving asset category...");
-    },
-  });
+      toast.success(`Asset saved!`, {
+                description: "The asset category was stored successfully.",
+              });
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  }
 
   // Define a submit handler:
   function onSubmit(values: SaveSageOneAssetCategoryType) {
+   
     const formattedValues = {
       ...values,
       assetCategory: {
@@ -68,9 +92,12 @@ export default function SageOneAssetCategorySaveForm() {
       },
     };
 
-    execute(formattedValues);
+    debugger;
+    createAssetCategory(formattedValues.assetCategory);
   }
 
+  debugger;
+  
   return (
     <>
       <Form {...form}>
@@ -146,12 +173,12 @@ export default function SageOneAssetCategorySaveForm() {
 
             <div className="w-full pt-2">
               <Button
-                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                className={cn("w-full font-bold", loading? "executing" : "animate-pulse")}
                 size={"lg"}
                 type="submit"
-                disabled={status === "executing"}
+                disabled={loading}
               >
-                {status === "executing" ? "Saving Asset..." : "Save Asset"}
+                {loading ? "Saving Category..." : "Save Category"}
               </Button>
             </div>
           </form>

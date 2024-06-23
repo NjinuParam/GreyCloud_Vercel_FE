@@ -1,16 +1,117 @@
+"use client";
+
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { GetCompanyDepreciationGroupResponseType } from "@/lib/schemas/depreciation";
 import { formatDate, formatToPercentage, formatToRand } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Dialog } from "@radix-ui/react-dialog";
+import {
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import { SelectGroup } from "@radix-ui/react-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
+import { AssetDepreciationHistoryTableTypes, assetDepreciationHistoryColumns } from "../../grey-cloud-admin/DataTableColumns";
+import { DataTable } from "../../../../../../components/ui/data-table";
+import { DownloadTableExcel } from "react-export-table-to-excel";
+import { PowerCircle } from "lucide-react";
+
+
 
 export const DepreciationGroupCard = ({ depreciationGroup }: { depreciationGroup: GetCompanyDepreciationGroupResponseType }) => {
+console.log("depreciationGroup", depreciationGroup  )
+const [selectedPeriod, setSelectedPeriod] = useState<number>(0);
+const [fetchingDepreciation, setFetchingDepreciation] = useState<boolean>(false);
+
+const [_transformedData, _setTransformedData] = useState<
+AssetDepreciationHistoryTableTypes[]
+>([]);
+
+
+async function fetchFutureDepreciation(categoryId:string){
+  toast.info("Fetching depreciation history...");
+  setFetchingDepreciation(true);
+  const response = await fetch(`https://grey-cloud-be.azurewebsites.net/Depreciation/FutureDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  });
+
+  if (response) {
+    const res = await response.json();
+    const newTransformedData = res?.map((depHistory:any) => ({
+      ...depHistory,
+      companyName: "company",
+    })) as AssetDepreciationHistoryTableTypes[];
+    _setTransformedData(newTransformedData);
+    debugger;
+   
+  } else {
+    debugger;
+  }
+
+  setFetchingDepreciation(false);
+}
+
+async function fetchHistoriceDepreciation(categoryId:string){
+  toast.info("Fetching depreciation history...");
+  setFetchingDepreciation(true);
+  const response = await fetch(`https://grey-cloud-be.azurewebsites.net/Depreciation/HistoricDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  });
+
+  if (response) {
+    const res = await response.json();
+    const newTransformedData = res?.map((depHistory:any) => ({
+      ...depHistory,
+      companyName: "company",
+    })) as AssetDepreciationHistoryTableTypes[];
+    _setTransformedData(newTransformedData);
+    debugger;
+   
+  } else {
+    debugger;
+  }
+
+  setFetchingDepreciation(false);
+}
+const tableRef = useRef(null);
+const _depreciationGroup= depreciationGroup as any;
   return (
     <Card className="flex flex-col gap-2 pb-2">
+     
       <CardHeader className="flex flex-col gap-2 pb-0">
-        <CardTitle>{depreciationGroup.depName}</CardTitle>
-        <CardDescription>Group ID: {depreciationGroup.depGroupId}</CardDescription>
+        <CardTitle>
+          <Badge variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
+          Active   
+          </Badge> 
+          {_depreciationGroup.depName}    
+          
+        </CardTitle>
+        <CardDescription>Category: {_depreciationGroup?.categoryId } 
+                  <br/>   
+        <small>Next depreciation run: 30 June 2024</small></CardDescription>
+    
       </CardHeader>
 
       <Separator className="my-2" />
@@ -18,56 +119,174 @@ export const DepreciationGroupCard = ({ depreciationGroup }: { depreciationGroup
       <CardContent className="flex flex-col gap-6 pt-2 pb-4">
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
-            {depreciationGroup.isMoney ? "Depreciation Amount (in Rands)" : "Depreciation Percentage"}
+        {_depreciationGroup.type==0?"Write off period" : _depreciationGroup.type==1?"Depreciation amount (per year)":_depreciationGroup.type==2?"Useful life (units)":"" }     
           </Label>
-          {depreciationGroup.isMoney ? (
-            <p>{formatToRand(depreciationGroup.depAmount)}</p>
-          ) : (
+          {/* {depreciationGroup.isMoney ? ( */}
+            <p>{_depreciationGroup.depAmount} {_depreciationGroup.type==0?" years": _depreciationGroup.type=="1"?"%": _depreciationGroup.type=="2"?" units":""}</p>
+          {/* ) : (
             <p>{formatToPercentage(depreciationGroup.depAmount) ?? "---"}</p>
-          )}
+          )} */}
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="contactNumber" className="text-xs text-foreground uppercase tracking-wider">
-            Depreciation Period (in months)
+            Asset Category (Sage)
           </Label>
-          <p>{depreciationGroup.period ?? "---"}</p>
+          <p>{_depreciationGroup?.categoryId }</p>
+        </span>
+        <span className="flex flex-col gap-1 text-muted-foreground">
+          <Label htmlFor="contactNumber" className="text-xs text-foreground uppercase tracking-wider">
+           Depreciation Type 
+          </Label>
+          <p>{_depreciationGroup?.type==0?"Straight Line": _depreciationGroup?.type==1?"Reducing Balance":"Usage" }</p>
+        </span>
+        <div className="grid w-full items-center grid-cols-2 gap-4">
+        <span className="flex flex-col gap-1 text-muted-foreground">
+          <Label htmlFor="dateCreated" className="text-xs text-foreground uppercase tracking-wider">
+           Acc.  Depreciation Journal
+          </Label>
+          <p>{_depreciationGroup.sageAccumilatedDepreciationJournalCode}</p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="dateCreated" className="text-xs text-foreground uppercase tracking-wider">
-            Active State
+            Depreciation Journal
           </Label>
-          <p>{depreciationGroup.active ? "Active" : "Not Active"}</p>
-        </span>
-
-        <span className="flex flex-col gap-1 text-muted-foreground">
-          <Label htmlFor="dateCreated" className="text-xs text-foreground uppercase tracking-wider">
-            Date Created
-          </Label>
-          <p>{formatDate(depreciationGroup.createdDate.toString())}</p>
+          <p>{_depreciationGroup.sageDepreciationJournalCode}</p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="dateModified" className="text-xs text-foreground uppercase tracking-wider">
-            Date Modified
+          Disposal Journal
           </Label>
-          <p>{formatDate(depreciationGroup.dateModified.toString())}</p>
+          <p>{_depreciationGroup.sageDisposalJournalCode}</p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
-            Company ID
+           Revaluation Journal
           </Label>
-          <p>{depreciationGroup.companyId ?? "---"}</p>
+          <p>{_depreciationGroup.sageRevaluationJournalCode}</p>
         </span>
-
+</div>
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="creatingUser" className="text-xs text-foreground uppercase tracking-wider">
             Creating User
           </Label>
-          <p>{depreciationGroup.creatingUser ?? "---"}</p>
+          <p>{_depreciationGroup.creatingUser ?? "---"}</p>
         </span>
+        <Dialog>
+      <DialogTrigger asChild className="grow">
+        <Button variant={"outline"} className="text-primary w-full">
+         View Depreciation
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="min-w-[1000px] w-full">
+        <DialogHeader>
+          <DialogTitle className="text-2xl text-center">
+             {_depreciationGroup.depName} Depreciation
+          </DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
+        <Select
+    
+    value={`${selectedPeriod}`}
+    onValueChange={(e:any) => {
+      debugger; 
+      const p = e as number;
+      setSelectedPeriod(p);
+      // console.log(e);
+      // const cat = categories && categories.find((x:any) => x.description == e).id;
+      // setCategory(cat);
+    }}
+    >
+    <SelectTrigger style={{width: "30%", float:"left"}} >
+      <SelectValue placeholder="Period"  />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectGroup>
+        <SelectLabel>Period</SelectLabel>
+        <SelectItem  key={0} value={"0"}>
+           1 month
+          </SelectItem>
+          <SelectItem  key={0} value={"1"}>
+           3 months
+          </SelectItem>
+        <SelectItem  key={0} value={"2"}>
+            6 months
+          </SelectItem>
+    
+          <SelectItem key={1} value={"3"}>
+            12 months
+          </SelectItem>
+    
+          <SelectItem key={2} value={"4"}>
+            24 months
+          </SelectItem>
+    
+        {/* {categories.map((c: any) => (
+          <SelectItem key={c.id} value={c.description}>
+            {c.description}
+          </SelectItem>
+        ))} */}
+      </SelectGroup>
+    </SelectContent>
+    </Select>
+            <p className="mx-auto text-center" style={{ width:"50%", float: "left", marginLeft: "5%"}}>
+
+              Select a depreciation period and then click one of the buttons below to view historic or projected depreciation for this depreciation group.
+            </p>
+          </DialogDescription>
+      
+            
+          {_transformedData.length > 0 && (
+          <DataTable
+            columns={assetDepreciationHistoryColumns}
+            data={_transformedData}
+          />
+        )}
+        {/* {transformedData.length > 0 ? (
+          <DataTable
+            columns={assetDepreciationHistoryColumns}
+            data={transformedData}
+          />
+        )
+        
+        : (
+          <DialogDescription>
+            <p className="mx-auto text-center">
+              Click button below to fetch asset depreciation.
+            </p>
+          </DialogDescription>
+        )} */}
+
+  <div className="grid w-full items-center grid-cols-2 gap-4">
+    <div>
+        <Button
+          variant={"outline"}
+           disabled={fetchingDepreciation}
+          className="text-primary w-full"
+          onClick={() => fetchHistoriceDepreciation(_depreciationGroup?.categoryId)}
+        >
+           Depreciation History
+        </Button>
+      </div>
+      <div>
+        
+        <Button
+          variant={"outline"}
+          // disabled={transformedData.length > 0 || status === "executing"}
+          className="text-primary  w-full " 
+           onClick={() => fetchFutureDepreciation(_depreciationGroup?.categoryId)}
+          // onClick={() => execute({ assetid: asset.id })}
+        >
+           Projected Depreciation
+        </Button> 
+      </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+
       </CardContent>
 
       {/* <Separator className="my-2" /> */}

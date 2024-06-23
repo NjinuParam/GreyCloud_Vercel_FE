@@ -50,33 +50,67 @@ export const companyUsersColumns: ColumnDef<AllCompanyUserResponseType>[] = [
 
 export type AssetDepreciationHistoryTableTypes = AssetDepreciationHistoryResponseType & {
   assetName?: string;
+  purchasePrice:string;
   companyName?: string;
+  residual: string;
+  depGroupName:string;
+  depGroupDetails:string;
+  depreciationThisYear:string;
+  depreciationThisMonth:string;
+  totalDepreciation:string;
 };
 
 export const assetDepreciationHistoryColumns: ColumnDef<AssetDepreciationHistoryTableTypes>[] = [
   {
-    accessorKey: "depGroupId",
-    header: "Depreciation Group ID",
+    accessorKey: "assetId",
+    header: "Asset ID",
   },
   {
     accessorKey: "assetName",
     header: "Asset Name",
   },
   {
-    accessorKey: "lastValue",
-    header: "Last Value",
-  },
-  {
-    accessorKey: "newValue",
-    header: "New Value",
-  },
-  {
-    accessorKey: "companyName",
-    header: "Company Name (Sage)",
+    accessorKey: "depGroupName",
+    header:"Depreciation Group",
+  },{
+    accessorKey: "depGroupDetails",
+    header:"Depreciation Details",
   },
   {
     accessorKey: "createdDate",
-    header: "Created Date",
+    header: "Depreciation Date",
     cell: (info) => formatDate(info.getValue() as string),
   },
+  {
+    accessorKey: "newValue",
+    header: "Book Value",
+  },
+  {
+    accessorKey: "lastValue",
+    header: "Previous Value",
+  },
+  {
+    accessorKey: "depreciationAmount",
+    header:"Depreciation amount",
+  },
+  {
+    accessorKey: "purchasePrice",
+    header:"Purchase Price",
+  },{
+    accessorKey: "residual",
+    header:"Residual Value",
+  },
+  {
+    accessorKey: "totalDepreciation",
+    header:"Total depreciation",
+  },
+  {
+    accessorKey: "depreciationThisYear",
+    header:"Depreciation this year",
+  },
+  
+  {
+    accessorKey: "depreciationThisMonth",
+    header:"Depreciation this month",
+  }
 ];

@@ -19,7 +19,7 @@ export const assetTableColumns: ColumnDef<EnrichedAssetType>[] = [
     header: "Description",
   },
   {
-    accessorKey: "category.description",
+    accessorKey: "catDescription",
     header: "Category",
   },
   {

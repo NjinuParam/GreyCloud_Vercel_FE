@@ -22,6 +22,8 @@ import { getGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greyc
 import AssetCardDrawer from "./AssetCardDrawer";
 import { UpdateSageOneAssetFormProps } from "../../../(dashboard-displays)/company-user-admin/add-asset/_components/UpdateSageOneAssetForm";
 import AssetDepreciationDialog from "./AssetDepreciationDrawer";
+import { Input } from "../../../../../../components/ui/input";
+import { Label } from "@radix-ui/react-label";
 
 export const AssetCardFooter = ({
   user,
@@ -104,13 +106,25 @@ export const AssetCardFooter = ({
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
             <DialogTitle>
-              <span className="text-muted-foreground">Delete</span>{" "}
+              <span className="text-muted-foreground">Suspend Asset</span>{" "}
               {asset.description}?
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="text-base">
-            This action cannot be undone. This will permanently delete the
-            asset.
+            This action cannot be undone. This will temporarily suspend the
+            asset. The asset cannot be editted or used for rentals.
+            <br/><br/>
+
+            <Input
+                id="name"
+                placeholder="Reason for suspension"
+                value={""}
+                onChange={(e) => {
+                  
+                }}
+              />
+
+          
           </DialogDescription>
 
           <DialogFooter>
@@ -143,8 +157,96 @@ export const AssetCardFooter = ({
               >
                 {statusFetchCompanyForUser === "executing" ||
                 statusDeleteAsset === "executing"
-                  ? "Deleting Asset..."
-                  : "Delete Asset"}
+                  ? "Suspening Asset..."
+                  : "Suspend Asset"}
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog>
+        <DialogTrigger asChild className="grow">
+          <Button
+            variant={"outline"}
+            className={cn(
+              "text-destructive w-48",
+              statusFetchCompanyForUser === "executing" ||
+                statusDeleteAsset === "executing"
+                ? "animate-pulse"
+                : null
+            )}
+            disabled={
+              statusFetchCompanyForUser === "executing" ||
+              statusDeleteAsset === "executing"
+            }
+          >
+            {/* {statusFetchCompanyForUser === "executing" || statusDeleteAsset === "executing" ? "Deleting Asset..." : "Delete Asset"} */}
+            <p>Write off asset</p>
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>
+              <span className="text-muted-foreground">Write off asset</span>{" "}
+              {asset.description}?
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-base">
+            This action cannot be undone. This will write off the
+            asset and it can no longer be edited or used for rentals.
+<br/><br/>
+{/* <Label htmlFor="name" className="text-xs text-foreground uppercase tracking-wider">Reason </Label> */}
+            <Input
+                id="name"
+                placeholder="Reason for write off"                
+                value={""}
+                onChange={(e) => {}}
+               
+              />
+              <br/>
+              <Label htmlFor="name" className="text-xs text-foreground uppercase tracking-wider">Recovered amount </Label>
+            <Input
+                id="name"
+                placeholder="Recovered amount"
+                value={0}
+                type="number"
+                onChange={(e) => {}}
+              />
+          </DialogDescription>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                className={cn(
+                  "w-full font-bold",
+                  statusFetchCompanyForUser === "executing" ||
+                    statusDeleteAsset === "executing"
+                    ? "animate-pulse"
+                    : null
+                )}
+                size={"lg"}
+                onClick={() => {
+                  if (Boolean(user)) {
+                    executeFetchCompanyForUser({
+                      id: user?.companyId as string,
+                    });
+                  } else {
+                    toast.error("An error has occured singing in:", {
+                      description: "User not found.",
+                    });
+                  }
+                }}
+                disabled={
+                  statusFetchCompanyForUser === "executing" ||
+                  statusDeleteAsset === "executing"
+                }
+                variant={"destructive"}
+              >
+                {statusFetchCompanyForUser === "executing" ||
+                statusDeleteAsset === "executing"
+                  ? "Writing off Asset..."
+                  : "Write off Asset"}
               </Button>
             </DialogClose>
           </DialogFooter>

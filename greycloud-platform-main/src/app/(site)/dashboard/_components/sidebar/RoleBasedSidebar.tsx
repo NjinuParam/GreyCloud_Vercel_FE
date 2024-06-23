@@ -57,6 +57,31 @@ const menuItems = {
   ],
   Company_Admin: [
     {
+      heading: "Depreciation Groups",
+      links: [
+        {
+          title: "Add Group",
+          path: "/dashboard/company-user-admin/add-depreciation-group",
+          icon: <FolderPlus />,
+        },
+        {
+          title: "Manage Groups",
+          path: "/dashboard/company-user-admin/manage-depreciation-groups",
+          icon: <Folder />,
+        },
+        {
+          title: "View History",
+          path: "/dashboard/company-user-admin/manage-depreciation-history",
+          icon: <Briefcase />,
+        },
+        // {
+        //   title: "Manage Asset Groups",
+        //   path: "/dashboard/company-user-admin/manage-asset-groups",
+        //   icon: <Layers />,
+        // },
+      ],
+    },
+    {
       heading: "Assets",
       links: [
         {
@@ -86,31 +111,7 @@ const menuItems = {
         // },
       ],
     },
-    {
-      heading: "Depreciation Groups",
-      links: [
-        {
-          title: "Add Group",
-          path: "/dashboard/company-user-admin/add-depreciation-group",
-          icon: <FolderPlus />,
-        },
-        {
-          title: "Manage Groups",
-          path: "/dashboard/company-user-admin/manage-depreciation-groups",
-          icon: <Folder />,
-        },
-        {
-          title: "View History",
-          path: "/dashboard/company-user-admin/manage-depreciation-history",
-          icon: <Briefcase />,
-        },
-        // {
-        //   title: "Manage Asset Groups",
-        //   path: "/dashboard/company-user-admin/manage-asset-groups",
-        //   icon: <Layers />,
-        // },
-      ],
-    },
+
     // {
     //   heading: "Depreciation History",
     //   links: [
@@ -140,6 +141,37 @@ const menuItems = {
   ],
   Company_User: [
     {
+      heading: "Depreciation Groups",
+      links: [
+        {
+          title: "Add Group",
+          path: "/dashboard/company-user/add-depreciation-group",
+          icon: <FolderPlus />,
+        },
+        {
+          title: "Manage Groups",
+          path: "/dashboard/company-user/manage-depreciation-groups",
+          icon: <Folder />,
+        },
+        {
+          title: "View History",
+          path: "/dashboard/company-user/manage-depreciation-history",
+          icon: <Briefcase />,
+        },
+        // {
+        //   title: "Add Asset Category",
+        //   path: "/dashboard/company-user/add-asset-category",
+        //   icon: <FolderPlus />,
+        // },
+        // {
+        //   title: "Manage Asset Groups",
+        //   path: "/dashboard/company-user/manage-asset-groups",
+        //   icon: <Layers />,
+        // },
+      ],
+    },
+  
+    {
       heading: "Assets",
       links: [
         {
@@ -152,11 +184,7 @@ const menuItems = {
           path: "/dashboard/company-user/manage-assets",
           icon: <Archive />,
         },
-        {
-          title: "Add Asset Category",
-          path: "/dashboard/company-user/add-asset-category",
-          icon: <FolderPlus />,
-        },
+      
         // {
         //   title: "Add Asset Location",
         //   path: "/dashboard/company-user/add-asset-location",
@@ -199,42 +227,17 @@ const menuItems = {
         },
       ],
     },
-    {
-      heading: "Depreciation Groups",
-      links: [
-        {
-          title: "Add Group",
-          path: "/dashboard/company-user/add-depreciation-group",
-          icon: <FolderPlus />,
-        },
-        {
-          title: "Manage Groups",
-          path: "/dashboard/company-user/manage-depreciation-groups",
-          icon: <Folder />,
-        },
-        {
-          title: "View History",
-          path: "/dashboard/company-user/manage-depreciation-history",
-          icon: <Briefcase />,
-        },
-        // {
-        //   title: "Manage Asset Groups",
-        //   path: "/dashboard/company-user/manage-asset-groups",
-        //   icon: <Layers />,
-        // },
-      ],
-    },
-  
-    {
-      heading: "Company",
-      links: [
-        {
-          title: "Settings",
-          path: "/dashboard/company/settings",
-          icon: <Settings2 />,
-        },
-      ],
-    },
+   
+    // {
+    //   heading: "Company",
+    //   links: [
+    //     {
+    //       title: "Settings",
+    //       path: "/dashboard/company/settings",
+    //       icon: <Settings2 />,
+    //     },
+    //   ],
+    // },
   ],
 };
 

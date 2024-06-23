@@ -153,7 +153,7 @@ export default function AddDepreciationHistoryForm({ sageCompanyId, depreciation
             name="newValue"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>New Value</FormLabel>
+                <FormLabel>Book Value</FormLabel>
                 <FormControl>
                   <Input
                     className="w-full"

@@ -78,14 +78,13 @@ const FormSchema = z.object({
 
   deposit: z.number({
   
-  }),
+  }).default(0),
   discount: z.number({
   
-  }),
+  }).default(0),
 
   customerId: z.string({
-    required_error: "A customer is required.",
-  }).nullable(),
+  }).nullable().default(""),
 });
 
 function CreateOrderForm({
@@ -112,6 +111,7 @@ function CreateOrderForm({
   const [qty, setQty] = useState(0);
   const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState(false);
+  const [excludedAssets, setExcludedAssets] = useState<any[]>([]);
   const [selectedCustomerAddresses, setSelectedCustomerAddresses] = useState<any[]>(
     []
   );
@@ -192,6 +192,35 @@ setCompanyId(sageCompanyId);
     }
   }
 
+  async function GetUnnavailableAssets(_sageCompanyId:any, start:string, endDate:string){
+
+    const endpoint = `${apiUrl}/SageOneOrder/SalesOrderNew/GetUnavailableAssets/${_sageCompanyId}/${start}/${endDate}`;
+
+    try {
+      
+
+      const response = await fetch(endpoint, {
+        method: "GET", // *GET, POST, PUT, DELETE, etc.     
+        headers: {
+          "Content-Type": "application/json",
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+       
+      });
+
+      const res = await response.json();
+      setExcludedAssets(res);
+     
+
+     
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+
 
   function getTotal(_asset:any){
 
@@ -249,7 +278,6 @@ setCompanyId(sageCompanyId);
 
 
       const res = await response.json();
-      debugger;
       toast.success(`Order created!`, {
         description: "The order was created successfully.",
       });
@@ -258,6 +286,8 @@ setCompanyId(sageCompanyId);
       console.log(e);
     }
   }
+
+  const filtAssets = assets.filter((x:any)=> { return !excludedAssets?.includes(x.id)});
 
   return (
     <Card>
@@ -344,8 +374,11 @@ setCompanyId(sageCompanyId);
                         <Calendar
                           mode="single"
                           selected={field.value}
+                          disabled={(date) =>
+                            date < new Date() || date < new Date(form.getValues("startDate"))
+                          }
                           onSelect={field.onChange}
-                          // onChange={  getFinalData(items)}
+                         // onChange={form.getValues("startDate") && excludedAssets.length==0 &&  form.getValues("endDate") && GetUnnavailableAssets(companyId, form.getValues("startDate").toDateString(), form.getValues("endDate").toDateString())}
                           // disabled={(date) =>
                           //   date > new Date() || date < new Date("1900-01-01")
                           // }
@@ -547,7 +580,7 @@ setCompanyId(sageCompanyId);
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Assets</SelectLabel>
-                          {assets?.map((asset:any) => (
+                          {filtAssets?.map((asset:any) => (
                             <SelectItem value={asset.id}>
                               {asset.description}
                             </SelectItem>
@@ -628,8 +661,8 @@ setCompanyId(sageCompanyId);
 
           <CardFooter>
           <ButtonSubmitForm
-                executingString="Saving Asset..."
-                idleString="Save Asset"
+                executingString="Creating Order..."
+                idleString="Create Order"
                 
                 status={"idle"}
               />

@@ -49,6 +49,9 @@ export type UpdateSageOneAssetFormProps = {
   depreciationGroups: GetCompanyDepreciationGroupResponseType[];
   sageCompanyId: number;
   user?: PlatformUserType;
+  updateUsage?: Function;
+  updateAddress?: Function;  
+
 };
 
 export default function UpdateSageOneAssetForm({
@@ -63,15 +66,16 @@ export default function UpdateSageOneAssetForm({
       asset: {
         ...asset,
         assetDepreciationGroupRequestModel: {
-          active: depreciationGroups[0].active,
+          active: depreciationGroups[0]?.active,
           assetId: Number(asset.id),
-          creatingUser: depreciationGroups[0].creatingUser,
-          depGroupId: depreciationGroups[0].depGroupId,
+          creatingUser: depreciationGroups[0]?.creatingUser,
+          depGroupId: depreciationGroups[0]?.depGroupId,
         },
       },
     },
   });
 
+  
   const { execute, status } = useAction(saveSageOneAsset, {
   
     onSuccess(data, _, reset) {
@@ -110,6 +114,8 @@ export default function UpdateSageOneAssetForm({
         purchasePrice: Number(values.asset.purchasePrice),
         currentValue: Number(values.asset.currentValue),
         replacementValue: Number(values.asset.replacementValue),
+        usage: Number(values.asset.usage),
+        recoverableAmount: Number(values.asset.recoverableAmount),
         numericField1: Number(values.asset.numericField1),
         numericField2: Number(values.asset.numericField2),
         numericField3: Number(values.asset.numericField3),
@@ -152,7 +158,8 @@ export default function UpdateSageOneAssetForm({
     });
   }, []);
 
-  const [isRental, setIsRental] = useState(false);
+  debugger;
+  const [isRental, setIsRental] = useState<boolean>(asset?.billingType?.amount==0??false);
   const [billingType, setBillingType] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
   const [category, setCategory] = useState("0");
@@ -254,7 +261,9 @@ export default function UpdateSageOneAssetForm({
                   <FormItem className="flex-1 grow min-w-full">
                     <FormLabel>Location Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input 
+                      // disabled={true}
+                      placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -382,6 +391,7 @@ export default function UpdateSageOneAssetForm({
                         type="number"
                         min={0}
                         step="0.01"
+                        disabled={true}
                       />
                     </FormControl>
                     <FormMessage />
@@ -394,12 +404,9 @@ export default function UpdateSageOneAssetForm({
               <div className="items-top flex space-x-2">
                 <Checkbox
                   id="terms1"
+                  checked={isRental}
                   onCheckedChange={(e) => {
-                    if (e.valueOf().toString() == "true") {
-                      setIsRental(true);
-                    } else {
-                      setIsRental(false);
-                    }
+                      setIsRental(!isRental);
                   }}
                 />
 
@@ -418,7 +425,13 @@ export default function UpdateSageOneAssetForm({
 
                   {isRental ? (
                     <div className="mt-4 flex gap-4">
-                      <Select onValueChange={(e) => setBillingType(e)}>
+                      <Select value={
+                      billingType=="" ? 
+                      (asset?.billingType?.type==0?"daily":
+                      asset?.billingType?.type==1?"onceoff":
+                      asset?.billingType?.type==2?"onceoffusage":
+                      asset?.billingType?.type==4?"usage":""
+                  ):""} onValueChange={(e) => setBillingType(e)}>
                         <SelectTrigger>
                           <SelectValue placeholder="Billing type" />
                         </SelectTrigger>
@@ -435,11 +448,12 @@ export default function UpdateSageOneAssetForm({
                         </SelectContent>
                       </Select>
 
-                      {billingType === "daily" ? (
+                      {((billingType=="" && asset&& asset?.billingType?.type==0) || billingType === "daily") ? (
                         <div className="w-full">
                           <Input
                             className="w-full"
                             type="number"
+                            defaultValue={asset?.billingType?.amount}
                             placeholder="Price"
                           />
                         </div>
@@ -447,11 +461,12 @@ export default function UpdateSageOneAssetForm({
                         <></>
                       )}
 
-                      {billingType === "onceoff" ? (
+                      {((billingType=="" && asset&& asset?.billingType?.type==1) || billingType === "onceoff") ? (
                         <div className="w-full">
                           <Input
                             className="w-full"
                             type="number"
+                            defaultValue={asset?.billingType?.amount}
                             placeholder="Price"
                           />
                         </div>
@@ -459,12 +474,13 @@ export default function UpdateSageOneAssetForm({
                         <></>
                       )}
 
-                      {billingType === "onceoffusage" ? (
+                      {((billingType=="" && asset && asset?.billingType?.type==2) || billingType === "onceoffusage") ? (
                         <div className="flex flex-row gap-4 w-full">
                           <Input
                             className="w-full"
                             type="number"
                             placeholder="Price"
+                            defaultValue={asset?.billingType?.amount}
                           />
                           <Select>
                             <SelectTrigger>
@@ -488,7 +504,7 @@ export default function UpdateSageOneAssetForm({
                         <></>
                       )}
 
-                      {billingType === "usage" ? (
+                      {((billingType=="" && asset&& asset?.billingType?.type==3) || billingType === "usage") ? (
                         <div className="flex flex-row gap-4 w-full">
                           <Select>
                             <SelectTrigger>
@@ -506,6 +522,7 @@ export default function UpdateSageOneAssetForm({
                             className="w-full"
                             type="number"
                             placeholder="Usage type price"
+                            defaultValue={asset?.billingType?.amount}
                           />
                         </div>
                       ) : (
