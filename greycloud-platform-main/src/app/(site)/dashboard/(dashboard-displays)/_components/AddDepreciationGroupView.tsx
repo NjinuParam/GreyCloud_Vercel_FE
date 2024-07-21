@@ -103,7 +103,7 @@ function AddDepreciationGroup() {
       sageRevaluationJournalCode     
     };
 
-    debugger;
+    
 
     try {
       await fetch(`${apiUrl}Depreciation/Add-Company-Depreciation-Group`, {
@@ -122,7 +122,7 @@ function AddDepreciationGroup() {
   async function fetchAccounts(assetId:string){
     toast.info("Fetching depreciation history...");
     
-    const response = await fetch(`https://grey-cloud-be.azurewebsites.net/GreyCloud/Admin/Get-Accounts/14999`, {
+    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/GreyCloud/Admin/Get-Accounts/14999`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -132,12 +132,12 @@ function AddDepreciationGroup() {
     if (response) {
       const res = await response.json();
       var data = res.results;
-      debugger;
+      
       setAccounts(data);
-      debugger;
+      
      
     } else {
-      debugger;
+      
     }
   }
 
@@ -327,7 +327,7 @@ function AddDepreciationGroup() {
                   setSageAccumilatedDepreciationJournalCode(e.target.value)
                 }
               /> */}
-                <Select onValueChange={(e) =>  {debugger; setSageAccumilatedDepreciationJournalCode(e)}}>
+                <Select onValueChange={(e) =>  { setSageAccumilatedDepreciationJournalCode(e)}}>
                     <SelectTrigger>
                     <SelectValue placeholder="Select" />
                     </SelectTrigger>
@@ -355,7 +355,7 @@ function AddDepreciationGroup() {
                 value={sageDepreciationJournalCode}
                 onChange={(e) => setSageDepreciationJournalCode(e.target.value)}
               /> */}
-               <Select  onValueChange={(e) =>  {debugger; setSageDepreciationJournalCode(e)}}>
+               <Select  onValueChange={(e) =>  { setSageDepreciationJournalCode(e)}}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
@@ -383,7 +383,7 @@ function AddDepreciationGroup() {
                 value={sageDisposalJournalCode}
                 onChange={(e) => setSageDisposalJournalCode(e.target.value)}
               /> */}
-               <Select onValueChange={(e) =>  {debugger; setSageDisposalJournalCode(e)}}>
+               <Select onValueChange={(e) =>  { setSageDisposalJournalCode(e)}}>
                     <SelectTrigger>
                       <SelectValue  placeholder="Select" />
                     </SelectTrigger>
@@ -406,7 +406,7 @@ function AddDepreciationGroup() {
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Sage Revaluation Journal Code</Label>
              
-               <Select value={sageRevaluationJournalCode}  onValueChange={(e) =>  {debugger; setSageRevaluationJournalCode(e)}}>
+               <Select value={sageRevaluationJournalCode}  onValueChange={(e) =>  { setSageRevaluationJournalCode(e)}}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>

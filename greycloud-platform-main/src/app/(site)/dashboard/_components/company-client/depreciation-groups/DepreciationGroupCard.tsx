@@ -47,7 +47,7 @@ AssetDepreciationHistoryTableTypes[]
 async function fetchFutureDepreciation(categoryId:string){
   toast.info("Fetching depreciation history...");
   setFetchingDepreciation(true);
-  const response = await fetch(`https://grey-cloud-be.azurewebsites.net/Depreciation/FutureDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
+  const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/Depreciation/FutureDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -58,13 +58,12 @@ async function fetchFutureDepreciation(categoryId:string){
     const res = await response.json();
     const newTransformedData = res?.map((depHistory:any) => ({
       ...depHistory,
-      companyName: "company",
     })) as AssetDepreciationHistoryTableTypes[];
     _setTransformedData(newTransformedData);
-    debugger;
+    
    
   } else {
-    debugger;
+    
   }
 
   setFetchingDepreciation(false);
@@ -73,24 +72,24 @@ async function fetchFutureDepreciation(categoryId:string){
 async function fetchHistoriceDepreciation(categoryId:string){
   toast.info("Fetching depreciation history...");
   setFetchingDepreciation(true);
-  const response = await fetch(`https://grey-cloud-be.azurewebsites.net/Depreciation/HistoricDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
+  const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/Depreciation/HistoricDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     }
   });
-
+debugger;
   if (response) {
     const res = await response.json();
     const newTransformedData = res?.map((depHistory:any) => ({
       ...depHistory,
-      companyName: "company",
+
     })) as AssetDepreciationHistoryTableTypes[];
     _setTransformedData(newTransformedData);
-    debugger;
+    
    
   } else {
-    debugger;
+    
   }
 
   setFetchingDepreciation(false);
@@ -192,7 +191,7 @@ const _depreciationGroup= depreciationGroup as any;
     
     value={`${selectedPeriod}`}
     onValueChange={(e:any) => {
-      debugger; 
+       
       const p = e as number;
       setSelectedPeriod(p);
       // console.log(e);

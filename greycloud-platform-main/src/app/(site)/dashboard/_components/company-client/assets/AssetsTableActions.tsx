@@ -14,7 +14,7 @@ export default function AssetsTableActions({ asset }: { asset: EnrichedAssetType
 
 toast.info("Updating asset...");
 
-const response = await fetch(`https://grey-cloud-be.azurewebsites.net/SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/14999`, {
+const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/14999`, {
   method: "GET",
   headers: {
     "Content-Type": "application/json",
@@ -22,7 +22,7 @@ const response = await fetch(`https://grey-cloud-be.azurewebsites.net/SageOneAss
 });
 
 if (response) {
-  debugger;
+  
   toast.success(`Asset usage updated!`, {
     description: "The asset was updated successfully.",
   });
@@ -44,7 +44,7 @@ if (response) {
       location: address,
       gps: "0,0"
     }
-    const response = await fetch(`https://grey-cloud-be.azurewebsites.net/SageOneAsset/Asset/UpdateLocation/${assetId}/14999`, {
+    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/UpdateLocation/${assetId}/14999`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -58,7 +58,7 @@ if (response) {
       toast.success(`Asset location updated!`, {
         description: "The asset was updated successfully.",
       });
-debugger;
+
       return address;
       // router.push("/dashboard/company-user/manage-assets");
     } else {

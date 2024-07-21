@@ -7,11 +7,23 @@ import { DataTable } from "@/components/ui/data-table";
 import { getIronSessionData } from "@/lib/auth/auth";
 import { AssetDepreciationHistoryTableTypes, assetDepreciationHistoryColumns } from "../../_components/grey-cloud-admin/DataTableColumns";
 import { getSageOneCompanyAssets } from "@/app/actions/sage-one-assets-actions/sage-one-assets-actions";
-import { CheckCircle, FileSpreadsheet, PowerCircle } from "lucide-react";
+import { CheckCircle, FileSpreadsheet, FileWarning, FileWarningIcon, LucideMessageSquareWarning, MailWarning, PowerCircle, Timer } from "lucide-react";
 import { Badge } from "../../../../../components/ui/badge";
 import { getAllCompanyDepreciationGroups } from "../../../../actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
 import { toast } from "sonner";
 import { useExcelDownloder } from 'react-xls';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "../../../../../components/ui/label";
+
 
 export default function ViewDepreciationHistoryView() {
 
@@ -24,35 +36,10 @@ export default function ViewDepreciationHistoryView() {
   
   const [transformedData, setTransformedData] = useState<any>();
   const [filteredData, setFilteredData] = useState<any>();
+  const [canDepr, setCanDepreciate] = useState<any[]>([]);
   const { ExcelDownloder, Type } = useExcelDownloder();
 
 
-
-  // async function fetchFutureDepreciation(categoryId:string){
-
-  //   // setFetchingDepreciation(true);
-  //   const response = await fetch(`https://grey-cloud-be.azurewebsites.net/Depreciation/FutureDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     }
-  //   });
-  
-  //   if (response) {
-  //     const res = await response.json();
-  //     const newTransformedData = res?.map((depHistory:any) => ({
-  //       ...depHistory,
-  //       companyName: "company",
-  //     })) as AssetDepreciationHistoryTableTypes[];
-  //     // _setTransformedData(newTransformedData);
-    
-     
-  //   } else {
-  //   }
-  
-  //   // setFetchingDepreciation(false);
-  // }
-  
   useEffect(() => {
 
   const session =  getIronSessionData().then((comp: any) => {
@@ -74,9 +61,10 @@ export default function ViewDepreciationHistoryView() {
     let _transformedData = depreHistory.data?.map((depHistory:any) => {
       const asset = _assets.data?.find((a:any) => a.id === depHistory.assetId);
       const depGroup = depreciationGroups.data?.find((dg:any) => dg.depGroupId === depHistory.depGroupId);
-      debugger;
+      
       return {
         ...depHistory,
+        code:asset.code,
         assetName: asset ? asset.description : "Unknown Asset",
         companyName: myCompany?.companyName,
         purchasePrice: asset?.purchasePrice,
@@ -89,7 +77,7 @@ export default function ViewDepreciationHistoryView() {
       };
     }) as AssetDepreciationHistoryTableTypes[];
   
-    debugger;
+    
     setTransformedData(_transformedData);
     filteredData?.data==undefined && setFilteredData(_transformedData)
       
@@ -106,10 +94,31 @@ export default function ViewDepreciationHistoryView() {
 }, []);
   
 
+async function canDepreciate(assetId:number){
+  toast.info("Fetching depreciation history...");
+  
+  const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/Depreciation/CanDepreciate/${assetId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  });
+
+  if (response) {
+    debugger;
+    const res = await response.json();
+    setCanDepreciate(res);
+   
+  } else {
+    
+  }
+}
 
   function filterByName(name:string){
     if(name!=""){
       setFilteredData(transformedData?.filter((data:any) => data.assetName.toLowerCase().includes(name.toLowerCase())));
+    }else{
+      setFilteredData(transformedData); 
     }
     
   }
@@ -117,7 +126,7 @@ export default function ViewDepreciationHistoryView() {
   function filterByDate(start:string, end:string){
 
     if(start!="" && end!=""){
-      debugger;
+      
       var startDate = new Date(start);
       var endDate = new Date(end);
 
@@ -139,13 +148,13 @@ export default function ViewDepreciationHistoryView() {
   async function depreciationRun(){
     toast.info("Processing...");
     // setFetchingDepreciation(true);
-    const response = await fetch(`https://grey-cloud-be.azurewebsites.net/Depreciation/DepreciationRun`, {
+    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/Depreciation/DepreciationRun`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       }
     });
-  debugger;
+  
     if (response) {
       toast.success(`Complete!`, {
         description: "The depreciation run completed succesfully.",
@@ -166,6 +175,13 @@ export default function ViewDepreciationHistoryView() {
   
     // setFetchingDepreciation(false);
   }
+
+
+  useEffect(() => {
+
+    canDepreciate(14999);
+
+  },[]);
 
 
   return (
@@ -205,15 +221,81 @@ export default function ViewDepreciationHistoryView() {
       </ExcelDownloder>
 }
     </div>
+    
     <a  onClick={()=>{depreciationRun()}}>
       <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
-          <CheckCircle size={16} style={{paddingRight:"1%"}} />  Last run: 2 days ago   
+          <CheckCircle size={16} style={{paddingRight:"1%"}} />  Last run: 5 hr ago  
+          </Badge>
+          
+          <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
+          <Timer size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days 
           </Badge> </a>
+          {/* <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
+          <CheckCircle size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days   
+          </Badge>  */}
           <div></div>
-        <a style={{cursor:"pointer"}} onClick={()=>{depreciationRun()}}>
-      <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
-          <PowerCircle size={16} style={{paddingRight:"1%"}} />  Run depreciation job   
-          </Badge> </a>
+        <a  style={{cursor: canDepr.length ==0? "pointer":"none"}}>
+         
+          <Dialog>
+        <DialogTrigger asChild className="grow">
+          
+        <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
+          <MailWarning style={{paddingRight:"1%"}}  size={16} />  
+          
+          
+          
+          {canDepr.length} assets need to be updated          </Badge> 
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>
+          Assets pending usage update
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-base">
+            {/* <Label style={{marginTop:"10px"}}>Last location: {newAddress!=""? newAddress :asset.locName}</Label>
+            <AutoComplete
+              style={{zIndex:99999999}}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
+              //  defaultValue={a.postalAddress01??""}
+                  apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                  onPlaceSelected={(place:any) => {
+                    _setAddress(`${place?.formatted_address}(${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()})`);
+                  }}
+                  options={{
+                    types: ["geocode", "establishment"],//Must add street addresses not just cities
+                    componentRestrictions: { country: "za" },
+                  }}  
+                /> */}
+
+            {canDepr.map((x:any)=>{
+              return <> <Label>Asset: {x}</Label> <br/></>
+            })}
+
+                
+          </DialogDescription>
+
+          <DialogFooter>
+            <DialogClose asChild>
+            {/* <Button onClick={()=>{ updateLocation();
+         
+              
+              }
+               
+               } variant={"outline"}>Update location</Button> */}
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
+          
+
+
+          <Badge style={{padding:"2%"}}  variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
+          <PowerCircle size={16} style={{paddingRight:"1%"}} />  Trigger run   
+          </Badge>
+          </a>
          
           </div>
         <DataTable columns={assetDepreciationHistoryColumns} data={filteredData ??  transformedData??[]} />

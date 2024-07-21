@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -21,8 +21,13 @@ import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { deleteGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greycloud-admin-actions";
 import { SageCompanyResponseType } from "@/lib/schemas/company";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/table";
+import { Input } from "../../../../../components/ui/input";
+import { Trash } from "lucide-react";
 
 export const CompaniesList = ({ companies }: { companies: SageCompanyResponseType[] }) => {
+
+  
   return (
     <div className="grid grid-cols-3 gap-2 w-full h-full overflow-y-scroll">
       {companies.map((company) => (
@@ -33,6 +38,8 @@ export const CompaniesList = ({ companies }: { companies: SageCompanyResponseTyp
 };
 
 export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) => {
+  
+
   return (
     <Card className="flex flex-col gap-2">
       <CardHeader className="pb-0">
@@ -94,6 +101,67 @@ export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) =
 };
 
 const CompanyCardFooter = (company: SageCompanyResponseType) => {
+  const [users, setUsers] = useState<any[]>([]);
+  const [firstName, setFirstName] = useState<string>("");
+  const [surname, setSurname] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  
+  async function fetchUsage(assetId:string){
+    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/UserCompany/Get-All-Company-User?companyId=${company.id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+  
+    if (response) {
+     
+      const res = await response.json();
+    setUsers(res);
+    
+     
+    } else {
+      
+    }
+
+  } 
+  
+  async function assignUser(){
+    var payload = {
+      email: email,
+      surname: surname,
+      name: firstName,
+      companyId: company.id,
+      password: "password",
+      role:"Company_Admin"
+    };
+debugger;
+    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/UserCompany/Create-User`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  
+    if (response) {
+      debugger;
+      const res = await response.json();
+      debugger;
+     
+     
+    } else {
+      
+    }
+
+  }    
+
+  
+  useEffect(() => {
+      fetchUsage(company.id);
+    });
+
+
   const { execute, result, status, reset } = useAction(deleteGreyCloudCompany, {
     onSuccess(data, input, reset) {
       toast.success("Company successfully deleted.", {
@@ -118,6 +186,10 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
     },
   });
 
+  function AddUser(){
+    assignUser();
+  }
+
   return (
     <div className="flex flex-row gap-2 items-center w-full">
       <Dialog>
@@ -134,6 +206,109 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
           <div className="w-full mt-2">
             <UpdateSageCompanyForm company={company} />
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog>
+        <DialogTrigger asChild className="grow">
+          <Button variant={"outline"} className="text-primary">
+            Assign users
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>
+              <span className="text-muted-foreground">Manage admin users to </span> {company.companyName}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-base">
+           
+             <Table>
+                <TableHeader>
+                  <TableRow>   
+                    <TableHead >Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Actions</TableHead>
+                    {/* <TableHead>Serial Number</TableHead>
+                    <TableHead>Billing type</TableHead>
+                    <TableHead>Price</TableHead> */}
+                  </TableRow>
+                
+                </TableHeader>
+                <TableBody>
+                {users?.map((itm:any) => (
+                    <TableRow>
+                       <TableCell>{itm.name}</TableCell>
+                       <TableCell>{itm.email}</TableCell>
+                       <TableCell><small><Trash width={"16px"}/></small></TableCell>
+            </TableRow>
+            ))}
+                </TableBody>
+              </Table>
+
+              <div className="grid grid-cols-2 gap-4 mt-4 p-4">
+        <div><h5>Add new admin user</h5></div><div></div>
+
+        <div className="flex flex-col space-y-1.5">
+          {/* <Label htmlFor="name">Name</Label> */}
+          <Input
+          onChange={(e) => setFirstName(e.target.value)}
+            id="name"
+            placeholder="Name"
+          />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          {/* <Label htmlFor="name">Surname</Label> */}
+          <Input
+          onChange={(e) => setSurname(e.target.value)}
+            id="name"
+            placeholder="Surname"
+          />
+        </div>
+        
+        <div className="flex flex-col space-y-1.5">
+          {/* <Label htmlFor="name">Email</Label> */}
+          <Input
+            id="email"
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+           />
+        </div>
+        <div></div>
+<div>    
+  <Button
+                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                size={"lg"}
+                onClick={() => {
+                  AddUser()
+                }}
+                disabled={status === "executing" || !email || !firstName || !surname}
+                // variant={"primary"}
+              >
+                {status === "executing" ? "Updating users..." : "Update users"}
+              </Button>
+              
+              </div>
+        </div>
+            </DialogDescription>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              {/* <Button
+                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                size={"lg"}
+                onClick={() => {
+                  execute({
+                    id: company.id,
+                  });
+                }}
+                disabled={status === "executing"}
+                variant={"destructive"}
+              >
+                {status === "executing" ? "Deleting Company..." : "Delete Company"}
+              </Button> */}
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -170,6 +345,9 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+   
+
     </div>
   );
 };

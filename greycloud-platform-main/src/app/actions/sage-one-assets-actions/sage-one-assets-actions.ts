@@ -50,7 +50,7 @@ console.log("::::", assets);
 
 export const getSageOneCompanyAssets = action(SageCompanyIdSchema, async ({ SageCompanyId }) => {
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.GET.ASSET_GET}?Companyid=${SageCompanyId}`;
-console.log("::::", endpoint);
+
   try {
     const response = await fetch(endpoint, { next: { tags: ["sage-one-assets"] } });
     if (!response.ok) {

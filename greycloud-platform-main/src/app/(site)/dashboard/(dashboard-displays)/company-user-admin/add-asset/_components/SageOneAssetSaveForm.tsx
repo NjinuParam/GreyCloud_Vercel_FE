@@ -14,6 +14,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
@@ -44,6 +54,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import router from "next/router";
+import SageOneAssetCategorySaveForm from "../../add-asset-category/_components/SageOneSaveAssetCategory";
 
  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -81,6 +92,7 @@ export default function SageOneAssetSaveForm({
         purchasePrice: 0,
         usage:0,
         currentValue: 0,
+        code:"",
         replacementValue: 0,
         textField1: "",
         textField2: "",
@@ -125,7 +137,7 @@ export default function SageOneAssetSaveForm({
         (x:any) => x.companyId == currentCompanyId
       )?.sageCompanyId;
       fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
-        .then((res) => res.json().then((data) => { setCategories(data.results); debugger; }))
+        .then((res) => res.json().then((data) => { setCategories(data.results);  }))
         .catch((e) => console.log(e));
     });
   }, []);
@@ -164,10 +176,11 @@ export default function SageOneAssetSaveForm({
 
   
    async function createAsset(input:any){
-    debugger;
+    
     toast.info("Saving asset...");
     input.id=0;
-    const response = await fetch(`https://grey-cloud-be.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=1`, {
+    debugger;
+    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=1`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -176,7 +189,7 @@ export default function SageOneAssetSaveForm({
     });
 
     if (response) {
-      debugger;
+      
       toast.success(`Asset saved!`, {
         description: "The asset was stored successfully.",
       });
@@ -191,7 +204,7 @@ export default function SageOneAssetSaveForm({
 
   // Define a submit handler:
   function onSubmit(values: any) {
-  debugger;
+ 
     const formattedValues = {
       ...values,
       SageCompanyId: Number(values.SageCompanyId),
@@ -200,6 +213,7 @@ export default function SageOneAssetSaveForm({
         purchasePrice: Number(values.asset.purchasePrice),
         currentValue: Number(values.asset.purchasePrice),
         usage: Number(values.asset.usage),
+        code: values.asset.code,
         replacementValue: Number(values.asset.replacementValue),
         recoverableAmount: Number(values.asset.recoverableAmount),
         numericField1: Number(values.asset.numericField1),
@@ -273,8 +287,63 @@ export default function SageOneAssetSaveForm({
                   </FormItem>
                 )}
               />
+                 <FormField
+                control={form.control}
+                name="asset.code"
+                render={({ field }) => (
+                  <FormItem className="flex-1 grow min-w-full">
+                    <FormLabel>Asset Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <div>
                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Category</label>
+               
+               
+               
+
+                <Dialog>
+        <DialogTrigger asChild className="grow">
+         <button className="text-sm text-blue-500 ml-2"><small>Create New</small></button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[400px]">
+          {/* <DialogHeader>
+            <DialogTitle>
+            Add new category
+            </DialogTitle>
+          </DialogHeader> */}
+          {/* <DialogDescription className="text-base">This action cannot be undone. This will permanently delete the user account.</DialogDescription> */}
+          {/* <DialogContent className="md:max-w-[600px]"> */}
+          <SageOneAssetCategorySaveForm  />
+          {/* </DialogContent> */}
+          
+          <DialogFooter>
+            <DialogClose asChild>
+              {/* <Button
+                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                size={"lg"}
+                onClick={(event) => {
+                  // execute({
+                  //   id: user?.id,
+                  // });
+                }}
+                disabled={status === "executing"}
+                variant={"destructive"}
+              >
+                {status === "executing" ? "Deleting User..." : "Delete User"}
+              </Button> */}
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
+
+               
                 <div style={{ marginTop: "7px" }}>
                   <Select
 
@@ -664,7 +733,7 @@ export default function SageOneAssetSaveForm({
               </div>
             </div>
             <div className="w-full pt-4">
-              <button type="submit" className="btn btn-primary">Sub</button>
+              {/* <button type="submit" className="btn btn-primary">Sub</button> */}
               <ButtonSubmitForm
                 executingString="Saving Asset..."
                 idleString="Save Asset"

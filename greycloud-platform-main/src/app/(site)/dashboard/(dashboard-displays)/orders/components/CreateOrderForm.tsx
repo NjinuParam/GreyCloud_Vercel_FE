@@ -22,6 +22,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, set } from "date-fns";
@@ -67,6 +77,7 @@ import {
 import { useRouter } from "next/navigation";
 import { getIronSessionData } from "@/lib/auth/auth";
 import { it } from "node:test";
+import { Checkbox } from "../../../../../../components/ui/checkbox";
 
 const FormSchema = z.object({
   startDate: z.date({
@@ -107,6 +118,8 @@ function CreateOrderForm({
     }[]
   >([]);
   const [selectedItem, setSelectedItem] = useState(0);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+
   const [custs, setCusts] = useState([]);
   const [qty, setQty] = useState(0);
   const [addresses, setAddresses] = useState([]);
@@ -130,10 +143,13 @@ function CreateOrderForm({
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredAssets, setFilteredAssets] = useState<any[]>([]);
+
   const [companyId, setCompanyId] = useState("");
 
   const getFinalData = (_items:any[]) => {
-    debugger;
+    
     let price = _items.reduce((accum, item) => accum + item.total, 0);
     setPrice(price);
     let discPr = price * (dis / 100);
@@ -153,6 +169,7 @@ function CreateOrderForm({
 setCompanyId(sageCompanyId);
       getCustomers(sageCompanyId);
       GetAddresses(sageCompanyId)
+      setFilteredAssets(assets);
     });
   }, []);
 
@@ -183,9 +200,9 @@ setCompanyId(sageCompanyId);
 
 
       const res = await response.json();
-      debugger;
+      
       setAddresses(res);
-      debugger;
+      
      
     } catch (e) {
       console.log(e);
@@ -220,6 +237,47 @@ setCompanyId(sageCompanyId);
     }
   }
 
+  function _setSelectedItems(itemId:string){ 
+
+    if(selectedItems.includes(itemId)){
+      setSelectedItems(selectedItems.filter((x:any)=> x!=itemId))
+    }else{
+      setSelectedItems([...selectedItems, itemId]);
+    
+    }
+
+    if(selectedItems.includes(itemId)){
+
+      const removedItem = items.filter((x:any)=> x.assetId != itemId);
+      setItems(removedItem);
+      getFinalData(removedItem);
+
+    }else{
+
+      const theAsset = assets.find(
+        (x:any) => x.id == itemId
+      );
+      const sDate = new Date(form.getValues("startDate"));
+      const eDate = new Date(form.getValues("endDate"));
+      const days = Math.abs(eDate.getTime() - sDate.getTime()) / (1000 * 60 * 60 * 24); 
+  
+      
+      const theItem = {
+        qty: 1,
+        assetId: theAsset.id,
+        serialNumber: theAsset.serialNumber,
+        description: theAsset.description,
+        value: theAsset.billingType.amount,
+        // total: theAsset.billingType.amount * days,
+        total: getTotal(theAsset),
+        billingType: theAsset.billingType,
+      };
+      setItems([...items, theItem]);
+      getFinalData([...items, theItem]);
+  
+    }
+
+  }
 
 
   function getTotal(_asset:any){
@@ -227,7 +285,7 @@ setCompanyId(sageCompanyId);
     const sDate = new Date(form.getValues("startDate"));
     const eDate = new Date(form.getValues("endDate"));
     const days = Math.abs(eDate.getTime() - sDate.getTime()) / (1000 * 60 * 60 * 24);
-    debugger;
+    
 
     if(_asset.billingType.type == 1){
       return _asset.billingType.amount;
@@ -259,7 +317,7 @@ setCompanyId(sageCompanyId);
          SageCompanyId: companyId,
          postalAddress01: address1,
         postalAddress02: address2};
-    debugger;
+    
     const endpoint = `${apiUrl}SageOneOrder/SalesOrderNew/Save`;
 
 
@@ -278,6 +336,8 @@ setCompanyId(sageCompanyId);
 
 
       const res = await response.json();
+      debugger;
+
       toast.success(`Order created!`, {
         description: "The order was created successfully.",
       });
@@ -287,7 +347,16 @@ setCompanyId(sageCompanyId);
     }
   }
 
-  const filtAssets = assets.filter((x:any)=> { return !excludedAssets?.includes(x.id)});
+  // const filtAssets = assets.filter((x:any)=> { return !excludedAssets?.includes(x.id)});
+
+
+  function searchAssetByName(name:string){
+
+    if(name == "") setFilteredAssets(assets);
+    const ret =  assets.filter((x:any)=> x.description.toLowerCase().includes(name.toLowerCase()));
+    setFilteredAssets(ret);
+  }
+
 
   return (
     <Card>
@@ -333,6 +402,7 @@ setCompanyId(sageCompanyId);
                           selected={field.value}
                           onSelect={field.onChange}
                           // onChange={  getFinalData(items)}
+                   
                           disabled={(date) =>
                             date < new Date() || date < new Date("1900-01-01")
                           }
@@ -374,14 +444,15 @@ setCompanyId(sageCompanyId);
                         <Calendar
                           mode="single"
                           selected={field.value}
+                          // disabled={(date) =>
+                          //   date < new Date() || date < new Date(form.getValues("startDate"))
+                          // }
                           disabled={(date) =>
-                            date < new Date() || date < new Date(form.getValues("startDate"))
+                            date < new Date() || date < new Date("1900-01-01")
                           }
                           onSelect={field.onChange}
-                         // onChange={form.getValues("startDate") && excludedAssets.length==0 &&  form.getValues("endDate") && GetUnnavailableAssets(companyId, form.getValues("startDate").toDateString(), form.getValues("endDate").toDateString())}
-                          // disabled={(date) =>
-                          //   date > new Date() || date < new Date("1900-01-01")
-                          // }
+                        //  onChange={form.getValues("startDate") && excludedAssets.length==0 &&  form.getValues("endDate") && GetUnnavailableAssets(companyId, form.getValues("startDate").toDateString(), form.getValues("endDate").toDateString())}
+                      
                           initialFocus
                         />
                       </PopoverContent>
@@ -399,13 +470,13 @@ setCompanyId(sageCompanyId);
                     <FormLabel>Customer</FormLabel>
                     <Select
                       onValueChange={(e) => {
-                        debugger;
+                        
                       
                         field.onChange;
 
                         const theCustomer = custs.find((c:any) => c?.name == e) as any;
                         setCustomerId(theCustomer?.id??"");
-                        debugger;
+                        
                         setSelectedCustomerAddresses([]);
                         let addresses = [];
                         if (theCustomer?.deliveryAddress01 !== "") {
@@ -517,7 +588,7 @@ setCompanyId(sageCompanyId);
                   
                     setAddress1(place?.formatted_address);
                     setAddress2(`${place.geometry.location.lat()},${place.geometry.location.lng()}`);
-                  debugger;
+                  
                     // ass[i].address = place?.formatted_address;
                     // ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
                                                     
@@ -564,7 +635,7 @@ setCompanyId(sageCompanyId);
             </div>
 
             <div className="my-4">
-              <Popover>
+              {/* <Popover>
                 <PopoverTrigger>
                   <div className="flex flex-row gap-2 p-2 rounded-sm cursor-pointer">
                     <PlusIcon></PlusIcon>
@@ -591,7 +662,7 @@ setCompanyId(sageCompanyId);
 
                     <Button
                       onClick={() => {
-                        debugger;
+                        
                         const theAsset = assets.find(
                           (x:any) => x.id == selectedItem
                         );
@@ -599,7 +670,7 @@ setCompanyId(sageCompanyId);
                         const eDate = new Date(form.getValues("endDate"));
                         const days = Math.abs(eDate.getTime() - sDate.getTime()) / (1000 * 60 * 60 * 24); 
 
-                        debugger;
+                        
                         const theItem = {
                           qty: 1,
                           assetId: theAsset.id,
@@ -618,7 +689,81 @@ setCompanyId(sageCompanyId);
                     </Button>
                   </div>
                 </PopoverContent>
-              </Popover>
+              </Popover> */}
+
+
+<Dialog>
+        <DialogTrigger asChild className="grow">
+        {form.getValues("startDate") && excludedAssets.length==0 &&  form.getValues("endDate") &&
+        <div className="flex flex-row gap-2 p-2 rounded-sm cursor-pointer">
+                    <PlusIcon></PlusIcon>
+                    Add Asset
+                  </div>
+}
+        
+        </DialogTrigger>
+        <DialogContent className="md:max-w-[60%]">
+        
+           <Card className="flex flex-col w-[100%] mx-auto justify-between mt-8">
+      <CardHeader className="flex flex-col bg-gradient-to-b from-primary/5 dark:from-primary/10 to-transparent w-full px-8 py-5">
+        <CardTitle>
+          <h2 className="text-xl text-foreground/80">Add Asset </h2>
+        </CardTitle>
+      </CardHeader> 
+
+      <CardContent className="p-8">
+        {/* <SageOneAssetCategorySaveForm  /> */}
+        <Table>
+                <TableHeader>
+                  <TableRow>   
+                   <div> <Input type="text" placeholder="Search" className="mb-2"  onChange={(e)=>searchAssetByName(e.target.value)} /></TableRow></div>
+                  <TableRow>
+                  
+                  <TableHead >Select</TableHead>
+                    <TableHead>Asset</TableHead>
+                    <TableHead>Serial Number</TableHead>
+                    <TableHead>Billing type</TableHead>
+                    <TableHead>Price</TableHead>
+                  </TableRow>
+                  <TableRow>
+                 
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                {filteredAssets?.map((itm:any) => (
+                  // {items.map((itm) => (
+                    <TableRow>
+                       <TableCell>
+                        <Checkbox
+                        defaultChecked={selectedItems.includes(itm.id)}
+                        onCheckedChange={(e: any) => { debugger; _setSelectedItems(itm.id)}}
+                       
+                       /></TableCell>
+                      <TableCell className="font-medium">
+                        {itm.description}
+                      </TableCell>
+                      <TableCell>{itm.serialNumber}</TableCell>
+                      <TableCell>{itm.billingType.type==0?"Daily": itm.billingType.type==1?"Once off": itm.billingType.type==2?"Once off + Usage":"Usage" }</TableCell>
+                      <TableCell>R{itm.billingType.amount} {itm.billingType.type==0?" per day": itm.billingType.type==1?" once off": itm.billingType.type==2?` once off + ${itm.billingType.usageType==0?' per km':'per hour'}`:`${itm.billingType.usageType==0? 'per km':'per hour'}`} </TableCell>
+                  
+                    </TableRow>
+                  ))}
+                </TableBody>
+                <TableFooter>
+                <DialogClose asChild>
+          
+                    </DialogClose>
+                </TableFooter>
+              </Table>
+
+
+      </CardContent>
+    </Card>
+
+        
+        </DialogContent>
+            </Dialog>
+
               <Table>
                 <TableHeader>
                   <TableRow>

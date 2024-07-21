@@ -8,6 +8,7 @@ import { PlatformUserType } from "../schemas/common-schemas";
 import { redirect } from "next/navigation";
 
 export async function getIronSessionData() {
+  debugger;
   const session = await getIronSession<PlatformUserType>(cookies(), { password: process.env.SESSION_PASSWORD as string, cookieName: "userSession" });
   if (!session) redirect("/login");
   return session;

@@ -148,6 +148,7 @@ export const SageOneAssetTypeSchema = z.object({
   replacementValue: z.coerce.number(),
   textField1: z.string(),
   textField2: z.string(),
+  code:z.string(),
   textField3: z.string(),
   numericField1: z.coerce.number(),
   numericField2: z.coerce.number(),
@@ -163,12 +164,12 @@ export const SageOneAssetTypeSchema = z.object({
   locName:z.string(),
   usage: z.coerce.number(),
   billingType: z.object({
-    type:  z.coerce.number(),
-    amount:  z.coerce.number(),
-    usageType:  z.string(),
-    usageRate:  z.coerce.number(),
+    type:  z.coerce.number().nullable(),
+    amount:  z.coerce.number().nullable(),
+    usageType:  z.string().nullable(),
+    usageRate:  z.coerce.number().nullable()
     
-  }).nullable(),
+  }),
   id: z.coerce.string(),
 });
 

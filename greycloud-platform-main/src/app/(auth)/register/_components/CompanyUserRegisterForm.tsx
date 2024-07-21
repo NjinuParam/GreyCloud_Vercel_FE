@@ -99,7 +99,7 @@ export default function CompanyUserRegisterForm() {
           </div>
 
           <div className="flex flex-row space-x-4 w-full">
-            <div className="min-w-full">
+            <div className="">
               <FormField
                 control={form.control}
                 name="role"
@@ -126,15 +126,15 @@ export default function CompanyUserRegisterForm() {
               />
             </div>
 
-            <div className="min-w-full">
+            <div className="">
               <FormField
                 control={form.control}
                 name="companyId"
                 render={({ field }) => (
-                  <FormItem className="min-w-full flex-1">
+                  <FormItem className=" flex-1">
                     <FormLabel>Company ID</FormLabel>
                     <FormControl>
-                      <Input className="w-full" placeholder="" {...field} />
+                      <Input className="" placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

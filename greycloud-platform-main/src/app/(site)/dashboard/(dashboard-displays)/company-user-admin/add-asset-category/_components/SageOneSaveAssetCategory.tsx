@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { SaveSageOneAssetCategorySchema, SaveSageOneAssetCategoryType } from "@/lib/schemas/company";
 import { saveSageOneAssetCategory } from "@/app/actions/sage-one-assets-actions/sage-one-assets-actions";
+import { useRouter } from "next/navigation";
 
 export default function SageOneAssetCategorySaveForm() {
   // Define the form:
@@ -20,7 +21,7 @@ export default function SageOneAssetCategorySaveForm() {
     defaultValues: {
       SageCompanyId: 14999,
       assetCategory: {
-        description: "Electronics",
+        description: "",
         id: Number(0),
         created: new Date(),
         modified: new Date(),
@@ -29,37 +30,7 @@ export default function SageOneAssetCategorySaveForm() {
   });
 
   const [loading, setLoading] = useState<boolean>(false);
-
-  // const { execute, status } = useAction(saveSageOneAssetCategory, {
-  //   onSuccess(data, input, reset) {
-  //     if (data) {
-  //       toast.success(`Asset saved!`, {
-  //         description: "The asset category was stored successfully.",
-  //       });
-  //     } else {
-  //       toast.error("Failed to store asset category.", {
-  //         description: "Please try again.",
-  //       });
-  //     }
-
-  //     reset();
-  //   },
-
-  //   onError(error, input, reset) {
-  //     toast.error("An error has occured:", {
-  //       description: JSON.stringify(error, null, 2),
-  //     });
-  //   },
-
-  //   onSettled(result, input, reset) {
-  //     reset();
-  //   },
-
-  //   onExecute(input) {
-  //     toast.info("Saving asset category...");
-  //   },
-  // });
-
+const router = useRouter();
   async function createAssetCategory(data:any, companyId:string="14999") {
 
     try {
@@ -73,17 +44,25 @@ export default function SageOneAssetCategorySaveForm() {
         },
         body: JSON.stringify(data),
       });
-      toast.success(`Asset saved!`, {
+      toast.success(`Asset category saved!`, {
                 description: "The asset category was stored successfully.",
               });
+              debugger;
+              router.refresh();
     } catch (e: any) {
       toast.error(e.message);
     }
   }
 
-  // Define a submit handler:
-  function onSubmit(values: SaveSageOneAssetCategoryType) {
+  // // Define a submit handler:
+  // function onSubmit(values: SaveSageOneAssetCategoryType) {
    
+
+  // }
+
+
+  function create(values: SaveSageOneAssetCategoryType) {
+    debugger;
     const formattedValues = {
       ...values,
       assetCategory: {
@@ -92,17 +71,17 @@ export default function SageOneAssetCategorySaveForm() {
       },
     };
 
-    debugger;
+    
     createAssetCategory(formattedValues.assetCategory);
+    
   }
-
-  debugger;
+  
   
   return (
     <>
       <Form {...form}>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form>
             <div className="grid grid-cols-1 gap-6 justify-center mb-4">
               <FormField
                 control={form.control}
@@ -172,14 +151,15 @@ export default function SageOneAssetCategorySaveForm() {
             </div>
 
             <div className="w-full pt-2">
-              <Button
-                className={cn("w-full font-bold", loading? "executing" : "animate-pulse")}
-                size={"lg"}
-                type="submit"
+              <button
+                className={cn("w-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full font-bold", loading? "animate-pulse" : "")}
+                // size={"lg"}
+                // type="submit"
+                onClick={(e)=>{ e.preventDefault(); create(form.getValues());}}
                 disabled={loading}
               >
                 {loading ? "Saving Category..." : "Save Category"}
-              </Button>
+              </button>
             </div>
           </form>
         </Form>

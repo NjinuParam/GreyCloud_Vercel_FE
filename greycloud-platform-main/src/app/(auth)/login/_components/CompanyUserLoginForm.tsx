@@ -30,7 +30,7 @@ export default function CompanyUserLoginForm() {
   });
 
   const { execute, status } = useAction(loginCompanyUser, {
-    onSuccess(data) {
+    onSuccess(data:any) {
       if (data) {
         // router.push("/dashboard");
         router.push("/company-picker");

@@ -4,6 +4,7 @@ import { getIronSessionData } from "@/lib/auth/auth";
 import { getGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greycloud-admin-actions";
 
 export default async function AddUser() {
+
   const session = await getIronSessionData();
 
   const mySelectedCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);

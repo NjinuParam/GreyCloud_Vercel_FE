@@ -49,6 +49,7 @@ export const companyUsersColumns: ColumnDef<AllCompanyUserResponseType>[] = [
 ];
 
 export type AssetDepreciationHistoryTableTypes = AssetDepreciationHistoryResponseType & {
+  code:string;
   assetName?: string;
   purchasePrice:string;
   companyName?: string;
@@ -62,7 +63,7 @@ export type AssetDepreciationHistoryTableTypes = AssetDepreciationHistoryRespons
 
 export const assetDepreciationHistoryColumns: ColumnDef<AssetDepreciationHistoryTableTypes>[] = [
   {
-    accessorKey: "assetId",
+    accessorKey: "code",
     header: "Asset ID",
   },
   {

@@ -50,7 +50,7 @@ export default function AssetDepreciationDialog({
 async function fatchFutureDepreciation(assetId:string){
   toast.info("Fetching depreciation history...");
   
-  const response = await fetch(`https://grey-cloud-be.azurewebsites.net/Depreciation/CalculateFutureepreciation/${assetId}/${selectedPeriod}`, {
+  const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/Depreciation/CalculateFutureepreciation/${assetId}/${selectedPeriod}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -58,18 +58,21 @@ async function fatchFutureDepreciation(assetId:string){
   });
 
   if (response) {
+    debugger;
     const res = await response.json();
     const newTransformedData = res?.map((depHistory:any) => ({
       ...depHistory,
+      code: asset ? asset.code : "--",
       assetName: asset ? asset.description : "Unknown Asset",
       companyName: sageCompanyId?.toString(),
     })) as AssetDepreciationHistoryTableTypes[];
 
+    
     _setTransformedData(newTransformedData);
-    debugger;
+    
    
   } else {
-    debugger;
+    
   }
 }
 
@@ -87,7 +90,7 @@ async function fatchFutureDepreciation(assetId:string){
             "The depreciation history for this asset was fetched successfully.",
         });
 
-        debugger;
+        
 
         // Transform the depreciation history data
         const newTransformedData = data?.map((depHistory) => ({
@@ -188,7 +191,7 @@ async function fatchFutureDepreciation(assetId:string){
               <Select
 value={`${selectedPeriod}`}
 onValueChange={(e:any) => {
-  debugger; 
+   
   const p = e as number;
   setSelectedPeriod(p);
   // console.log(e);

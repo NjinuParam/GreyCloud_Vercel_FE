@@ -105,7 +105,7 @@ export default function UpdateSageOneAssetForm({
 
   // Define a submit handler:
   function onSubmit(values: SaveSageOneAssetType) {
-  
+debugger;
     const formattedValues: SaveSageOneAssetType = {
       ...values,
       SageCompanyId: Number(values.SageCompanyId),
@@ -114,6 +114,7 @@ export default function UpdateSageOneAssetForm({
         purchasePrice: Number(values.asset.purchasePrice),
         currentValue: Number(values.asset.currentValue),
         replacementValue: Number(values.asset.replacementValue),
+        code: values.asset.code,
         usage: Number(values.asset.usage),
         recoverableAmount: Number(values.asset.recoverableAmount),
         numericField1: Number(values.asset.numericField1),
@@ -150,7 +151,7 @@ export default function UpdateSageOneAssetForm({
           res.json().then((data) => {
             setCategories(data.results);
             setTimeout(() => {
-              setCategory(asset.category.id.toString());
+              setCategory(asset?.category?.id?.toString());
             }, 1000);
           })
         )
@@ -158,7 +159,7 @@ export default function UpdateSageOneAssetForm({
     });
   }, []);
 
-  debugger;
+  
   const [isRental, setIsRental] = useState<boolean>(asset?.billingType?.amount==0??false);
   const [billingType, setBillingType] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
@@ -176,6 +177,20 @@ export default function UpdateSageOneAssetForm({
                 render={({ field }) => (
                   <FormItem className="flex-1 grow min-w-full">
                     <FormLabel>Asset Description</FormLabel>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="asset.code"
+                render={({ field }) => (
+                  <FormItem className="flex-1 grow min-w-full">
+                    <FormLabel>Asset Code</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} />
                     </FormControl>
@@ -544,7 +559,7 @@ export default function UpdateSageOneAssetForm({
                 )}
                 size={"lg"}
                 type="submit"
-                disabled={status === "executing"}
+               // disabled={status === "executing"}
               >
                 {status === "executing" ? "Edting Asset..." : "Edit Asset"}
               </Button>

@@ -4,6 +4,7 @@ import { formatDate, formatToRand } from "@/lib/utils";
 import AssetsTableActions from "./AssetsTableActions";
 import { GetCompanyDepreciationGroupResponseType } from "@/lib/schemas/depreciation";
 import { ArrowDownRight, ArrowRight, ArrowUpRight } from "lucide-react";
+import moment from "moment";
 
 // Define a new type that represents enriched assets
 export type EnrichedAssetType = SageOneAssetTypeType & {
@@ -33,7 +34,7 @@ export const assetTableColumns: ColumnDef<EnrichedAssetType>[] = [
   {
     accessorKey: "datePurchased",
     header: "Date Purchased",
-    cell: (info) => formatDate(String(info.getValue())),
+    cell: (info) => moment(String(info.getValue())).format("MMM Do YYYY"),
   },
   {
     accessorKey: "purchasePrice",

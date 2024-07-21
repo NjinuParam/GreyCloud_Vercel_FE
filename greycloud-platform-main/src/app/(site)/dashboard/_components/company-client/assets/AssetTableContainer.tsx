@@ -26,7 +26,7 @@ export default function AssetTableContainer({ assets, depreciationGroups, sageCo
     
   }));
 
-  debugger;
+  
   return (
     <div className="min-w-full">
       <DataTable columns={assetTableColumns} data={enrichedAssets} />

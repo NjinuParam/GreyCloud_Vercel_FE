@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 
 
 import { Label } from "@/components/ui/label";
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -24,6 +25,7 @@ import { Input } from "../../../../../../components/ui/input";
 import AutoComplete from "react-google-autocomplete";
 
 import { Button } from "@/components/ui/button";
+import moment from "moment";
 
  export default function AssetCard({ asset, depreciationGroups, sageCompanyId,updateUsage, updateAddress}: UpdateSageOneAssetFormProps){
   let session ={}as any;
@@ -37,7 +39,7 @@ import { Button } from "@/components/ui/button";
       var res = await  updateAddress(asset?.id, _address);
     }
   
-    debugger;
+    
     if(res !==""){ setNewAddress(res); }
   }
   
@@ -49,14 +51,44 @@ import { Button } from "@/components/ui/button";
 
   const [_address, _setAddress] = useState< string>("");
   const [newAddress, setNewAddress] = useState< string>("");
-  const [_usage, _setUsage] = useState< number>(asset.usage??0);
+  const [_usage, _setUsage] = useState< number>(asset?.usage??0);
+  const [prevUsage, setPrevUsage] = useState<any[]>([]);
+
+  debugger;
+  async function fetchUsage(assetId:string){
+    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/GetUsage/${assetId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+  
+    if (response) {
+   
+      const res = await response.json();
+      debugger;
+      setPrevUsage(res);
+      
+      // _setTransformedData(newTransformedData);
+      
+     
+    } else {
+      
+    }
 
 
+    useEffect(() => {
+debugger;
+      fetchUsage(asset.id);
+    });
+
+
+  }
   return (
     <Card className="flex flex-col gap-2">
       <CardHeader className="pb-0 flex flex-col gap-2">
         <CardTitle>{asset.description}</CardTitle>
-        <CardDescription>Asset ID: {asset.id}</CardDescription>
+        <CardDescription>Asset ID: {asset.code}</CardDescription>
       </CardHeader>
 
       <Separator className="my-2" />
@@ -88,7 +120,7 @@ import { Button } from "@/components/ui/button";
           <Label htmlFor="dateCreated" className="text-xs text-foreground uppercase tracking-wider">
             Date Purchased
           </Label>
-          <p>{formatDate(asset.datePurchased.toString())}</p>
+          <p>{moment(asset.datePurchased).format("MMM Do YYYY")}</p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
@@ -178,8 +210,9 @@ import { Button } from "@/components/ui/button";
           Last usage            
       <Dialog>
         <DialogTrigger asChild className="grow">
-          <button className="text-sm text-blue-500 ml-2"><small>Update</small></button>
+          <button className="text-sm text-blue-500 ml-2"><small>Update / View</small></button>
         </DialogTrigger>
+        
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
             <DialogTitle>
@@ -189,6 +222,25 @@ import { Button } from "@/components/ui/button";
           </DialogHeader>
           <DialogDescription className="text-base">
             <Label style={{marginTop:"10px"}}>Last usage: {asset?.usage} units</Label>
+               {prevUsage.length==0 &&<button className="text-sm text-blue-500 ml-2" onClick={()=>{fetchUsage(asset.id)}}><small>Fetch all usage</small></button>}
+            {/* <Label>Previous Usage History</Label> */}
+            <div></div>
+         <br/>
+          {prevUsage.map((x:any)=>{return (
+            <div className="grid w-full  grid-cols-2 gap-4">
+            
+              <Label><small>{moment(x.dateCreated).format("MMM Do YYYY")} : </small></Label>
+              <Label><small>{x.usage} units </small></Label>
+             <br/>
+          </div>
+          
+            );
+            })}
+
+
+              
+  <div></div>
+ <Label>New Usage</Label>
           <Input
             style={{marginTop:"10px"}}
             id="name"
@@ -199,12 +251,14 @@ import { Button } from "@/components/ui/button";
             onChange={(e:any) => {
             
               // updateUsage(asset.id, e.target.value);
-              debugger;
+              
                _setUsage(parseInt(e.target.value));
             }}
               />
           </DialogDescription>
 
+    
+ 
           <DialogFooter>
             <DialogClose asChild>
             <Button type="submit" onClick={()=>{updateUsage!=undefined && updateUsage(asset.id, _usage)}} variant={"outline"}>Update usage</Button>
@@ -212,6 +266,7 @@ import { Button } from "@/components/ui/button";
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
           </Label>
           <p>{asset.usage==0?"--":asset.usage} units
           {/* <small style={{color:"blue" }}>update usage</small> */}

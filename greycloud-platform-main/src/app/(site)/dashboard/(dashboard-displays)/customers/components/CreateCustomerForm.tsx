@@ -44,13 +44,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import AutoComplete from "react-google-autocomplete";
 import {
   SAGE_ONE_CUSTOMER,
   SAGE_ONE_CUSTOMER_NEW,
 } from "@/lib/api-endpoints/sage-one-customer";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   // dob: z.date({
@@ -61,22 +62,22 @@ const FormSchema = z.object({
   }),
   category: z.string({
     required_error: "Please select the category",
-  }),
-  balance: z.string({
+  }).default("0"),
+  balance: z.number({
     required_error: "Please enter the balance",
-  }),
+  }).default(0),
 
-  creditLimit: z.string({
+  creditLimit: z.number({
     required_error: "Please enter the credit limit",
-  }),
+  }).default(0),
   defaultDiscountPercentage: z.string({
     required_error: "Please enter the default discount percentage",
-  }),
+  }).default("0"),
   acceptsElectronicInvoices: z.boolean().default(false).optional(),
   subjectToDRCVat: z.boolean().default(false).optional(),
-  salesRepresentativeId: z.string({
+  salesRepresentativeId: z.number({
     required_error: "Please select a sales representative",
-  }),
+  }).default(5417),
   contactName: z.string({
     required_error: "Please enter the contact name",
   }),
@@ -106,13 +107,13 @@ const FormSchema = z.object({
   }),
   city: z.string({
     required_error: "Please select the city",
-  }),
+  }).default("0"),
   statementDistribution: z.string({
     required_error: "Please select the statement distribution",
   }),
   defaultPriceListId: z.string({
     required_error: "Please select the default price list",
-  }),
+  }).default("0"),
 });
 
 function CreateCustomerForm({ companyId }: { companyId: any }) {
@@ -120,8 +121,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
   const [gpsy, setGpsLongitude] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const { toast } = useToast();
-
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -135,18 +135,19 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
         modified: "2024-04-16T01:40:15.340Z",
         created: "2024-04-16T01:40:15.340Z",
       },
-      salesRepresentative: {
-        id: 0,
-        firstName: "string",
-        lastName: "string",
-        name: "string",
-        active: true,
-        email: "string",
-        mobile: "string",
-        telephone: "string",
-        created: "2024-04-16T01:40:15.340Z",
-        modified: "2024-04-16T01:40:15.340Z",
-      },
+      salesRepresentativeId: 5417,
+      // salesRepresentative: {
+      //   id: 0,
+      //   firstName: "string",
+      //   lastName: "string",
+      //   name: "string",
+      //   active: true,
+      //   email: "string",
+      //   mobile: "string",
+      //   telephone: "string",
+      //   created: "2024-04-16T01:40:15.340Z",
+      //   modified: "2024-04-16T01:40:15.340Z",
+      // },
       taxReference: "string",
       communicationMethod: 0,
       postalAddress01: "string",
@@ -157,6 +158,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
       deliveryAddress03: "string",
       deliveryAddress04: "string",
       deliveryAddress05: "string",
+      creditLimit:0,
       autoAllocateToOldestInvoice: true,
       enableCustomerZone: true,
       customerZoneGuid: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -197,7 +199,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
         created: "2024-04-16T01:40:15.341Z",
         modified: "2024-04-16T01:40:15.341Z",
         taxTypeDefaultUID: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        companyId: companyId,
+        companyId: 14999,
         dueDateMethodId: 0,
         dueDateMethodValue: 0,
         cityId: 0,
@@ -207,16 +209,17 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
         overdueInvoices: true,
         onHold: true,
         excludeFromDebtorsManager: true,
-        subjectToDRCVat: true,
+        subjectToDRCVat: false,
       },
     };
     console.log("SAVE", values);
 
-    const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.POST.CUSTOMER_SAVE}`;
+    const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.POST.CUSTOMER_SAVE}/14999`;
 
     console.log(endpoint);
 
     try {
+      toast.info("Creating customer");
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -225,12 +228,36 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
         body: JSON.stringify(values),
       });
 
-      toast({
-        title: "Success!",
-        description: "Customer added",
-      });
+  
+     const res = await response.json();
+     debugger;
+     
+
+      if(response.status==200){
+        if(res ==null){
+
+          toast.success("Success!",{
+            description: res,
+          });
+          router.push("/dashboard/customers/show");
+        }else{
+          toast.error("Errors on the following fields:",{
+            description:res,
+          });
+        }
+     
+      }else{
+        toast.error("Errors on the following fields:",{
+          description: Object.keys(res.errors).join(" , "),
+        });
+      }
+      
     } catch (e) {
+      debugger;
       console.log(e);
+      toast.error("An error has occured:", {
+        description: e.message,
+      });
     }
   }
 
@@ -272,7 +299,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                         <FormLabel>Category</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          defaultValue={"0"}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -280,7 +307,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="0">(None)</SelectItem>
+                            <SelectItem value="0">None</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -296,6 +323,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                         <FormLabel>Opening Balance</FormLabel>
                         <FormControl>
                           <Input
+                          defaultValue={0}
                             placeholder="Balance"
                             type="number"
                             {...field}
@@ -317,6 +345,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                         <FormLabel>Credit Limit</FormLabel>
                         <FormControl>
                           <Input
+                          defaultValue={0}
                             placeholder="Credit Limit"
                             type="number"
                             {...field}
@@ -335,7 +364,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                         <FormLabel>Sales Representative</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          defaultValue={5417}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -343,7 +372,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="0">(None)</SelectItem>
+                            <SelectItem  selected={true} value={5417}>Current user</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -526,7 +555,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                         <FormLabel>City</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          defaultValue={"0"}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -534,7 +563,11 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="0">(None)</SelectItem>
+                            <SelectItem value="0">Johannesburg</SelectItem>
+                            <SelectItem value="1">Pretoria</SelectItem>
+                            <SelectItem value="2">Cape Town</SelectItem>
+                            <SelectItem value="3">Durban</SelectItem>
+                            <SelectItem value="4">Pietermaritzburg</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -584,6 +617,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                         <FormLabel>Default Descount Percentage</FormLabel>
                         <FormControl>
                           <Input
+                          defaultValue={0}
                             placeholder="Default Descount Percentage"
                             type="number"
                             {...field}
