@@ -716,7 +716,7 @@ setCompanyId(sageCompanyId);
         <Table>
                 <TableHeader>
                   <TableRow>   
-                   <div> <Input type="text" placeholder="Search" className="mb-2"  onChange={(e)=>searchAssetByName(e.target.value)} /></TableRow></div>
+                   <div> <Input type="text" placeholder="Search" className="mb-2"  onChange={(e)=>searchAssetByName(e.target.value)} /></div></TableRow>
                   <TableRow>
                   
                   <TableHead >Select</TableHead>
@@ -743,8 +743,8 @@ setCompanyId(sageCompanyId);
                         {itm.description}
                       </TableCell>
                       <TableCell>{itm.serialNumber}</TableCell>
-                      <TableCell>{itm.billingType.type==0?"Daily": itm.billingType.type==1?"Once off": itm.billingType.type==2?"Once off + Usage":"Usage" }</TableCell>
-                      <TableCell>R{itm.billingType.amount} {itm.billingType.type==0?" per day": itm.billingType.type==1?" once off": itm.billingType.type==2?` once off + ${itm.billingType.usageType==0?' per km':'per hour'}`:`${itm.billingType.usageType==0? 'per km':'per hour'}`} </TableCell>
+                      <TableCell>{itm.billingType?.type==0?"Daily": itm.billingType?.type==1?"Once off": itm.billingType?.type==2?"Once off + Usage":"Usage" }</TableCell>
+                      <TableCell>R{itm.billingType?.amount} {itm.billingType?.type==0?" per day": itm.billingType?.type==1?" once off": itm.billingType?.type==2?` once off + ${itm.billingType?.usageType==0?' per km':'per hour'}`:`${itm.billingType?.usageType==0? 'per km':'per hour'}`} </TableCell>
                   
                     </TableRow>
                   ))}
@@ -781,8 +781,8 @@ setCompanyId(sageCompanyId);
                         {itm.description}
                       </TableCell>
                       <TableCell>{itm.serialNumber}</TableCell>
-                      <TableCell>{itm.billingType.type==0?"Daily": itm.billingType.type==1?"Once off": itm.billingType.type==2?"Once off + Usage":"Usage" }</TableCell>
-                      <TableCell>R{itm.value} {itm.billingType.type==0?" per day": itm.billingType.type==1?" once off": itm.billingType.type==2?` once off + ${itm.billingType.usageType==0?' per km':'per hour'}`:`${itm.billingType.usageType==0? 'per km':'per hour'}`} </TableCell>
+                      <TableCell>{itm.billingType?.type==0?"Daily": itm.billingType?.type==1?"Once off": itm.billingType?.type==2?"Once off + Usage":"Usage" }</TableCell>
+                      <TableCell>R{itm.value} {itm.billingType?.type==0?" per day": itm.billingType?.type==1?" once off": itm.billingType?.type==2?` once off + ${itm.billingType?.usageType==0?' per km':'per hour'}`:`${itm.billingType?.usageType==0? 'per km':'per hour'}`} </TableCell>
                       <TableCell className="text-right">R{itm.total}</TableCell>
                     </TableRow>
                   ))}

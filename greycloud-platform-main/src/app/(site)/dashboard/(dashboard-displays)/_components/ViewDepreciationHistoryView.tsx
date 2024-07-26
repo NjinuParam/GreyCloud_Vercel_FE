@@ -222,7 +222,7 @@ async function canDepreciate(assetId:number){
 }
     </div>
     
-    <a  onClick={()=>{depreciationRun()}}>
+    <a >
       <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
           <CheckCircle size={16} style={{paddingRight:"1%"}} />  Last run: 5 hr ago  
           </Badge>
@@ -234,7 +234,7 @@ async function canDepreciate(assetId:number){
           <CheckCircle size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days   
           </Badge>  */}
           <div></div>
-        <a  style={{cursor: canDepr.length ==0? "pointer":"none"}}>
+        <a  onClick={()=>{depreciationRun()}} style={{cursor: canDepr.length ==0? "pointer":"none"}}>
          
           <Dialog>
         <DialogTrigger asChild className="grow">

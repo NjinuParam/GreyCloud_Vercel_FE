@@ -29,8 +29,8 @@ export default function Register() {
 
       <CardContent className="p-8">{isCompanyUser(user?.role) ? <CompanyUserRegisterForm /> : <GreyCloudAdminRegisterForm />}</CardContent>
 
-      <CardFooter className="flex mx-auto px-8">
-        <p className="text-sm text-muted-foreground -mr-2">Already have an account?</p>
+      {/* <CardFooter className="flex mx-auto px-8">
+        <p className="text-sm text-muted-foreground -mr-2">Don't have an account?</p>
         <Button
           variant={"link"}
           onClick={() => {
@@ -39,7 +39,7 @@ export default function Register() {
         >
           Sign in.
         </Button>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 }

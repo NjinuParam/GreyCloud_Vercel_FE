@@ -44,7 +44,7 @@ import CreateOrderForm from "../components/CreateOrderForm";
 
 async function CreateOrder() {
   const session = await getIronSessionData();
-  const myCompany = session.companyProfile.companiesList?.find(
+  const myCompany = session.companyProfile?.companiesList?.find(
     (company) => company.companyId === session.companyProfile.loggedInCompanyId
   );
 

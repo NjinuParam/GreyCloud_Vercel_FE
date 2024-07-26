@@ -12,7 +12,7 @@ export const AssetsList = async () => {
     return null;
   }
 
-  const myCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+  const myCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
 
 
   const [assets, depreciationGroups] = await Promise.all([

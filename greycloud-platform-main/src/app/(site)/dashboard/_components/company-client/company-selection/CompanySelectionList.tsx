@@ -12,14 +12,14 @@ export const CompanySelectionList = async () => {
 
   // if the user is not associated with any company, redirect to the dashboard:
   // this means the user only has 1 company, and it is the default company
-  if (session.companyProfile.companiesList?.length === 0) {
+  if (session.companyProfile?.companiesList?.length === 0) {
     redirect("/dashboard");
   }
 
   return (
     <Card className="min-h-full w-full p-8 max-w-7xl bg-transparent overflow-y-auto">
       <CardContent className="p-1 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-scroll">
-        {session.companyProfile.companiesList
+        {session.companyProfile?.companiesList
           ?.filter(
             (c) => c.companyId !== session.companyProfile.loggedInCompanyId
           )

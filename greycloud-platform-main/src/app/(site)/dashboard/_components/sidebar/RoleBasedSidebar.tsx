@@ -111,33 +111,66 @@ const menuItems = {
         // },
       ],
     },
-
-    // {
-    //   heading: "Depreciation History",
-    //   links: [
-    //     // {
-    //     //   title: "Add History",
-    //     //   path: "/dashboard/company-user-admin/add-depreciation-history",
-    //     //   icon: <FolderPlus />,
-    //     // },
-       
-    //   ],
-    // },
     {
-      heading: "Users",
+      heading: "Customers",
       links: [
         {
-          title: "Add New Profile",
-          path: "/dashboard/company-user-admin/add-user",
-          icon: <UserPlus />,
+          title: "Customers",
+          path: "/dashboard/customers/show",
+          icon: <Users />,
         },
         {
-          title: "Manage Users",
-          path: "/dashboard/company-user-admin/manage-users",
-          icon: <Users />,
+          title: "Add Customer",
+          path: "/dashboard/customers/create",
+          icon: <UserPlus />,
         },
       ],
     },
+    {
+      heading: "Orders",
+      links: [
+        {
+          title: "Orders",
+          path: "/dashboard/orders/show",
+          icon: <ShoppingBasket />,
+        },
+        {
+          title: "Create Order",
+          path: "/dashboard/orders/create",
+          icon: <ShoppingCartIcon />,
+        },
+      ],
+    },
+    // {
+    //   heading: "Users",
+    //   links: [
+    //     {
+    //       title: "Add New Profile",
+    //       path: "/dashboard/company-user-admin/add-user",
+    //       icon: <UserPlus />,
+    //     },
+    //     {
+    //       title: "Manage Users",
+    //       path: "/dashboard/company-user-admin/manage-users",
+    //       icon: <Users />,
+    //     },
+    //   ],
+    // },
+    {
+      heading: "Company",
+      links: [
+        {
+          title: "Add Company",
+          path: "/dashboard/greycloud-admin/add-company",
+          icon: <PlusCircle />,
+        },
+        {
+          title: "Manage Companies",
+          path: "/dashboard/greycloud-admin/manage-companies",
+          icon: <Layers />,
+        },
+      ],
+    }
   ],
   Company_User: [
     {

@@ -6,7 +6,7 @@ import { CompanyUsersList } from "../../_components/company-client/company-users
 export default async function ManageCompanyUsersView() {
   const session = await getIronSessionData();
 
-  const mySelectedCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+  const mySelectedCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
 
   const myCompanyUsers = await getAllCompanyUsers({
     companyId: mySelectedCompany?.companyId ?? "",

@@ -231,11 +231,11 @@ export const assignCompanyProfileToCompanyUser = action(
     const session = await getIronSessionData();
     session.companyProfile = {
       loggedInCompanyId: companyId,
-      companiesList: session.companyProfile.companiesList,
+      companiesList: session.companyProfile?.companiesList,
     };
 
     await session.save();
-    const selectedCompany = session.companyProfile.companiesList?.find(
+    const selectedCompany = session.companyProfile?.companiesList?.find(
       (company) => company.companyId === companyId
     );
 

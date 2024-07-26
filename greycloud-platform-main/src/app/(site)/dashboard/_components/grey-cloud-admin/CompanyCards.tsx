@@ -23,14 +23,29 @@ import { deleteGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/gr
 import { SageCompanyResponseType } from "@/lib/schemas/company";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/table";
 import { Input } from "../../../../../components/ui/input";
-import { Trash } from "lucide-react";
+import { PencilIcon, Trash } from "lucide-react";
+import { getIronSessionData } from "../../../../../lib/auth/auth";
 
 export const CompaniesList = ({ companies }: { companies: SageCompanyResponseType[] }) => {
+  const [_companies, setCompanies] = useState<any[]>([]);
 
-  
+  useEffect(() => {
+    getIronSessionData().then(x=>{
+      if(x.role=="GreyCloud_Admin"){
+        setCompanies(companies)
+      }else{
+        const _comp = companies.filter((_com)=>{return x.companyProfile?.companiesList?.find((company) => company.companyId === _com.id)});
+        debugger;
+        setCompanies(_comp)
+      }
+       
+      });
+  }, []);
+ 
+
   return (
     <div className="grid grid-cols-3 gap-2 w-full h-full overflow-y-scroll">
-      {companies.map((company) => (
+      {_companies.map((company) => (
         <CompanyCard key={company.id} company={company} />
       ))}
     </div>
@@ -104,7 +119,10 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
   const [users, setUsers] = useState<any[]>([]);
   const [firstName, setFirstName] = useState<string>("");
   const [surname, setSurname] = useState<string>("");
+  const [isResetPassword, setResetPassword] = useState<string>("");
+  const [isDeleteUser, setDeleteUser] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("Systa.io123!");
   
   async function fetchUsage(assetId:string){
     const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/UserCompany/Get-All-Company-User?companyId=${company.id}`, {
@@ -132,7 +150,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       surname: surname,
       name: firstName,
       companyId: company.id,
-      password: "password",
+      password: password,
       role:"Company_Admin"
     };
 debugger;
@@ -220,6 +238,7 @@ debugger;
             <DialogTitle>
               <span className="text-muted-foreground">Manage admin users to </span> {company.companyName}
             </DialogTitle>
+            <small style={{float:"left", cursor:"pointer"}}><a onClick={()=>{setResetPassword(""); setDeleteUser("")}} style={{color:"blue"}}>Create new user</a></small>
           </DialogHeader>
           <DialogDescription className="text-base">
            
@@ -240,38 +259,35 @@ debugger;
                     <TableRow>
                        <TableCell>{itm.name}</TableCell>
                        <TableCell>{itm.email}</TableCell>
-                       <TableCell><small><Trash width={"16px"}/></small></TableCell>
+                       <TableCell>
+                        <small style={{float:"left", cursor:"pointer"}}><a onClick={()=>{setDeleteUser(itm.id); setResetPassword("")}} style={{color:"blue"}}>Delete user</a></small><br/>
+                        <small style={{float:"left", cursor:"pointer"}}><a onClick={()=>{setResetPassword(itm.id); setDeleteUser("")}} style={{color:"blue"}}>Change password</a></small>
+                        </TableCell>
             </TableRow>
             ))}
                 </TableBody>
               </Table>
 
-              <div className="grid grid-cols-2 gap-4 mt-4 p-4">
-        <div><h5>Add new admin user</h5></div><div></div>
-
-        <div className="flex flex-col space-y-1.5">
-          {/* <Label htmlFor="name">Name</Label> */}
-          <Input
-          onChange={(e) => setFirstName(e.target.value)}
-            id="name"
-            placeholder="Name"
-          />
-        </div>
-        <div className="flex flex-col space-y-1.5">
-          {/* <Label htmlFor="name">Surname</Label> */}
-          <Input
-          onChange={(e) => setSurname(e.target.value)}
-            id="name"
-            placeholder="Surname"
-          />
-        </div>
+{isResetPassword!=""?<>
+  <div className="grid grid-cols-2 gap-4 mt-4 p-4">
+        <div> <p style={{fontWeight:"bold"}} className="text-muted-foreground">Update password</p> </div><div></div>
         
         <div className="flex flex-col space-y-1.5">
-          {/* <Label htmlFor="name">Email</Label> */}
+          <Label htmlFor="name"><small>Password</small></Label>
           <Input
             id="email"
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
+            defaultValue={password}
+           />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="name"><small>Confirm Password</small></Label>
+          <Input
+            id="password"
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            defaultValue={password}
            />
         </div>
         <div></div>
@@ -290,6 +306,86 @@ debugger;
               
               </div>
         </div>
+
+
+</> :<>
+{isDeleteUser!=""?<>
+
+  <div className="grid grid-cols-1 gap-4 mt-4 p-4">
+        <div> <p style={{fontWeight:"bold"}} className="text-muted-foreground">Delete user</p> </div><div></div>
+
+        <Button
+                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                size={"lg"}
+                // onClick={() => {
+                //   execute({
+                //     id: company.id,
+                //   });
+                // }}
+                disabled={status === "executing"}
+                variant={"destructive"}
+              >
+                {status === "executing" ? "Deleting User..." : "Delete User"}
+              </Button>
+        <div></div>
+
+        </div>
+
+</>:<><div className="grid grid-cols-2 gap-4 mt-4 p-4">
+        <div> <p style={{fontWeight:"bold"}} className="text-muted-foreground">Create new user</p> </div><div></div>
+
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="name"><small>Name</small></Label>
+          <Input
+          onChange={(e) => setFirstName(e.target.value)}
+            id="name"
+            placeholder="Name"
+          />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="name"><small>Surname</small></Label>
+          <Input
+          onChange={(e) => setSurname(e.target.value)}
+            id="name"
+            placeholder="Surname"
+          />
+        </div>
+        
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="name"><small>Email</small></Label>
+          <Input
+            id="email"
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+           />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="name"><small>Password</small></Label>
+          <Input
+            id="password"
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            defaultValue={password}
+           />
+        </div>
+        <div></div>
+<div>    
+  <Button
+                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                size={"lg"}
+                onClick={() => {
+                  AddUser()
+                }}
+                disabled={status === "executing" || !email || !firstName || !surname}
+                // variant={"primary"}
+              >
+                {status === "executing" ? "Updating users..." : "Update users"}
+              </Button>
+              
+              </div>
+        </div></>}
+  </> }
+           
             </DialogDescription>
 
           <DialogFooter>

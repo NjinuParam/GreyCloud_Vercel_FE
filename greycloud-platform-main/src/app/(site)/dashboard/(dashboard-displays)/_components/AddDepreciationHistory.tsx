@@ -13,7 +13,7 @@ export default async function AddDepreciationHistoryView() {
     return null;
   }
 
-  const myCompany = session.companyProfile.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+  const myCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
 
   // const { data: myCompany } = await getGreyCloudCompany({
   //   id: session.companyId as string,
