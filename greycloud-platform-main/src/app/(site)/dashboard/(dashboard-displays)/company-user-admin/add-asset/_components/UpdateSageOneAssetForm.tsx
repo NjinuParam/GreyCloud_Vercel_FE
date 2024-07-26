@@ -468,7 +468,7 @@ debugger;
                           <Input
                             className="w-full"
                             type="number"
-                            defaultValue={asset?.billingType?.amount}
+                            defaultValue={asset?.billingType?.amount??0}
                             placeholder="Price"
                           />
                         </div>
@@ -481,7 +481,7 @@ debugger;
                           <Input
                             className="w-full"
                             type="number"
-                            defaultValue={asset?.billingType?.amount}
+                            defaultValue={asset?.billingType?.amount??0}
                             placeholder="Price"
                           />
                         </div>
@@ -495,7 +495,7 @@ debugger;
                             className="w-full"
                             type="number"
                             placeholder="Price"
-                            defaultValue={asset?.billingType?.amount}
+                            defaultValue={asset?.billingType?.amount??0}
                           />
                           <Select>
                             <SelectTrigger>
@@ -537,7 +537,7 @@ debugger;
                             className="w-full"
                             type="number"
                             placeholder="Usage type price"
-                            defaultValue={asset?.billingType?.amount}
+                            defaultValue={asset?.billingType?.amount??0}
                           />
                         </div>
                       ) : (

@@ -359,6 +359,7 @@ setCompanyId(sageCompanyId);
 
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle>Add Order</CardTitle>
@@ -716,7 +717,7 @@ setCompanyId(sageCompanyId);
         <Table>
                 <TableHeader>
                   <TableRow>   
-                   <div> <Input type="text" placeholder="Search" className="mb-2"  onChange={(e)=>searchAssetByName(e.target.value)} /></TableRow></div>
+                    <Input type="text" placeholder="Search" className="mb-2"  onChange={(e)=>searchAssetByName(e.target.value)} /></TableRow>
                   <TableRow>
                   
                   <TableHead >Select</TableHead>
@@ -815,6 +816,7 @@ setCompanyId(sageCompanyId);
         </form>
       </Form>
     </Card>
+    </>
   );
 }
 
