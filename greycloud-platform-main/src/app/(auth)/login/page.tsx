@@ -25,7 +25,7 @@ export default function Login() {
           External Login
         </TabsTrigger>
         <TabsTrigger value="greycloud-admin" onClick={() => updateUserField("role", "GreyCloud_Admin")}>
-          GreyCloud Admin
+          Admin
         </TabsTrigger>
       </TabsList>
 
@@ -44,7 +44,7 @@ export default function Login() {
 
           <CardFooter className="flex flex-row justify-between px-8 align-top">
             <div className="flex items-center">
-              <p className="text-sm text-muted-foreground -mr-2">Already have an account?</p>
+              <p className="text-sm text-muted-foreground -mr-2">Don't have an account?</p>
               <Button
                 variant={"link"}
                 onClick={() => {
