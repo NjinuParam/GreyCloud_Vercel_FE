@@ -25,6 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Input } from "../../../../../components/ui/input";
 import { PencilIcon, Trash } from "lucide-react";
 import { getIronSessionData } from "../../../../../lib/auth/auth";
+import { toBase64 } from "../../../../../lib/utils";
 
 export const CompaniesList = ({ companies }: { companies: SageCompanyResponseType[] }) => {
   const [_companies, setCompanies] = useState<any[]>([]);
@@ -150,7 +151,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       surname: surname,
       name: firstName,
       companyId: company.id,
-      password: password,
+      password: toBase64(password),
       role:"Company_Admin"
     };
 debugger;
@@ -177,7 +178,7 @@ debugger;
   
   useEffect(() => {
       fetchUsage(company.id);
-    });
+    },[]);
 
 
   const { execute, result, status, reset } = useAction(deleteGreyCloudCompany, {
@@ -346,7 +347,7 @@ debugger;
           <Label htmlFor="name"><small>Surname</small></Label>
           <Input
           onChange={(e) => setSurname(e.target.value)}
-            id="name"
+            id="surname"
             placeholder="Surname"
           />
         </div>

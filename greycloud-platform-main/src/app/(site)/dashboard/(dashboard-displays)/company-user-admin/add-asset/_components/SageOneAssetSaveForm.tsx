@@ -74,7 +74,7 @@ export default function SageOneAssetSaveForm({
     defaultValues: {
       SageCompanyId: Number(SageCompanyId),
       asset: {
-        description: "",
+        description: "Product Name",
         category: {
           description: "Electronics",
           id: 8184,
@@ -83,30 +83,25 @@ export default function SageOneAssetSaveForm({
         },
         location: {
           id: 10220,
-          description: "",
+          description: "Product Description",
         },
         datePurchased: new Date(),
         depreciationStart: new Date(),
-        serialNumber: "",
-        boughtFrom: "",
-        purchasePrice: 0,
-        usage:0,
-        currentValue: 0,
-        code:"",
-        replacementValue: 0,
-        textField1: "",
-        textField2: "",
-        textField3: "",
+        serialNumber: "ABC_123",
+        boughtFrom: "Electronics Store",
+        purchasePrice: 500,
+        currentValue: 350,
+        replacementValue: 600,
+        textField1: "Additional Info 1",
+        textField2: "Additional Info 2",
+        textField3: "Additional Info 3",
         numericField1: 10,
         numericField2: 20,
         numericField3: 30,
         yesNoField1: true,
         yesNoField2: false,
-        locName:"",
         yesNoField3: true,
         dateField1: new Date(),
-        recoverableAmount:1,
-        currentUsage:0,
         dateField2: new Date(),
         dateField3: new Date(),
         id: "",
@@ -204,7 +199,7 @@ export default function SageOneAssetSaveForm({
 
   // Define a submit handler:
   function onSubmit(values: any) {
- 
+ debugger;
     const formattedValues = {
       ...values,
       SageCompanyId: Number(values.SageCompanyId),

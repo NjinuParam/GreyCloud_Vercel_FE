@@ -5,11 +5,12 @@ import { CompanyResponseSchemaForUser, PasswordSchema, RolesCompanySchema } from
 
 export const CreateCompanyUserRequestModelSchema = zfd
   .formData({
-    companyId: z.string().min(1, { message: "Company ID is required." }),
+    // companyId: z.string().min(1, { message: "Company ID is required." }),
     name: z.string().min(2, { message: "Name must be at least 2 characters long." }).max(50),
     surname: z.string().min(2, { message: "Surname must be at least 2 characters long." }).max(50),
     email: z.string().email({ message: "Please enter a valid email address." }),
-    role: RolesCompanySchema,
+    apiKey: z.string().optional(),
+    //role: RolesCompanySchema,
     password: PasswordSchema,
     passwordConfirmation: z.string(),
   })
@@ -26,7 +27,8 @@ export const UpdateCompanyUserRequestModelSchema = zfd.formData({
   surname: z.string().min(2, { message: "Surname must be at least 2 characters long." }).max(50),
   email: z.string().email({ message: "Please enter a valid email address." }),
   isPasswordUpdated: z.coerce.boolean().default(false).optional(),
-  role: RolesCompanySchema,
+  apiKey: z.string().optional(),
+  // role: RolesCompanySchema,
 });
 
 export type UpdateCompanyUserType = z.infer<typeof UpdateCompanyUserRequestModelSchema>;

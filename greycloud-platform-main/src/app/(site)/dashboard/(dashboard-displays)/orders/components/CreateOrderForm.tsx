@@ -168,8 +168,9 @@ function CreateOrderForm({
       ).sageCompanyId;
 setCompanyId(sageCompanyId);
       getCustomers(sageCompanyId);
-      GetAddresses(sageCompanyId)
-      setFilteredAssets(assets);
+      GetAddresses(sageCompanyId);
+      debugger;
+      setFilteredAssets(assets.filter(x=>x.billingType !=null));
     });
   }, []);
 
