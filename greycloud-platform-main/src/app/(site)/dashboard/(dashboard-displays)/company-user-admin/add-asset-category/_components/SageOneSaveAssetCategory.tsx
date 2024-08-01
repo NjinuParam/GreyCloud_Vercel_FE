@@ -14,7 +14,11 @@ import { SaveSageOneAssetCategorySchema, SaveSageOneAssetCategoryType } from "@/
 import { saveSageOneAssetCategory } from "@/app/actions/sage-one-assets-actions/sage-one-assets-actions";
 import { useRouter } from "next/navigation";
 
-export default function SageOneAssetCategorySaveForm() {
+type SageOneAssetCategorySaveFormProps = {
+  callBack?:Function
+};
+
+export default function SageOneAssetCategorySaveForm({callBack}: SageOneAssetCategorySaveFormProps) {
   // Define the form:
   const form = useForm<SaveSageOneAssetCategoryType>({
     resolver: zodResolver(SaveSageOneAssetCategorySchema),
@@ -48,7 +52,9 @@ const router = useRouter();
                 description: "The asset category was stored successfully.",
               });
               debugger;
-              router.refresh();
+              // router.refresh();
+              callBack && callBack();
+
     } catch (e: any) {
       toast.error(e.message);
     }
@@ -124,37 +130,11 @@ const router = useRouter();
                   </FormItem>
                 )}
               />
-
-              {/* <FormField
-                control={form.control}
-                name="assetCategory.created"
-                render={({ field }) => (
-                  <FormItem className="flex-1 grow min-w-full">
-                    <FormLabel>Date Created</FormLabel>
-                    <FormControl><Input placeholder="" {...field} type="date"/></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="assetCategory.modified"
-                render={({ field }) => (
-                  <FormItem className="flex-1 grow min-w-full">
-                    <FormLabel>Date Modified</FormLabel>
-                    <FormControl><Input placeholder="" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
             </div>
 
             <div className="w-full pt-2">
               <button
                 className={cn("w-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full font-bold", loading? "animate-pulse" : "")}
-                // size={"lg"}
-                // type="submit"
                 onClick={(e)=>{ e.preventDefault(); create(form.getValues());}}
                 disabled={loading}
               >

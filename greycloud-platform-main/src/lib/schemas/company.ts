@@ -148,7 +148,6 @@ export const SageOneAssetTypeSchema = z.object({
   replacementValue: z.coerce.number(),
   textField1: z.string(),
   textField2: z.string(),
-  code:z.string(),
   textField3: z.string(),
   numericField1: z.coerce.number(),
   numericField2: z.coerce.number(),
@@ -159,25 +158,26 @@ export const SageOneAssetTypeSchema = z.object({
   dateField1: z.coerce.date(),
   dateField2: z.coerce.date(),
   dateField3: z.coerce.date(),
-  recoverableAmount: z.coerce.number(),
-  currentUsage:z.coerce.number(),
-  locName:z.string(),
-  usage: z.coerce.number(),
   billingType: z.object({
-    type:  z.coerce.number().nullable(),
-    amount:  z.coerce.number().nullable(),
-    usageType:  z.string().nullable(),
-    usageRate:  z.coerce.number().nullable()
+    type:  z.coerce.number(),
+    amount:  z.coerce.number(),
+    usageType:  z.string(),
+    usageRate:  z.coerce.number(),
     
-  }),
+  }).nullable(),
   id: z.coerce.string(),
+  code:z.string(),
+  usage: z.coerce.number(),
+  recoverableAmount: z.coerce.number(),
+  // locName: z.string().nullable(),
 });
+
 
 export type SageOneAssetTypeType = z.infer<typeof SageOneAssetTypeSchema>;
 
 export const SaveSageOneAssetSchema = SageCompanyIdSchema.extend({
   asset: SageOneAssetTypeSchema.extend({
-    assetDepreciationGroupRequestModel: AddAssetGroupSchema,
+    assetDepreciationGroupRequestModel: AddAssetGroupSchema.nullable(),
   }),
 });
 

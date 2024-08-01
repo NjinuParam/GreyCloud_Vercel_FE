@@ -127,16 +127,18 @@ export default function CompanyUserRegisterForm() {
     
       if (response) {
         const res = await response.json();
-        if(res ==null){
+        if(res?.results ==null){
           toast.error("Invalid credentials", {
             description: "No companies found",
           });
-        }
-        var data = res.results;
+        }else{
+             var data = res.results;
         toast.success("Company details fetched successfully", {})
 
         debugger;
         setCompanies(data);
+        }
+     
         
        
       } else {
@@ -177,7 +179,7 @@ export default function CompanyUserRegisterForm() {
   return (
     <>
     {
-      companies.length>0?
+      companies?.length>0?
      <div>
     <Card className="flex flex-col">
       <CardHeader className="flex flex-col gap-2 bg-gradient-to-b from-primary/5 dark:from-primary/10 to-transparent w-full px-8 pt-10 pb-4 mb-4 relative">

@@ -83,7 +83,11 @@ debugger;
     });
 
 
+
+  
   }
+
+  debugger; 
   return (
     <Card className="flex flex-col gap-2">
       <CardHeader className="pb-0 flex flex-col gap-2">
@@ -99,7 +103,7 @@ debugger;
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
             Category Description
           </Label>
-          <p>{asset.category?.description ?? "---"}</p>
+          <p>{asset.catDescription ?? "---"}</p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
@@ -141,7 +145,7 @@ debugger;
           <Label htmlFor="apiKey" className="text-xs text-foreground uppercase tracking-wider">
            Recoverable amount
           </Label>
-          <p>{"---"}</p>
+          <p>{formatToRand(asset.residual)}</p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
@@ -155,7 +159,7 @@ debugger;
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
            Billing Type
           </Label>
-          <p>{asset?.billingType?.amount==0? "None": asset?.billingType?.type==0? `Daily (R${asset?.billingType?.amount})` : asset?.billingType?.type==1?"Usage": "---"}</p>
+          <p>{asset?.billingType?.amount==0? "None": asset?.billingType?.type==0? `Daily (R${asset?.billingType?.amount})` : asset?.billingType?.type==1?`Once off (R${asset?.billingType?.amount})`:  asset?.billingType?.type==2?"Once off + Usage":  asset?.billingType?.type==3?`Usage (R${asset?.billingType?.amount}) per unit`:"--"}</p>
         </span>
   <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">

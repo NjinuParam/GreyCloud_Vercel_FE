@@ -24,9 +24,9 @@ export default function Login() {
         <TabsTrigger value="company-user" onClick={() => updateUserField("role", "Company_User")}>
           External Login
         </TabsTrigger>
-        <TabsTrigger value="greycloud-admin" onClick={() => updateUserField("role", "GreyCloud_Admin")}>
+        {/* <TabsTrigger value="greycloud-admin" onClick={() => updateUserField("role", "GreyCloud_Admin")}>
           Admin
-        </TabsTrigger>
+        </TabsTrigger> */}
       </TabsList>
 
       <TabsContent value="company-user">

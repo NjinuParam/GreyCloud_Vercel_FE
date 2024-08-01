@@ -333,7 +333,7 @@ usage:string
               <DropdownMenuLabel>
                 <a
                 target="_blank"
-                  href="https://avis-dev-storage.s3.af-south-1.amazonaws.com/6612e2be514b7be8fc71c691_Invoice.pdf"
+                  href={`https://localhost:7195/SageOneOrder/SalesOrderNew/GetInvoice/${order.id}`}
                   download
                 >
                   Download Invoice
@@ -342,7 +342,7 @@ usage:string
 
               <Dialog>
                 <DialogTrigger asChild>
-                  {( order.status ==4) && 
+                  {( order.status ==4 || order.status == 2) && 
                     <DropdownMenuLabel className="cursor-pointer">
                     Complete Order
                   </DropdownMenuLabel>
@@ -715,7 +715,7 @@ Test      </>:<>
                   
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
-                    key="2"
+                    key="1"
                     className="capitalize"
                     checked = {selectedFilter == 1}
                     // checked={column.getIsVisible()}
@@ -730,7 +730,7 @@ Test      </>:<>
                   </DropdownMenuCheckboxItem>
 
                   <DropdownMenuCheckboxItem
-                    key="1"
+                    key="2"
                     className="capitalize"
                     checked = {selectedFilter == 2}
                     // checked={column.getIsVisible()}
@@ -744,7 +744,7 @@ Test      </>:<>
                
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
-                    key="1"
+                    key="4"
                     className="capitalize"
                     checked = {selectedFilter == 4}
                     // checked={column.getIsVisible()}
@@ -757,7 +757,7 @@ Test      </>:<>
                   </Badge>
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
-                    key="1"
+                    key="3"
                     className="capitalize"
                     checked = {selectedFilter == 3}
                     // checked={column.getIsVisible()}
@@ -770,7 +770,7 @@ Test      </>:<>
                   </Badge>
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
-                    key="1"
+                    key="5"
                     checked = {selectedFilter == 5}
                     className="capitalize"
                     // checked={column.getIsVisible()}

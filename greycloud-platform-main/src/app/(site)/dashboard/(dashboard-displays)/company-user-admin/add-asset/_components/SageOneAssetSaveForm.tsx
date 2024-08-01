@@ -56,7 +56,7 @@ import { useRouter } from "next/navigation";
 import router from "next/router";
 import SageOneAssetCategorySaveForm from "../../add-asset-category/_components/SageOneSaveAssetCategory";
 
- const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 type SageOneAssetSaveFormProps = {
   children?: React.ReactNode;
@@ -69,6 +69,7 @@ export default function SageOneAssetSaveForm({
   SageCompanyId,
   children,
 }: SageOneAssetSaveFormProps) {
+
   const form = useForm<SaveSageOneAssetType>({
     resolver: zodResolver(SaveSageOneAssetSchema),
     defaultValues: {
@@ -85,6 +86,7 @@ export default function SageOneAssetSaveForm({
           id: 10220,
           description: "Product Description",
         },
+        locName: "",
         datePurchased: new Date(),
         depreciationStart: new Date(),
         serialNumber: "ABC_123",
@@ -105,18 +107,13 @@ export default function SageOneAssetSaveForm({
         dateField2: new Date(),
         dateField3: new Date(),
         id: "",
-        assetDepreciationGroupRequestModel: {
-          active: depreciationGroups[0]?.active,
-          assetId: 0,
-          creatingUser: depreciationGroups[0]?.creatingUser,
-          depGroupId: depreciationGroups[0]?.depGroupId,
-        },
-        billingType:{
-          type:  0,
-          amount:  0,
-          usageType:  "",
-          usageRate:  0,
-          
+        assetDepreciationGroupRequestModel: null,
+        billingType: {
+          type: 0,
+          amount: 0,
+          usageType: "",
+          usageRate: 0,
+
         }
       },
     },
@@ -125,21 +122,25 @@ export default function SageOneAssetSaveForm({
 
   useEffect(() => {
 
+    getCategories();
+  }, []);
+
+
+  function getCategories() {
     getIronSessionData().then((comp: any) => {
       let currentCompanyId = comp.companyId;
 
       let sageId = comp.companyProfile.companiesList.find(
-        (x:any) => x.companyId == currentCompanyId
+        (x: any) => x.companyId == currentCompanyId
       )?.sageCompanyId;
       fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
-        .then((res) => res.json().then((data) => { setCategories(data.results);  }))
+        .then((res) => res.json().then((data) => { setCategories(data.results); }))
         .catch((e) => console.log(e));
     });
-  }, []);
-
+  }
 
   const { execute, status } = useAction(saveSageOneAsset, {
- 
+
     onSuccess(data, input, reset) {
       if (data) {
         toast.success(`Asset saved!`, {
@@ -169,11 +170,11 @@ export default function SageOneAssetSaveForm({
     },
   });
 
-  
-   async function createAsset(input:any){
-    
+
+  async function createAsset(input: any) {
+
     toast.info("Saving asset...");
-    input.id=0;
+    input.id = 0;
     debugger;
     const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=1`, {
       method: "POST",
@@ -184,11 +185,11 @@ export default function SageOneAssetSaveForm({
     });
 
     if (response) {
-      
+
       toast.success(`Asset saved!`, {
         description: "The asset was stored successfully.",
       });
-      // router.push("/dashboard/company-user/manage-assets");
+      router.push("/dashboard/company-user/manage-assets");
     } else {
       toast.error("Failed to store asset.", {
         description: "Please try again.",
@@ -199,7 +200,7 @@ export default function SageOneAssetSaveForm({
 
   // Define a submit handler:
   function onSubmit(values: any) {
- debugger;
+
     const formattedValues = {
       ...values,
       SageCompanyId: Number(values.SageCompanyId),
@@ -214,24 +215,29 @@ export default function SageOneAssetSaveForm({
         numericField1: Number(values.asset.numericField1),
         numericField2: Number(values.asset.numericField2),
         numericField3: Number(values.asset.numericField3),
-        assetDepreciationGroupRequestModel: {
-          ...values.asset.assetDepreciationGroupRequestModel,
-          active: Boolean(
-            values.asset.assetDepreciationGroupRequestModel.active
-          ),
-          assetId: 0,
+        category: {
+          ...values.asset.category,
+          id: category
         },
+        // assetDepreciationGroupRequestModel: {
+        //   ...values.asset.assetDepreciationGroupRequestModel,
+        //   active: Boolean(
+        //     values.asset.assetDepreciationGroupRequestModel.active
+        //   ),
+        //   assetId: 0,
+        // },
+        assetDepreciationGroupRequestModel: null,
         billingType: {
-          type: billingType=="daily"?0: billingType=="onceoff"?1: billingType == "onceoffusage"?2: 3,
-          amount: billingType=="onceoffusage"?onceOffAmount: usageOrDailyAmount,
+          type: billingType == "daily" ? 0 : billingType == "onceoff" ? 1 : billingType == "onceoffusage" ? 2 : 3,
+          amount: billingType == "onceoffusage" ? onceOffAmount : usageOrDailyAmount,
           usageType: usageType,
           usageRate: usageOrDailyAmount
         },
       },
-     
+
       quantity: qty,
     };
-
+    debugger;
     // execute(formattedValues);
     createAsset(formattedValues.asset);
   }
@@ -282,7 +288,7 @@ export default function SageOneAssetSaveForm({
                   </FormItem>
                 )}
               />
-                 <FormField
+              <FormField
                 control={form.control}
                 name="asset.code"
                 render={({ field }) => (
@@ -297,54 +303,38 @@ export default function SageOneAssetSaveForm({
               />
               <div>
                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Category</label>
-               
-               
-               
 
-                <Dialog>
-        <DialogTrigger asChild className="grow">
-         <button className="text-sm text-blue-500 ml-2"><small>Create New</small></button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[400px]">
-          {/* <DialogHeader>
-            <DialogTitle>
-            Add new category
-            </DialogTitle>
-          </DialogHeader> */}
-          {/* <DialogDescription className="text-base">This action cannot be undone. This will permanently delete the user account.</DialogDescription> */}
-          {/* <DialogContent className="md:max-w-[600px]"> */}
-          <SageOneAssetCategorySaveForm  />
-          {/* </DialogContent> */}
-          
-          <DialogFooter>
-            <DialogClose asChild>
-              {/* <Button
-                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
-                size={"lg"}
-                onClick={(event) => {
-                  // execute({
-                  //   id: user?.id,
-                  // });
-                }}
-                disabled={status === "executing"}
-                variant={"destructive"}
-              >
-                {status === "executing" ? "Deleting User..." : "Delete User"}
-              </Button> */}
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
 
 
-               
+                <Dialog>
+                  <DialogTrigger asChild className="grow">
+                    <button className="text-sm text-blue-500 ml-2"><small>Create New</small></button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[400px]">
+
+                    <SageOneAssetCategorySaveForm callBack={()=>{
+getCategories();
+                    }} />
+
+                    <DialogFooter>
+                      <DialogClose asChild>
+
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+
+
+
+
                 <div style={{ marginTop: "7px" }}>
                   <Select
 
                     onValueChange={(e) => {
                       console.log(e);
-                      const cat = categories && categories.find((x:any) => x.description == e).id;
+                      const cat = categories && categories.find((x: any) => x.description == e).id;
+                      debugger;
                       setCategory(cat);
                     }}
                   >
@@ -364,7 +354,7 @@ export default function SageOneAssetSaveForm({
                   </Select>
                 </div>
               </div>
-           
+
               <FormField
                 control={form.control}
                 name="asset.location.description"
@@ -420,7 +410,7 @@ export default function SageOneAssetSaveForm({
                   </FormItem>
                 )}
               />
-                <FormField
+              <FormField
                 control={form.control}
                 name="asset.depreciationStart"
                 render={({ field }) => (
@@ -517,28 +507,28 @@ export default function SageOneAssetSaveForm({
                   </FormItem>
                 )}
               />
-            <FormField
+              <FormField
                 control={form.control}
                 name="asset.recoverableAmount"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Recoverable Amount (R)</FormLabel>
                     <FormControl>
-                      <Input {...field} type="number"  min={1} step="1" />
+                      <Input {...field} type="number" min={1} step="1" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-            <FormField
+              <FormField
                 control={form.control}
                 name="asset.usage"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Usage (units)</FormLabel>
                     <FormControl>
-                      <Input {...field} type="number"  min={0} step="1" />
+                      <Input {...field} type="number" min={0} step="1" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -546,7 +536,7 @@ export default function SageOneAssetSaveForm({
               />
 
 
-        
+
             </div>
             {/* TODO: Add a suspend button on manage asset modal */}
 
@@ -636,7 +626,7 @@ export default function SageOneAssetSaveForm({
                       {billingType === "daily" ? (
                         <div className="w-full">
                           <Input
-                          onChange={(e:any) => setUsageOrDailyAmount(e.target.value)}
+                            onChange={(e: any) => setUsageOrDailyAmount(e.target.value)}
                             className="w-full"
                             type="number"
                             placeholder="Price (per day)"
@@ -649,7 +639,7 @@ export default function SageOneAssetSaveForm({
                       {billingType === "onceoff" ? (
                         <div className="w-full">
                           <Input
-                          onChange={(e:any) => setOnceOffAmount(e.target.value)}
+                            onChange={(e: any) => setOnceOffAmount(e.target.value)}
                             className="w-full"
                             type="number"
                             placeholder="Price (once off)"
@@ -663,7 +653,7 @@ export default function SageOneAssetSaveForm({
                         <div>
                           <div className="flex flex-row gap-4 w-full">
                             <Input
-                            onChange={(e:any) => setOnceOffAmount(e.target.value)}
+                              onChange={(e: any) => setOnceOffAmount(e.target.value)}
                               className="w-full"
                               type="number"
                               placeholder="Price (once off)"
@@ -685,7 +675,7 @@ export default function SageOneAssetSaveForm({
                           </div>
                           <div className="flex flex-row gap-4 w-full mt-2">
                             <Input
-                            onChange={(e:any) => setUsageOrDailyAmount(e.target.value)}
+                              onChange={(e: any) => setUsageOrDailyAmount(e.target.value)}
                               className="w-full"
                               type="number"
                               placeholder="Price (per unit)"
@@ -711,7 +701,7 @@ export default function SageOneAssetSaveForm({
                             </SelectContent>
                           </Select>
                           <Input
-                           onChange={(e:any) => setUsageOrDailyAmount(e.target.value)}
+                            onChange={(e: any) => setUsageOrDailyAmount(e.target.value)}
                             className="w-full"
                             type="number"
                             placeholder="Price (usage)"
