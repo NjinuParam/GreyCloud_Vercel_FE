@@ -28,7 +28,7 @@ export default function CompanyUserRegisterForm() {
 
 
 
-  function selectCompany(companyId){
+  function selectCompany(companyId:any){
     debugger;
     var company = companies.filter(x=>x.id == companyId);
     if(!companyNames.includes(company[0].name)){

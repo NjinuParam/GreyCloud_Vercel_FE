@@ -149,6 +149,7 @@ export const SageOneAssetTypeSchema = z.object({
   textField1: z.string(),
   textField2: z.string(),
   textField3: z.string(),
+  locName:z.string().nullable(),  
   numericField1: z.coerce.number(),
   numericField2: z.coerce.number(),
   numericField3: z.coerce.number(),
@@ -169,6 +170,8 @@ export const SageOneAssetTypeSchema = z.object({
   code:z.string(),
   usage: z.coerce.number(),
   recoverableAmount: z.coerce.number(),
+  catDescription:z.string().nullable(),
+  residual: z.coerce.number().default(0)
   // locName: z.string().nullable(),
 });
 

@@ -25,7 +25,7 @@ export default function UpdateCompanyUserForm({ user, onClose }: { user: AllComp
       surname: user.surname,
       email: user.email,
       // isPasswordUpdated: false,
-      role: user.role,
+      role: user.role??"Company_User",
     },
   });
 

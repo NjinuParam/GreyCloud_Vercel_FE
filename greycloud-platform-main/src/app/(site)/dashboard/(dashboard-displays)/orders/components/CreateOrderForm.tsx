@@ -170,7 +170,7 @@ setCompanyId(sageCompanyId);
       getCustomers(sageCompanyId);
       GetAddresses(sageCompanyId);
       debugger;
-      setFilteredAssets(assets.filter(x=>x.billingType !=null));
+      setFilteredAssets(assets.filter((x:any)=>x.billingType !=null));
     });
   }, []);
 

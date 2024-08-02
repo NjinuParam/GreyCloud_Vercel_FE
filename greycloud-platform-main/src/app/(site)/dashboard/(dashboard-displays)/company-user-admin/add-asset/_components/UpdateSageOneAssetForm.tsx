@@ -123,11 +123,13 @@ debugger;
         assetDepreciationGroupRequestModel: {
           ...values.asset.assetDepreciationGroupRequestModel,
           active: Boolean(
-            values.asset.assetDepreciationGroupRequestModel.active
+            values?.asset?.assetDepreciationGroupRequestModel?.active??true,
           ),
           assetId: 
-            values.asset.assetDepreciationGroupRequestModel.assetId
+            values?.asset?.assetDepreciationGroupRequestModel?.assetId??0
           ,
+          depGroupId:"",
+          creatingUser:""
         },
       },
     };

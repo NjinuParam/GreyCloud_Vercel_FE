@@ -252,7 +252,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
         });
       }
       
-    } catch (e) {
+    } catch (e:any) {
       debugger;
       console.log(e);
       toast.error("An error has occured:", {
@@ -364,7 +364,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                         <FormLabel>Sales Representative</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={5417}
+                          defaultValue={"5417"}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -372,7 +372,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem  selected={true} value={5417}>Current user</SelectItem>
+                            <SelectItem  value={"5417"}>Current user</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

@@ -13,6 +13,8 @@ export const CreateCompanyUserRequestModelSchema = zfd
     //role: RolesCompanySchema,
     password: PasswordSchema,
     passwordConfirmation: z.string(),
+    role:z.string().nullable(),
+    companyId:z.string().nullable(),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
     message: "Passwords do not match.",
@@ -27,7 +29,9 @@ export const UpdateCompanyUserRequestModelSchema = zfd.formData({
   surname: z.string().min(2, { message: "Surname must be at least 2 characters long." }).max(50),
   email: z.string().email({ message: "Please enter a valid email address." }),
   isPasswordUpdated: z.coerce.boolean().default(false).optional(),
+  companyId:z.string().nullable(),
   apiKey: z.string().optional(),
+  role:z.string().default("Company_User"),
   // role: RolesCompanySchema,
 });
 

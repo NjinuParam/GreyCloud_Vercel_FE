@@ -98,7 +98,7 @@ export default function CompanyUserAddUserForm({ myCompany }: CompanyUserAddUser
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Role</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value??"Company_User"}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a user role" />

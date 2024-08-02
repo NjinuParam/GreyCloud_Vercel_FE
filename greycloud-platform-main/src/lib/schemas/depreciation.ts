@@ -28,7 +28,7 @@ export type UpdateAssetGroupType = z.infer<typeof UpdateAssetGroupSchema>;
 
 export const AddAssetGroupSchema = z.object({
   assetId: z.number().default(0),
-  depGroupId: z.string().min(1, { message: "Depreciation Group Id is required." }),
+  depGroupId: z.string().nullable(),
   active: z.coerce.boolean(),
   creatingUser: z.string().min(1, { message: "Creating User is required." }),
 });
