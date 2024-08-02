@@ -15,7 +15,6 @@ import { useAuthStore } from "@/store/authSlice";
 
 export default function Login() {
   const router = useRouter();
-
   const { storeUser, updateUserField } = useAuthStore();
 
   return (
