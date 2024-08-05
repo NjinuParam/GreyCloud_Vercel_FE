@@ -176,7 +176,7 @@ export default function SageOneAssetSaveForm({
     toast.info("Saving asset...");
     input.id = 0;
     debugger;
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=1`, {
+    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=${qty}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -540,7 +540,8 @@ getCategories();
             </div>
             {/* TODO: Add a suspend button on manage asset modal */}
 
-            <div className="items-top flex space-x-2 mt-5">
+            <div className="grid grid-cols-2 gap-6 justify-center mb-4">
+              <div>
               <Checkbox
 
                 onCheckedChange={(e) => setIsCollection(e.valueOf().toString())}
@@ -559,9 +560,8 @@ getCategories();
                     Create multiple identical assets
                   </p>
                 </div>
-              </div>
-            </div>
-            {isCollection == "true" ? (
+              </div>  
+              </div> {isCollection == "true" ? (
               <div className="mt-2 ml-5">
                 <Label htmlFor="qty">Quantity</Label>
                 <Input
@@ -578,6 +578,8 @@ getCategories();
             ) : (
               <></>
             )}
+            </div>
+         
             <div>
               <div className="items-top flex space-x-2 mt-5">
                 <Checkbox

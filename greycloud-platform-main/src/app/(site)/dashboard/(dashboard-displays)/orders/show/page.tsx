@@ -313,6 +313,7 @@ usage:string
             ass.push({
               assetId: a.assetId,
               returned: true,
+              assetLocation:a?.assetDetail?.locName,
               usage: a.assetDetail?.billingType?.usageType
                 ? a?.assetDetail?.billingType?.amount
                 : 0,
@@ -320,7 +321,7 @@ usage:string
             });
           }
         });
-
+debugger;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -410,7 +411,7 @@ Test      </>:<>
                             <AutoComplete
                             style={{zIndex:99999999}}
                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
-                            //  defaultValue={a.postalAddress01??""}
+                             defaultValue={order?.address??""}
                                 apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
                                 onPlaceSelected={(place:any) => {
                                 
@@ -433,74 +434,7 @@ Test      </>:<>
                       
                                           </>
                     ))}
-                       {ass.map((a, i) => (
-                      <>
-                      <div  style={{paddingBottom: "20px", paddingTop:"20px"}} className="w-full flex flex-row justify-between items-center">
-                        <div className="w-full">
-                        <h2 style={{fontWeight:"bold"}} >
-                            {
-                              assets.find((x:any) => x.assetId == a.assetId).assetDetail.description
-                            }
-                             <label style={{marginLeft:"15%"}}> <Checkbox checked={true}></Checkbox><small style={{marginLeft:"2%", fontWeight:"normal"}}>Mark as returned  </small></label>
-                              
-                          </h2>
-                          <p>
-                          { (a.billingType?.type==2 || a.billingType==3) && 
-                            <small>
-                            Starting usage: {
-                              a.startUsage
-                            } {  assets.find((x:any) => x.assetId == a.assetId)
-                              .assetDetail.billingType.usageType}
-                            </small>
-                          }
-                          </p>
-                          <br/>
-                          {a.usage !== 0 ? (
-                            <div>
-                                <label><small>Set final usage</small></label>
-                              <Input
-                               className="mt-4"
-                                type="number"
-                                placeholder="Usage"
-                                value={a.usage}
-                                onChange={(e) => {
-                                  ass[i].usage = e.target.value;
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <></>
-                          )}
-                        </div>
-                       
-                       
-                      </div>
-                      <div style={{ borderBottom: "1px solid silver",  paddingBottom: "40px"}}>
-                    
-                    <small> Please enter drop off address or select from your <a  onClick={(e)=>{ toggleThis(i)}}  style={{color:"blue", cursor:"pointer"}}> saved addresses</a> </small>
-                          
-                            <AutoComplete
-                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
-                            //  defaultValue={a.postalAddress01??""}
-                                apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                                onPlaceSelected={(place:any) => {
-                                
-                                
-                                  ass[i].address = place?.formatted_address;
-                                  ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
-                                                                  
-                                }}
-                                options={{
-                                  types: ["geocode", "establishment"],//Must add street addresses not just cities
-                                  componentRestrictions: { country: "za" },
-                                }}
-                              />
-                       
-
-                      </div>
-                      
-                                          </>
-                    ))}
+               
                   </div>
                   <DialogFooter>
                     <Button
@@ -587,6 +521,7 @@ Test      </>:<>
                               <AutoComplete
                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
                               //  defaultValue={a.postalAddress01??""}
+                                defaultValue={ass[i].assetLocation??""}
                                   apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
                                   onPlaceSelected={(place:any) => {
                                   
@@ -613,7 +548,6 @@ Test      </>:<>
                                   apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
                                   onPlaceSelected={(place:any) => {
                                   
-                                    console.log(place);
                                     ass[i].address = place?.formatted_address;
                                     ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
                                                                     

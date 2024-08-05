@@ -24,8 +24,8 @@ export const assetTableColumns: ColumnDef<EnrichedAssetType>[] = [
     header: "Category",
   },
   {
-    accessorKey: "serialNumber",
-    header: "Serial Number",
+    accessorKey: "code",
+    header: "Code",
   },
   {
     accessorKey: "boughtFrom",

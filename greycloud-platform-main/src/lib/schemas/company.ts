@@ -170,7 +170,7 @@ export const SageOneAssetTypeSchema = z.object({
   code:z.string(),
   usage: z.coerce.number(),
   recoverableAmount: z.coerce.number(),
-  catDescription:z.string().nullable(),
+  // catDescription:z.string().nullable(),
   residual: z.coerce.number().default(0)
   // locName: z.string().nullable(),
 });

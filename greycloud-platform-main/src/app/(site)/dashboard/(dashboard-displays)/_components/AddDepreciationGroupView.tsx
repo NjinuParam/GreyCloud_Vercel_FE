@@ -164,6 +164,7 @@ function AddDepreciationGroup() {
  
 
    const p = accounts.map((x:any)=>{return {value:x.id.toString() as string, label:x.name as string} as IOption});
+  const dep = categories.map(x=>{return {value:x.id as string, label:x.description as string} as IOption});
 
 
   return (
@@ -198,73 +199,36 @@ function AddDepreciationGroup() {
         </DialogTrigger>
         <DialogContent className="md:max-w-[600px]">
         
-          {/* <Card className="flex flex-col w-[600px] mx-auto justify-between mt-8">
-      <CardHeader className="flex flex-col bg-gradient-to-b from-primary/5 dark:from-primary/10 to-transparent w-full px-8 py-5">
-        <CardTitle>
-          <h2 className="text-xl text-foreground/80">Add A Sage Asset Category</h2>
-        </CardTitle>
-      </CardHeader> */}
-
-      {/* <CardContent className="p-8"> */}
         <SageOneAssetCategorySaveForm  />
-      {/* </CardContent> */}
-    {/* </Card> */}
 
-        
         </DialogContent>
             </Dialog>
             </Label>
-              {/* <Select
-                onValueChange={(e) => {
-                  console.log(e);
-                  const cat = categories!=undefined && categories?.find((x) => x.description == e).id;
-                  setCategory(cat);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Category</SelectLabel>
-                    {categories.map((c: any) => (
-                      <SelectItem key={c.id} value={c.description}>
-                        {c.description}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select> */}
-
+            
             <Select
                   styles={customStyle}
-                  value={sageDepreciationJournalCode}
+                  // defaultValue={categories.find(x=>x.id == category)?.description as string}
+                  // value={categories.find(x=>x.id == category)?.description }
+                  value = {
+                    dep.filter(option => 
+                       option.value == category )
+                 }
                   onChange={(e:any)=>{
-                    const cat = categories!=undefined && categories?.find((x) => x.description == e).id;
-                    setCategory(cat);
+                    debugger;
+                    const cat = dep!=undefined && dep?.find((x:IOption) => x.value == e.value);
+                    debugger;
+                    setCategory(cat?.value?.toString());
                   }}
-                  options={categories.map(x=>{return {value:x.id as string, label:x.description as string} as IOption})}
+                  options={dep}
                 />
             </div>
           
             <div className="flex flex-col space-y-1.5">
             <Label> Depreciation Type</Label>
-              {/* <Select value={type} onValueChange={(e) => setType(e)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel> Depreciation Type</SelectLabel>
-                    <SelectItem value="0">Straight Line</SelectItem>
-                    <SelectItem value="1">Reducing Amount </SelectItem>
-                    <SelectItem value="2">Usage </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select> */}
+          
                <Select
                   styles={customStyle}
-                  value={type}
+                  defaultValue={type=="0"?"Straight Line":type=="1"?"Reducing Amount":"Usage" }
                   onChange={(e:any)=>{
                     setType(e.value)
                   }}
@@ -289,14 +253,7 @@ function AddDepreciationGroup() {
             </div>
             <div className="flex flex-col space-y-1.5" style={{width:"30%"}}>
             <Label> <br/></Label>
-                  {/* <Select onValueChange={(e) => setPeriodType(e)}>
-                    <SelectTrigger>
-                    { type=="0" &&<SelectValue placeholder="Years" />}  
-                      { type=="1" &&<SelectValue placeholder="Per Year" />}
-                      { type=="2" &&<SelectValue placeholder="Units" />}
-                    </SelectTrigger>
-                  
-                  </Select> */}
+                
                   <Label style={{marginTop:"20px"}}>
                    
                     { type=="0" &&  "Years" }  
