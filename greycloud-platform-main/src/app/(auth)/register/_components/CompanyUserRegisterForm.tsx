@@ -157,6 +157,7 @@ export default function CompanyUserRegisterForm() {
       password: "",
       passwordConfirmation: "",
       apiKey: "",
+      role:"Company_Admin"
     },
   });
 
@@ -183,7 +184,7 @@ export default function CompanyUserRegisterForm() {
      <div>
     <Card className="flex flex-col">
       <CardHeader className="flex flex-col gap-2 bg-gradient-to-b from-primary/5 dark:from-primary/10 to-transparent w-full px-8 pt-10 pb-4 mb-4 relative">
-        <CardTitle className="text-3xl">Select company</CardTitle>
+        <CardTitle className="text-xl">Select company</CardTitle>
         <CardDescription className="text-base max-w-[60%]">Select all companies that you want to import.</CardDescription>
 
         {/* <Image className="absolute size-36 right-8 top-4 flex items-center justify-center" src={AuthSVG} alt="Picture of auth." /> */}

@@ -25,7 +25,7 @@ export default function GreyCloudAdminRegisterForm() {
 
       reset();
 
-      router.push("/login");
+      router.push("/admin");
     },
 
     onError(error, input, reset) {

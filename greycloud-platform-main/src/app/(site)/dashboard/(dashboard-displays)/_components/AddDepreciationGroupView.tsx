@@ -24,7 +24,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
   SelectContent,
   SelectItem,
   SelectLabel,
@@ -35,6 +34,7 @@ import { getIronSessionData } from "@/lib/auth/auth";
 import { toast } from "sonner";
 import { SelectGroup } from "@radix-ui/react-select";
 import SageOneAssetCategorySaveForm from "../company-user-admin/add-asset-category/_components/SageOneSaveAssetCategory";
+import Select from 'react-select';
 
 function AddDepreciationGroup() {
   useEffect(() => {
@@ -147,6 +147,25 @@ function AddDepreciationGroup() {
    }, []);
 
   
+   const customStyle = {
+    option: (base:any) => ({
+      ...base,
+      backgroundColor: "white",
+      font:"black !important",
+      zIndex:999999999999999
+    }),
+     menuPortal: (base:any) => ({ ...base, zIndex: 999999999999999999 }) 
+  }
+
+  interface IOption {
+    label:string, 
+    value: string;
+  }
+ 
+
+   const p = accounts.map((x:any)=>{return {value:x.id.toString() as string, label:x.name as string} as IOption});
+
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -195,7 +214,7 @@ function AddDepreciationGroup() {
         </DialogContent>
             </Dialog>
             </Label>
-              <Select
+              {/* <Select
                 onValueChange={(e) => {
                   console.log(e);
                   const cat = categories!=undefined && categories?.find((x) => x.description == e).id;
@@ -215,12 +234,22 @@ function AddDepreciationGroup() {
                     ))}
                   </SelectGroup>
                 </SelectContent>
-              </Select>
+              </Select> */}
+
+            <Select
+                  styles={customStyle}
+                  value={sageDepreciationJournalCode}
+                  onChange={(e:any)=>{
+                    const cat = categories!=undefined && categories?.find((x) => x.description == e).id;
+                    setCategory(cat);
+                  }}
+                  options={categories.map(x=>{return {value:x.id as string, label:x.description as string} as IOption})}
+                />
             </div>
           
             <div className="flex flex-col space-y-1.5">
             <Label> Depreciation Type</Label>
-              <Select value={type} onValueChange={(e) => setType(e)}>
+              {/* <Select value={type} onValueChange={(e) => setType(e)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
@@ -232,7 +261,15 @@ function AddDepreciationGroup() {
                     <SelectItem value="2">Usage </SelectItem>
                   </SelectGroup>
                 </SelectContent>
-              </Select>
+              </Select> */}
+               <Select
+                  styles={customStyle}
+                  value={type}
+                  onChange={(e:any)=>{
+                    setType(e.value)
+                  }}
+                  options={[{value:"0", label:"Straight Line"}, {value:"1", label:"Reducing Amount"}, {value:"2", label:"Usage"}] as IOption[]}
+                />
             </div>
             
             <div className="flex flex-col space-y-1.5">
@@ -319,94 +356,50 @@ function AddDepreciationGroup() {
               <Label htmlFor="name">
                 Sage Accumilated Depreciation Journal Code
               </Label>
-              {/* <Input
-                id="name"
-                placeholder=""
-                value={sageAccumilatedDepreciationJournalCode}
-                onChange={(e) =>
-                  setSageAccumilatedDepreciationJournalCode(e.target.value)
-                }
-              /> */}
-                <Select onValueChange={(e) =>  { setSageAccumilatedDepreciationJournalCode(e)}}>
-                    <SelectTrigger>
-                    <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                  
-                        {
-                          accounts.map((x:any) => (
-                            <SelectItem key={x.id} value={`${x.id}`}>
-                              {`${x.name} (${x.id})`} 
-                            </SelectItem>
-                          ))
-                        }
-                       
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+             
+                   <Select
+                      styles={customStyle}
+                      value = {
+                        p.filter(option => 
+                           option.value == sageAccumilatedDepreciationJournalCode )
+                     }
+                  onChange={(e:any)=>{debugger; setSageAccumilatedDepreciationJournalCode(e.value)}}
+                  options={p}
+                />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Sage Depreciation Journal Code</Label>
-              {/* <Input
-                id="name"
-                placeholder=""
-                value={sageDepreciationJournalCode}
-                onChange={(e) => setSageDepreciationJournalCode(e.target.value)}
-              /> */}
-               <Select  onValueChange={(e) =>  { setSageDepreciationJournalCode(e)}}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                     
-                        {
-                          accounts.map((x:any) => (
-                            <SelectItem key={x.id} value={`${x.id}`}>
-                               {`${x.name} (${x.id})`} 
-                            </SelectItem>
-                          ))
-                        }
-                      
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+           
+                <Select
+                  styles={customStyle}
+                  value = {
+                    p.filter(option => 
+                       option.value == sageDepreciationJournalCode )
+                 }
+                  onChange={(e:any)=>{debugger; setSageDepreciationJournalCode(e.value)}}
+                  options={p}
+                />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Sage Disposal Journal Code</Label>
-              {/* <Input
-                id="name"
-                placeholder=""
-                value={sageDisposalJournalCode}
-                onChange={(e) => setSageDisposalJournalCode(e.target.value)}
-              /> */}
-               <Select onValueChange={(e) =>  { setSageDisposalJournalCode(e)}}>
-                    <SelectTrigger>
-                      <SelectValue  placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                     
-                        {
-                          accounts.map((x:any) => (
-                            <SelectItem key={x.id} value={`${x.id}`}>
-                               {`${x.name} (${x.id})`} 
-                            </SelectItem>
-                          ))
-                        }
-                     
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+             
+                       <Select
+                  styles={customStyle}
+                  value = {
+                    p.filter(option => 
+                       option.value == sageDisposalJournalCode )
+                 }
+                  onChange={(e:any)=>{debugger; setSageDisposalJournalCode(e.value)}}
+                  options={p}
+                />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Sage Revaluation Journal Code</Label>
              
-               <Select value={sageRevaluationJournalCode}  onValueChange={(e) =>  { setSageRevaluationJournalCode(e)}}>
+               {/* <Select value={sageRevaluationJournalCode}  onValueChange={(e) =>  { setSageRevaluationJournalCode(e)}}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
@@ -423,7 +416,16 @@ function AddDepreciationGroup() {
                        
                       </SelectGroup>
                     </SelectContent>
-                  </Select>
+                  </Select> */}
+                          <Select
+                  styles={customStyle}
+                  value = {
+                    p.filter(option => 
+                       option.value == sageRevaluationJournalCode )
+                 }
+                  onChange={(e:any)=>{debugger; setSageRevaluationJournalCode(e.value)}}
+                  options={p}
+                />
             </div>
       </div>
 
@@ -432,6 +434,7 @@ function AddDepreciationGroup() {
       <CardFooter className="flex justify-between">
         <Button onClick={() => save()}>Save</Button>
       </CardFooter>
+      <br/><br/><br/><br/><br/><br/>
     </Card>
   );
 }
