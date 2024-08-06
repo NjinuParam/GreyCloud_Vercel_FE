@@ -54,7 +54,6 @@ import moment from "moment";
   const [_usage, _setUsage] = useState< number>(asset?.usage??0);
   const [prevUsage, setPrevUsage] = useState<any[]>([]);
 
-  debugger;
   async function fetchUsage(assetId:string){
     const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/GetUsage/${assetId}`, {
       method: "GET",
@@ -78,7 +77,7 @@ import moment from "moment";
 
 
     useEffect(() => {
-debugger;
+
       fetchUsage(asset.id);
     });
 
@@ -103,7 +102,7 @@ debugger;
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
             Category Description
           </Label>
-          <p>{asset.catDescription ?? "---"}</p>
+          <p>{asset?.category?.description ?? "---"}</p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">

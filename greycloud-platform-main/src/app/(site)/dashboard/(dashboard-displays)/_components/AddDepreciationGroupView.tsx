@@ -215,9 +215,10 @@ function AddDepreciationGroup() {
                  }
                   onChange={(e:any)=>{
                     debugger;
-                    const cat = dep!=undefined && dep?.find((x:IOption) => x.value == e.value);
+                    const cat =  dep.filter(option => 
+                      option.value == category )
                     debugger;
-                    setCategory(cat?.value?.toString());
+                    setCategory(cat[0]?.value?.toString());
                   }}
                   options={dep}
                 />

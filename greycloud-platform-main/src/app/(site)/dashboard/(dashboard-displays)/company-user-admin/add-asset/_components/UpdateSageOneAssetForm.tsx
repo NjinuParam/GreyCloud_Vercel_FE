@@ -51,7 +51,7 @@ export type UpdateSageOneAssetFormProps = {
   user?: PlatformUserType;
   updateUsage?: Function;
   updateAddress?: Function;  
-
+  catDescription?:string;
 };
 
 export default function UpdateSageOneAssetForm({
