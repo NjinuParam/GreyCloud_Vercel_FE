@@ -39,7 +39,6 @@ import Select from 'react-select';
 function AddDepreciationGroup() {
   useEffect(() => {
     getIronSessionData().then((comp: any) => {
-      console.log("USER", comp);
       let currentCompanyId = comp.companyId;
       const sageCompanyId = comp.companyProfile.companiesList.find(
         (x:any) => x.companyId == comp.companyId
@@ -87,6 +86,7 @@ function AddDepreciationGroup() {
     useState("");
 
   async function save() {
+    debugger;
     let obj = {
       companyId:`${companyId}`,  
       categoryId: parseInt(category),
@@ -208,16 +208,15 @@ function AddDepreciationGroup() {
             <Select
                   styles={customStyle}
                   // defaultValue={categories.find(x=>x.id == category)?.description as string}
-                  // value={categories.find(x=>x.id == category)?.description }
-                  value = {
+                   value={categories.find(x=>x.id == category)?.id }
+                  defaultValue = {
                     dep.filter(option => 
                        option.value == category )
                  }
                   onChange={(e:any)=>{
-                    debugger;
                     const cat =  dep.filter(option => 
-                      option.value == category )
-                    debugger;
+                      option.value == e.value )
+                      debugger;
                     setCategory(cat[0]?.value?.toString());
                   }}
                   options={dep}
@@ -321,7 +320,7 @@ function AddDepreciationGroup() {
                         p.filter(option => 
                            option.value == sageAccumilatedDepreciationJournalCode )
                      }
-                  onChange={(e:any)=>{debugger; setSageAccumilatedDepreciationJournalCode(e.value)}}
+                  onChange={(e:any)=>{setSageAccumilatedDepreciationJournalCode(e.value)}}
                   options={p}
                 />
             </div>
@@ -335,7 +334,7 @@ function AddDepreciationGroup() {
                     p.filter(option => 
                        option.value == sageDepreciationJournalCode )
                  }
-                  onChange={(e:any)=>{debugger; setSageDepreciationJournalCode(e.value)}}
+                  onChange={(e:any)=>{setSageDepreciationJournalCode(e.value)}}
                   options={p}
                 />
             </div>
@@ -349,7 +348,7 @@ function AddDepreciationGroup() {
                     p.filter(option => 
                        option.value == sageDisposalJournalCode )
                  }
-                  onChange={(e:any)=>{debugger; setSageDisposalJournalCode(e.value)}}
+                  onChange={(e:any)=>{setSageDisposalJournalCode(e.value)}}
                   options={p}
                 />
             </div>
@@ -381,7 +380,7 @@ function AddDepreciationGroup() {
                     p.filter(option => 
                        option.value == sageRevaluationJournalCode )
                  }
-                  onChange={(e:any)=>{debugger; setSageRevaluationJournalCode(e.value)}}
+                  onChange={(e:any)=>{setSageRevaluationJournalCode(e.value)}}
                   options={p}
                 />
             </div>

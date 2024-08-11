@@ -212,11 +212,8 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
         subjectToDRCVat: false,
       },
     };
-    console.log("SAVE", values);
 
     const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.POST.CUSTOMER_SAVE}/14999`;
-
-    console.log(endpoint);
 
     try {
       toast.info("Creating customer");

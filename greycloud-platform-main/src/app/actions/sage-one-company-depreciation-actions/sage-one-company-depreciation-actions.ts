@@ -248,8 +248,7 @@ export const getSpecificAssetDepreciationHistory = action(GetSpecificAssetDeprec
 
   try {
     const response = await fetch(endpoint, { next: { tags: ["asset-depreciation-history"] } });
-    console.log("response11", response);  
-    console.log("ep", endpoint);  
+
     if (!response.ok) {
 
       throw new ActionError(`Error: ${response.status}`);
@@ -272,7 +271,6 @@ export const getFutureAssetDepreciationHistory = action(GetSpecificAssetDeprecia
   try {
     const response = await fetch(endpoint, { next: { tags: ["asset-depreciation-future"] } });
   
-    console.log("response", response);  
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -294,6 +292,7 @@ export const getAllAssetDepreciationHistory = action(GetAllAssetDepreciationHist
 
   try {
     const response = await fetch(endpoint, { next: { tags: ["asset-depreciation-history"] } });
+
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }

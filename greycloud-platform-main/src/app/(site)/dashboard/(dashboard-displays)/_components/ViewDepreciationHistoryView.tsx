@@ -48,23 +48,23 @@ export default function ViewDepreciationHistoryView() {
     }
     const _myCompany = comp.companyProfile.companiesList?.find((company:any) => company.companyId === comp.companyProfile.loggedInCompanyId);
     setMyCompany(_myCompany)
-
+debugger;
     getAllAssetDepreciationHistory({ sageCompanyId: Number(_myCompany?.sageCompanyId) }).then((depreHistory: any) => {
    
       setDepreciationHistoryAll(depreHistory)
       getSageOneCompanyAssets({ SageCompanyId: Number(_myCompany?.sageCompanyId) }).then((_assets: any) => {
       
         setAssets(_assets)
-        
+        debugger;
     getAllCompanyDepreciationGroups({}).then((depreciationGroups: any) => {
-  
+  debugger;
     let _transformedData = depreHistory.data?.map((depHistory:any) => {
-      const asset = _assets.data?.find((a:any) => a.id === depHistory.assetId);
+      const asset = _assets.data?.find((a:any) => a.code === depHistory.assetId);
       const depGroup = depreciationGroups.data?.find((dg:any) => dg.depGroupId === depHistory.depGroupId);
       
       return {
         ...depHistory,
-        code:asset.code,
+        code:asset?.code,
         assetName: asset ? asset.description : "Unknown Asset",
         companyName: myCompany?.companyName,
         purchasePrice: asset?.purchasePrice,

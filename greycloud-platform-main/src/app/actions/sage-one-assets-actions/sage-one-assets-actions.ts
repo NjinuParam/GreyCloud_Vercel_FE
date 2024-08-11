@@ -20,7 +20,7 @@ import { SageCompanyIdSchema } from "@/lib/schemas/common-schemas";
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const saveSageOneAsset = action(SaveSageOneAssetSchema, async ({ SageCompanyId, ...assets }) => {
-console.log("::::", assets);
+
   const endpoint = `http://localhost:5022/SageOneAsset/Asset/Save?Companyid=14999&quantity=1`;
 
   try {
