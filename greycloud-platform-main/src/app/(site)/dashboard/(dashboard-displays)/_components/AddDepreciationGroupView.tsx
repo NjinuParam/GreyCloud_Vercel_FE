@@ -208,10 +208,9 @@ function AddDepreciationGroup() {
             <Select
                   styles={customStyle}
                   // defaultValue={categories.find(x=>x.id == category)?.description as string}
-                   value={categories.find(x=>x.id == category)?.id }
+                  //  value={category }
                   defaultValue = {
-                    dep.filter(option => 
-                       option.value == category )
+                    category
                  }
                   onChange={(e:any)=>{
                     const cat =  dep.filter(option => 

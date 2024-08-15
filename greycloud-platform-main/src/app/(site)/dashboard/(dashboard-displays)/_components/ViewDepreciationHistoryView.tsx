@@ -23,6 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "../../../../../components/ui/label";
+import moment from "moment";
 
 
 export default function ViewDepreciationHistoryView() {
@@ -176,6 +177,12 @@ async function canDepreciate(assetId:number){
     // setFetchingDepreciation(false);
   }
 
+  function nextRun(){
+    var a = moment().endOf('month');
+    var b = moment();
+
+    return a.diff(b, 'days');
+  }
 
   useEffect(() => {
 
@@ -183,6 +190,7 @@ async function canDepreciate(assetId:number){
 
   },[]);
 
+  
 
   return (
     <div className="mx-auto min-w-full min-h-full">
@@ -228,7 +236,7 @@ async function canDepreciate(assetId:number){
           </Badge>
           
           <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
-          <Timer size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days 
+          <Timer size={16} style={{paddingRight:"1%"}} />  Next run: {nextRun()} days
           </Badge> </a>
           {/* <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
           <CheckCircle size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days   

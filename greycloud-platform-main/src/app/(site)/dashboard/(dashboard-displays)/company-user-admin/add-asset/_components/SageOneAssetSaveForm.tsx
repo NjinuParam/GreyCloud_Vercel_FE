@@ -189,7 +189,9 @@ export default function SageOneAssetSaveForm({
       toast.success(`Asset saved!`, {
         description: "The asset was stored successfully.",
       });
+      if(!createAnother){
       router.push("/dashboard/company-user/manage-assets");
+      }
     } else {
       toast.error("Failed to store asset.", {
         description: "Please try again.",
@@ -254,6 +256,7 @@ export default function SageOneAssetSaveForm({
 
   const [usageOrDailyAmount, setUsageOrDailyAmount] = useState(0);
   const [onceOffAmount, setOnceOffAmount] = useState(0);
+  const [createAnother, setCreateAnother] = useState(true);
 
   return (
     <>
@@ -540,8 +543,8 @@ getCategories();
             </div>
             {/* TODO: Add a suspend button on manage asset modal */}
 
-            <div className="grid grid-cols-2 gap-6 justify-center mb-4">
-              <div>
+            <div className="items-top flex space-x-2 mt-5">
+             
               <Checkbox
 
                 onCheckedChange={(e) => setIsCollection(e.valueOf().toString())}
@@ -560,12 +563,13 @@ getCategories();
                     Create multiple identical assets
                   </p>
                 </div>
-              </div>  
-              </div> {isCollection == "true" ? (
-              <div className="mt-2 ml-5">
+           
+              </div> 
+              {isCollection == "true" ? (
+              <div style={{marginTop:"-15px"}} className="ml-5">
                 <Label htmlFor="qty">Quantity</Label>
                 <Input
-                  style={{ width: "50%" }}
+
                   value={qty}
                   min={2}
                   max={20}
@@ -721,11 +725,30 @@ getCategories();
             </div>
             <div className="w-full pt-4">
               {/* <button type="submit" className="btn btn-primary">Sub</button> */}
+             
               <ButtonSubmitForm
                 executingString="Saving Asset..."
                 idleString="Save Asset"
                 status={status}
               />
+            </div>
+            <div style={{float:"right", marginTop:"15px"}}>
+            <Checkbox
+                  id="another1"
+                  checked={createAnother}
+                  onCheckedChange={(e) => {
+                    if (e.valueOf().toString() == "true") {
+                      // setIsRental(true);
+                      setCreateAnother(true);
+                    } else {
+                      setCreateAnother(false);
+                      // setIsRental(false);
+                    }
+                  }}
+                />
+              <p style={{  float: "left", marginRight: "5px", }}className="text-sm text-muted-foreground">
+                     Add another
+                    </p>
             </div>
           </form>
         </Form>
