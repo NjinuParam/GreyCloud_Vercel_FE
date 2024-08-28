@@ -78,7 +78,7 @@ async function fetchHistoriceDepreciation(categoryId:string){
       "Content-Type": "application/json",
     }
   });
-debugger;
+
   if (response) {
     const res = await response.json();
     const newTransformedData = res?.map((depHistory:any) => ({

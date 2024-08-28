@@ -58,7 +58,7 @@ async function fatchFutureDepreciation(assetId:string){
   });
 
   if (response) {
-    debugger;
+    
     const res = await response.json();
     const newTransformedData = res?.map((depHistory:any) => ({
       ...depHistory,

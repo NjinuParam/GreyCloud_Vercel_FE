@@ -51,7 +51,7 @@ const router = useRouter();
       toast.success(`Asset category saved!`, {
                 description: "The asset category was stored successfully.",
               });
-              debugger;
+              
               // router.refresh();
               callBack && callBack();
 
@@ -68,7 +68,7 @@ const router = useRouter();
 
 
   function create(values: SaveSageOneAssetCategoryType) {
-    debugger;
+    
     const formattedValues = {
       ...values,
       assetCategory: {

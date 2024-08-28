@@ -57,7 +57,7 @@ export default function ViewDepreciationHistoryView() {
         const summary = depreHistoryFull.data.summary;
 
         const full = {fullExport: depreHistory, summary: summary};
-        debugger;
+        
 
         setSummaryData(full);
         
@@ -115,7 +115,7 @@ export default function ViewDepreciationHistoryView() {
     });
 
     if (response) {
-      debugger;
+      
       const res = await response.json();
       setCanDepreciate(res);
 
@@ -263,7 +263,8 @@ export default function ViewDepreciationHistoryView() {
 
 
 
-                  {canDepr.length} assets need to be updated          </Badge>
+                  {canDepr.length} assets need to be updated          
+                </Badge>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[400px]">
                 <DialogHeader>

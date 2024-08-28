@@ -105,7 +105,7 @@ export default function UpdateSageOneAssetForm({
 
   // Define a submit handler:
   function onSubmit(values: SaveSageOneAssetType) {
-debugger;
+
     const formattedValues: SaveSageOneAssetType = {
       ...values,
       SageCompanyId: Number(values.SageCompanyId),
@@ -162,10 +162,12 @@ debugger;
   }, []);
 
   
-  const [isRental, setIsRental] = useState<boolean>(asset?.billingType?.amount==0??false);
+  const [isRental, setIsRental] = useState<boolean>(asset?.billingType?.amount!==0??false);
   const [billingType, setBillingType] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
   const [category, setCategory] = useState("0");
+
+  // debugger;
 
   return (
     <>
@@ -222,6 +224,7 @@ debugger;
                     setCategory(cat);
                     asset.category = cat;
                   }}
+                  defaultValue={asset?.category}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Category" />
@@ -280,7 +283,8 @@ debugger;
                     <FormControl>
                       <Input 
                       // disabled={true}
-                      placeholder="" {...field} />
+                      placeholder={asset.locName} 
+                      {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -448,14 +452,15 @@ debugger;
                       asset?.billingType?.type==1?"onceoff":
                       asset?.billingType?.type==2?"onceoffusage":
                       asset?.billingType?.type==4?"usage":""
-                  ):""} onValueChange={(e) => setBillingType(e)}>
+                  ):"" 
+                  } onValueChange={(e) => setBillingType(e)}>
                         <SelectTrigger>
                           <SelectValue placeholder="Billing type" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             <SelectLabel>Billing type</SelectLabel>
-                            <SelectItem value="daily">Daily</SelectItem>
+                            <SelectItem selected value="daily">Daily</SelectItem>
                             <SelectItem value="onceoff">Once Off</SelectItem>
                             <SelectItem value="onceoffusage">
                               Once Off + Usage

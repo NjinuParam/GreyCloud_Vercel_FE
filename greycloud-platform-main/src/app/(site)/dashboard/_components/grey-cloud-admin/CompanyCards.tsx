@@ -30,13 +30,14 @@ import { toBase64 } from "../../../../../lib/utils";
 export const CompaniesList = ({ companies }: { companies: SageCompanyResponseType[] }) => {
   const [_companies, setCompanies] = useState<any[]>([]);
 
+
   useEffect(() => {
     getIronSessionData().then(x=>{
       if(x.role=="GreyCloud_Admin"){
         setCompanies(companies)
       }else{
         const _comp = companies.filter((_com)=>{return x.companyProfile?.companiesList?.find((company) => company.companyId === _com.id)});
-        debugger;
+        
         setCompanies(_comp)
       }
        
@@ -152,9 +153,9 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       name: firstName,
       companyId: company.id,
       password: toBase64(password),
-      role:"Company_Admin"
+      role: isAdmin? "Company_Admin": "Company_User"
     };
-debugger;
+
     const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/UserCompany/Create-User`, {
       method: "POST",
       headers: {
@@ -164,9 +165,9 @@ debugger;
     });
   
     if (response) {
-      debugger;
+      
       const res = await response.json();
-      debugger;
+      
      
      
     } else {
@@ -208,6 +209,8 @@ debugger;
   function AddUser(){
     assignUser();
   }
+
+  const [isAdmin, setAdmin] = useState(false);
 
   return (
     <div className="flex flex-row gap-2 items-center w-full">
@@ -332,8 +335,14 @@ debugger;
 
         </div>
 
-</>:<><div className="grid grid-cols-2 gap-4 mt-4 p-4">
-        <div> <p style={{fontWeight:"bold"}} className="text-muted-foreground">Create new user</p> </div><div></div>
+</>:<>
+
+
+<div className="grid grid-cols-2 gap-4 mt-4 p-4">
+        <div> <p style={{fontWeight:"bold"}} className="text-muted-foreground">Create new user</p> </div>
+        <div>
+        <input style={{marginLeft:"3%"}} onChange={(e)=>{setAdmin(!isAdmin)}} checked={isAdmin} type="checkbox"/> <small>Is Admin </small><br/>
+        </div>
 
         <div className="flex flex-col space-y-1.5">
           <Label htmlFor="name"><small>Name</small></Label>

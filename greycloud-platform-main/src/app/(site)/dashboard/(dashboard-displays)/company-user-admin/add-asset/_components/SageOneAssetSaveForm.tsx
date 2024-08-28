@@ -175,7 +175,7 @@ export default function SageOneAssetSaveForm({
 
     toast.info("Saving asset...");
     input.id = 0;
-    debugger;
+    
     const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=${qty}`, {
       method: "POST",
       headers: {
@@ -239,7 +239,7 @@ export default function SageOneAssetSaveForm({
 
       quantity: qty,
     };
-    debugger;
+    
     // execute(formattedValues);
     createAsset(formattedValues.asset);
   }
@@ -337,7 +337,7 @@ getCategories();
                     onValueChange={(e) => {
                       console.log(e);
                       const cat = categories && categories.find((x: any) => x.description == e).id;
-                      debugger;
+                      
                       setCategory(cat);
                     }}
                   >

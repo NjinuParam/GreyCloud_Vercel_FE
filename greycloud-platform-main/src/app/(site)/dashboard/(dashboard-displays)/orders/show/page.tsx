@@ -321,7 +321,7 @@ usage:string
             });
           }
         });
-debugger;
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

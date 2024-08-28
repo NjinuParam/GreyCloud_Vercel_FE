@@ -29,7 +29,7 @@ export default function CompanyUserRegisterForm() {
 
 
   function selectCompany(companyId:any){
-    debugger;
+    
     var company = companies.filter(x=>x.id == companyId);
     if(!companyNames.includes(company[0].name)){
     setCompanyNames([...companyNames, company[0].name]);
@@ -71,7 +71,7 @@ export default function CompanyUserRegisterForm() {
 
 
   async function completeCreateCompany(payload:any){
-    debugger;
+    
 
     var _payload = {
       email: payload.email,
@@ -135,7 +135,7 @@ export default function CompanyUserRegisterForm() {
              var data = res.results;
         toast.success("Company details fetched successfully", {})
 
-        debugger;
+        
         setCompanies(data);
         }
      
@@ -163,7 +163,7 @@ export default function CompanyUserRegisterForm() {
 
   // Define a submit handler:
   function onSubmit(values: CreateCompanyUserType) {
-    debugger;
+    
     fetchAccounts(values);
 
   //   {

@@ -22,7 +22,7 @@ export const AssetsList = async () => {
     await getAllCompanyDepreciationGroups({}),
   ]);
 
-  debugger;
+  
 
   return (
     <>

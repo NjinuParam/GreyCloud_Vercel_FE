@@ -86,7 +86,7 @@ function AddDepreciationGroup() {
     useState("");
 
   async function save() {
-    debugger;
+    
     let obj = {
       companyId:`${companyId}`,  
       categoryId: parseInt(category),
@@ -215,7 +215,7 @@ function AddDepreciationGroup() {
                   onChange={(e:any)=>{
                     const cat =  dep.filter(option => 
                       option.value == e.value )
-                      debugger;
+                      
                     setCategory(cat[0]?.value?.toString());
                   }}
                   options={dep}

@@ -227,7 +227,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
 
   
      const res = await response.json();
-     debugger;
+     
      
 
       if(response.status==200){
@@ -250,7 +250,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
       }
       
     } catch (e:any) {
-      debugger;
+      
       console.log(e);
       toast.error("An error has occured:", {
         description: e.message,

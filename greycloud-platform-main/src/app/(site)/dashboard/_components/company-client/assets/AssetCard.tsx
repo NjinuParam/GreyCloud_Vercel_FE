@@ -65,7 +65,7 @@ import moment from "moment";
     if (response) {
    
       const res = await response.json();
-      debugger;
+      
       setPrevUsage(res);
       
       // _setTransformedData(newTransformedData);
@@ -86,7 +86,7 @@ import moment from "moment";
   
   }
 
-  debugger; 
+   
   return (
     <Card className="flex flex-col gap-2">
       <CardHeader className="pb-0 flex flex-col gap-2">

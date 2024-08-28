@@ -169,7 +169,7 @@ function CreateOrderForm({
 setCompanyId(sageCompanyId);
       getCustomers(sageCompanyId);
       GetAddresses(sageCompanyId);
-      debugger;
+      
       setFilteredAssets(assets.filter((x:any)=>x.billingType !=null));
     });
   }, []);
@@ -337,7 +337,7 @@ setCompanyId(sageCompanyId);
 
 
       const res = await response.json();
-      debugger;
+      
 
       toast.success(`Order created!`, {
         description: "The order was created successfully.",
@@ -737,7 +737,7 @@ setCompanyId(sageCompanyId);
                        <TableCell>
                         <Checkbox
                         defaultChecked={selectedItems.includes(itm.id)}
-                        onCheckedChange={(e: any) => { debugger; _setSelectedItems(itm.id)}}
+                        onCheckedChange={(e: any) => {  _setSelectedItems(itm.id)}}
                        
                        /></TableCell>
                       <TableCell className="font-medium">
