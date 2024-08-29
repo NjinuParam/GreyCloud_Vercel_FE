@@ -282,7 +282,8 @@ export default function UpdateSageOneAssetForm({
                     <FormControl>
                       <Input 
                       // disabled={true}
-                      defaultValue={asset.locName} 
+                      defaultValue={asset.locName??""} 
+                      placeholder={asset.locName??""}
                       {...field} />
                     </FormControl>
                     <FormMessage />
@@ -459,7 +460,7 @@ export default function UpdateSageOneAssetForm({
                         <SelectContent>
                           <SelectGroup>
                             <SelectLabel>Billing type</SelectLabel>
-                            <SelectItem selected value="daily">Daily</SelectItem>
+                            <SelectItem  value="daily">Daily</SelectItem>
                             <SelectItem value="onceoff">Once Off</SelectItem>
                             <SelectItem value="onceoffusage">
                               Once Off + Usage
