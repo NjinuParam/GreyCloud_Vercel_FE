@@ -90,6 +90,7 @@ export default function SageOneAssetSaveForm({
         datePurchased: new Date(),
         depreciationStart: new Date(),
         serialNumber: "ABC_123",
+        usage: 0,
         boughtFrom: "Electronics Store",
         purchasePrice: 500,
         currentValue: 350,
@@ -523,7 +524,7 @@ getCategories();
                   </FormItem>
                 )}
               />
-
+           {billingType === "usage" && 
               <FormField
                 control={form.control}
                 name="asset.usage"
@@ -531,12 +532,14 @@ getCategories();
                   <FormItem>
                     <FormLabel>Usage (units)</FormLabel>
                     <FormControl>
-                      <Input {...field} type="number" min={0} step="1" />
+                      <Input {...field} type="number" min={0} defaultValue={0} step="1" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
+              
               />
+}
 
 
 
