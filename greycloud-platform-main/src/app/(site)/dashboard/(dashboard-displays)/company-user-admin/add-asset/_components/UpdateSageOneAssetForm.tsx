@@ -224,7 +224,6 @@ export default function UpdateSageOneAssetForm({
                     setCategory(cat);
                     asset.category = cat;
                   }}
-                  defaultValue={asset?.category}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Category" />
