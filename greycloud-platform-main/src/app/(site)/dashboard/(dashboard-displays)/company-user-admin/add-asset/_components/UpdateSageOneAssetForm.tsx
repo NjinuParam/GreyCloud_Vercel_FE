@@ -282,7 +282,7 @@ export default function UpdateSageOneAssetForm({
                     <FormControl>
                       <Input 
                       // disabled={true}
-                      placeholder={asset.locName} 
+                      defaultValue={asset.locName} 
                       {...field} />
                     </FormControl>
                     <FormMessage />
