@@ -13,7 +13,7 @@ const CompanyPicker = async () => {
   return (
     <div className="flex flex-col items-center space-y-16 p-8 pt-16 w-screen min-h-screen max-h-screen bg-slate-200/40 dark:bg-slate-900/30 overflow-auto">
       <div className="flex flex-col gap-4 text-center items-center">
-        <h1 className="text-6xl text-foreground font-bold text-pretty max-w-xl text-center ">Welcome, {session.name}.</h1>
+        <h1 className="text-2xl text-foreground font-bold text-pretty max-w-xl text-center ">Welcome, {session.name}.</h1>
         <p className="text-muted-foreground text-2xl">Please select the Company Profile you want to log in with.</p>
       </div>
 
