@@ -42,7 +42,7 @@ export const RoleBasedSidebar = ({ role }: PlatformUserType) => {
 
   return (
     <div className="flex flex-col justify-between gap-0">
-      {roleMenu.map((section, index) => (
+      {roleMenu.map((section:any, index:number) => (
         <Fragment key={section.heading}>
           <SidebarSection section={section} isActive={isActive} />
           {index < roleMenu.length - 1 && (
