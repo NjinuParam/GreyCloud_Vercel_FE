@@ -7,7 +7,7 @@ const AuthLayout = ({
 }>) => {
   return (
     <div className="flex flex-col gap-8  w-screen min-h-screen bg-background/20 items-center justify-center">
-      <ButtonBackToHome />
+      {/* <ButtonBackToHome /> */}
       {children}
     </div>
   );

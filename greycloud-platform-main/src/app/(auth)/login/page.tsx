@@ -19,14 +19,7 @@ export default function Login() {
 
   return (
     <Tabs defaultValue="company-user" className="w-[600px]">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="company-user" onClick={() => updateUserField("role", "Company_User")}>
-          External Login
-        </TabsTrigger>
-        {/* <TabsTrigger value="greycloud-admin" onClick={() => updateUserField("role", "GreyCloud_Admin")}>
-          Admin
-        </TabsTrigger> */}
-      </TabsList>
+     
 
       <TabsContent value="company-user">
         <Card className="w-full flex flex-col p-0 overflow-hidden">
