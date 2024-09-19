@@ -14,7 +14,7 @@ const Dashboard = async () => {
 
   return (
     <div className="flex flex-col grow gap-2 items-center justify-center">
-      <p> Click on the sidebar links to interact with the Dashboard.</p>
+      {/* <p> Click on the sidebar links to interact with the Dashboard.</p> */}
 
       <Suspense fallback={<TableSkeletonList />}>
         <GreyCloudAdminDashboardView />
