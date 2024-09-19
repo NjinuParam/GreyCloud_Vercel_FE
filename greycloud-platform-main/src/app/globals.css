@@ -97,7 +97,7 @@
     @apply border-border;
   }
   body {
-    background-color: #ebeced;
+    background-color: whitesmoke;
     @apply text-foreground;
   }
 }
