@@ -8,9 +8,9 @@ const SiteLayout = async ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div style={{width:"85vw"}} className="flex min-h-screen max-h-screen  p-2 gap-2 overflow-auto">
+    <div style={{width:"100vw"}} className="flex min-h-screen max-h-screen  p-2 gap-2 overflow-auto">
       {/* Sidebar */}
-      {/* <div className="min-h-full">{<SideBar />}</div> */}
+      <div className="min-h-full">{<SideBar />}</div>
 
       {/* Content Area */}
       <div className="flex-1 flex flex-col gap-2">
@@ -18,7 +18,7 @@ const SiteLayout = async ({
         <NavBar />
 
         {/* Main content */}
-        <Card className="flex-1 overflow-auto p-2">
+        <Card className="flex-1 overflow-auto p-2" >
           <CardContent className="min-w-full p-0 ">
             <main className="overflow-hidden">{children}</main>
           </CardContent>

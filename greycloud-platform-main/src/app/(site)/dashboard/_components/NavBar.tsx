@@ -20,7 +20,8 @@ import {
   ShoppingCart,
   ShoppingCartIcon,
   Settings2, // For adding notes
-  FolderPlus, Menu, MoreHorizontal, Search
+  FolderPlus, Menu, MoreHorizontal, Search,
+  PowerCircle
 } from "lucide-react";
 
 import { getIronSessionData } from "@/lib/auth/auth";
@@ -81,33 +82,18 @@ export default async function NavBar() {
     ],
     Company_Admin: [
       {
-        heading: "Depreciation Groups",
+        heading: "Assets",
         links: [
           {
-            title: "Add Group",
+            title: "Trasact",
+            path: "/dashboard/orders/create",
+            icon: <ShoppingCartIcon />,
+          },
+          {
+            title: "Add Depreciation Group",
             path: "/dashboard/company-user-admin/add-depreciation-group",
             icon: <FolderPlus />,
           },
-          {
-            title: "Manage Groups",
-            path: "/dashboard/company-user-admin/manage-depreciation-groups",
-            icon: <Folder />,
-          },
-          {
-            title: "View History",
-            path: "/dashboard/company-user-admin/manage-depreciation-history",
-            icon: <Briefcase />,
-          },
-          // {
-          //   title: "Manage Asset Groups",
-          //   path: "/dashboard/company-user-admin/manage-asset-groups",
-          //   icon: <Layers />,
-          // },
-        ],
-      },
-      {
-        heading: "Assets",
-        links: [
           {
             title: "Add Asset",
             path: "/dashboard/company-user-admin/add-asset",
@@ -136,6 +122,43 @@ export default async function NavBar() {
         ],
       },
       {
+        heading: "Company",
+        links: [
+          // {
+          //   title: "Manage Companies",
+          //   path: "/dashboard/greycloud-admin/manage-companies",
+          //   icon: <Layers />,
+          // },
+          // {
+          //         title: "Add Company",
+          //         path: "/dashboard/greycloud-admin/add-company",
+          //         icon: <PlusCircle />,
+          //       },
+                {
+                  title: "Company Assets",
+                  path: "/dashboard/company-user-admin/manage-assets",
+                  icon: <Archive />,
+                },
+          {
+            title: "Company Groups",
+            path: "/dashboard/company-user-admin/manage-depreciation-groups",
+            icon: <Folder />,
+          },
+          {
+            title: "Manage Groups",
+            path: "/dashboard/company-user-admin/add-depreciation-group",
+            icon: <FolderPlus />,
+          },
+          
+          
+          // {
+          //   title: "Manage Asset Groups",
+          //   path: "/dashboard/company-user-admin/manage-asset-groups",
+          //   icon: <Layers />,
+          // },
+        ],
+      },
+      {
         heading: "Customers",
         links: [
           {
@@ -150,6 +173,9 @@ export default async function NavBar() {
           },
         ],
       },
+      
+     
+ 
       {
         heading: "Orders",
         links: [
@@ -165,6 +191,22 @@ export default async function NavBar() {
           },
         ],
       },
+      {
+          heading: "Reports",
+          links: [
+            {
+              title: "Reports",
+              path: "/dashboard/company-user-admin/manage-depreciation-history",
+              icon: <Briefcase />,
+            },
+            {
+              title: "Run Depreciation",
+              path: "#",
+              icon: <PowerCircle />,
+            }
+          ]
+        }
+            
       // {
       //   heading: "Users",
       //   links: [
@@ -180,21 +222,22 @@ export default async function NavBar() {
       //     },
       //   ],
       // },
-      {
-        heading: "Company",
-        links: [
-          {
-            title: "Add Company",
-            path: "/dashboard/greycloud-admin/add-company",
-            icon: <PlusCircle />,
-          },
-          {
-            title: "Manage Companies",
-            path: "/dashboard/greycloud-admin/manage-companies",
-            icon: <Layers />,
-          },
-        ],
-      }
+      // {
+      //   heading: "Company",
+      //   links: [
+      //     {
+      //       title: "Add Company",
+      //       path: "/dashboard/greycloud-admin/add-company",
+      //       icon: <PlusCircle />,
+      //     },
+      //     {
+      //       title: "Manage Companies",
+      //       path: "/dashboard/greycloud-admin/manage-companies",
+      //       icon: <Layers />,
+      //     },
+          
+      //   ],
+      // }
     ],
     Company_User: [
       {

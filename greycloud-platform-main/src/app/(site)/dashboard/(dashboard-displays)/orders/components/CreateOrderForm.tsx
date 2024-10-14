@@ -715,9 +715,11 @@ setCompanyId(sageCompanyId);
       <CardContent className="p-8">
         {/* <SageOneAssetCategorySaveForm  /> */}
         <Table>
+        <div><br/><br/> <Input type="text" placeholder="Search" className="mb-2"  onChange={(e)=>searchAssetByName(e.target.value)} /></div>
                 <TableHeader>
-                  <TableRow>   
-                   <div> <Input type="text" placeholder="Search" className="mb-2"  onChange={(e)=>searchAssetByName(e.target.value)} /></div></TableRow>
+                  {/* <TableRow>    */}
+                  
+                   {/* </TableRow> */}
                   <TableRow>
                   
                   <TableHead >Select</TableHead>

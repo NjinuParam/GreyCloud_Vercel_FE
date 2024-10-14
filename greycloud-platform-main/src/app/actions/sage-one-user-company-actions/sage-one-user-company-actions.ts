@@ -192,6 +192,7 @@ export const loginCompanyUser = action(
         },
       });
 
+      console.log("EEEEE",response)
       if (!response.ok) {
         throw new ActionError(`Error: ${response.status}`);
       }
@@ -219,6 +220,7 @@ export const loginCompanyUser = action(
 
       return user;
     } catch (error) {
+
       console.error("Failed to login user:", error);
       throw error;
     }

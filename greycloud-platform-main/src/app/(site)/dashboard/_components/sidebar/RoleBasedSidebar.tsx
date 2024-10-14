@@ -24,13 +24,238 @@ import { PlatformUserType } from "@/lib/schemas/common-schemas";
 
 const menuItems = {
   GreyCloud_Admin: [
-
+    {
+      heading: "Company",
+      links: [
+        {
+          title: "Add Company",
+          path: "/dashboard/greycloud-admin/add-company",
+          icon: <PlusCircle />,
+        },
+        {
+          title: "Manage Companies",
+          path: "/dashboard/greycloud-admin/manage-companies",
+          icon: <Layers />,
+        },
+      ],
+    },
+    {
+      heading: "Admins",
+      links: [
+        {
+          title: "Add Admin",
+          path: "/dashboard/greycloud-admin/add-admin",
+          icon: <UserPlus />,
+        },
+        {
+          title: "Manage Admins",
+          path: "/dashboard/greycloud-admin/manage-admins",
+          icon: <Users />,
+        },
+      ],
+    },
   ],
   Company_Admin: [
- 
+    // {
+    //   heading: "Depreciation Groups",
+    //   links: [
+    //     {
+    //       title: "Add Group",
+    //       path: "/dashboard/company-user-admin/add-depreciation-group",
+    //       icon: <FolderPlus />,
+    //     },
+    //     {
+    //       title: "Manage Groups",
+    //       path: "/dashboard/company-user-admin/manage-depreciation-groups",
+    //       icon: <Folder />,
+    //     },
+    //     {
+    //       title: "View History",
+    //       path: "/dashboard/company-user-admin/manage-depreciation-history",
+    //       icon: <Briefcase />,
+    //     },
+    //     // {
+    //     //   title: "Manage Asset Groups",
+    //     //   path: "/dashboard/company-user-admin/manage-asset-groups",
+    //     //   icon: <Layers />,
+    //     // },
+    //   ],
+    // },
+    // {
+    //   heading: "Assets",
+    //   links: [
+    //     {
+    //       title: "Add Asset",
+    //       path: "/dashboard/company-user-admin/add-asset",
+    //       icon: <PlusCircle />,
+    //     },
+    //     {
+    //       title: "Manage Assets",
+    //       path: "/dashboard/company-user-admin/manage-assets",
+    //       icon: <Archive />,
+    //     },
+    //     {
+    //       title: "Add Asset Category",
+    //       path: "/dashboard/company-user-admin/add-asset-category",
+    //       icon: <FolderPlus />,
+    //     }
+    //   ],
+    // },
+    // {
+    //   heading: "Customers",
+    //   links: [
+    //     {
+    //       title: "Customers",
+    //       path: "/dashboard/customers/show",
+    //       icon: <Users />,
+    //     },
+    //     {
+    //       title: "Add Customer",
+    //       path: "/dashboard/customers/create",
+    //       icon: <UserPlus />,
+    //     },
+    //   ],
+    // },
+    // {
+    //   heading: "Orders",
+    //   links: [
+    //     {
+    //       title: "Orders",
+    //       path: "/dashboard/orders/show",
+    //       icon: <ShoppingBasket />,
+    //     },
+    //     {
+    //       title: "Create Order",
+    //       path: "/dashboard/orders/create",
+    //       icon: <ShoppingCartIcon />,
+    //     },
+    //   ],
+    // },
+    {
+      heading: "Company",
+      links: [
+        {
+          title: "Add Company",
+          path: "/dashboard/greycloud-admin/add-company",
+          icon: <PlusCircle />,
+        },
+        {
+          title: "Manage Companies",
+          path: "/dashboard/greycloud-admin/manage-companies",
+          icon: <Layers />,
+        },
+        {
+          title: "Add New Profile",
+          path: "/dashboard/company-user-admin/add-user",
+          icon: <UserPlus />,
+        },
+        {
+          title: "Manage Users",
+          path: "/dashboard/company-user-admin/manage-users",
+          icon: <Users />,
+        }
+      ],
+    }
   ],
   Company_User: [
- 
+    {
+      heading: "Depreciation Groups",
+      links: [
+        {
+          title: "Add Group",
+          path: "/dashboard/company-user/add-depreciation-group",
+          icon: <FolderPlus />,
+        },
+        {
+          title: "Manage Groups",
+          path: "/dashboard/company-user/manage-depreciation-groups",
+          icon: <Folder />,
+        },
+        {
+          title: "View History",
+          path: "/dashboard/company-user/manage-depreciation-history",
+          icon: <Briefcase />,
+        },
+        // {
+        //   title: "Add Asset Category",
+        //   path: "/dashboard/company-user/add-asset-category",
+        //   icon: <FolderPlus />,
+        // },
+        // {
+        //   title: "Manage Asset Groups",
+        //   path: "/dashboard/company-user/manage-asset-groups",
+        //   icon: <Layers />,
+        // },
+      ],
+    },
+  
+    {
+      heading: "Assets",
+      links: [
+        {
+          title: "Add Asset",
+          path: "/dashboard/company-user/add-asset",
+          icon: <PlusCircle />,
+        },
+        {
+          title: "Manage Assets",
+          path: "/dashboard/company-user/manage-assets",
+          icon: <Archive />,
+        },
+      
+        // {
+        //   title: "Add Asset Location",
+        //   path: "/dashboard/company-user/add-asset-location",
+        //   icon: <MapPin />,
+        // },
+        // {
+        //   title: "Add Asset Note",
+        //   path: "/dashboard/company-user/add-asset-note",
+        //   icon: <Notebook />,
+        // },
+      ],
+    },
+    // {
+    //   heading: "Customers",
+    //   links: [
+    //     {
+    //       title: "Customers",
+    //       path: "/dashboard/customers/show",
+    //       icon: <Users />,
+    //     },
+    //     {
+    //       title: "Add Customer",
+    //       path: "/dashboard/customers/create",
+    //       icon: <UserPlus />,
+    //     },
+    //   ],
+    // },
+    // {
+    //   heading: "Orders",
+    //   links: [
+    //     {
+    //       title: "Orders",
+    //       path: "/dashboard/orders/show",
+    //       icon: <ShoppingBasket />,
+    //     },
+    //     {
+    //       title: "Create Order",
+    //       path: "/dashboard/orders/create",
+    //       icon: <ShoppingCartIcon />,
+    //     },
+    //   ],
+    // },
+   
+    // {
+    //   heading: "Company",
+    //   links: [
+    //     {
+    //       title: "Settings",
+    //       path: "/dashboard/company/settings",
+    //       icon: <Settings2 />,
+    //     },
+    //   ],
+    // },
   ],
 };
 

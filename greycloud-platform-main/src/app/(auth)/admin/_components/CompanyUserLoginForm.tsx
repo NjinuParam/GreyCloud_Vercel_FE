@@ -59,6 +59,7 @@ export default function CompanyUserLoginForm() {
     },
 
     onError(error) {
+      console.log("ERROR", error)
       toast.error("An error has occured:", {
         description: JSON.stringify(error, null, 2),
       });

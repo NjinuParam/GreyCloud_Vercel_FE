@@ -208,16 +208,16 @@ export default function ViewDepreciationHistoryView() {
         <div className="grid grid-cols-2 gap-2 justify-center mb-4">
           <div>
             <small>Search by asset name</small><br />
-            <input onChange={(e) => filterByName(e.target.value)} type="text" placeholder="Search asset name" className="w-1/2 p-2 border border-gray-300 rounded-md" />
+            <input  style={{fontSize: "14px"}}  onChange={(e) => filterByName(e.target.value)} type="text" placeholder="Search asset name" className="w-1/2 p-1 border border-gray-300 rounded-md" />
           </div>
           <div>
             {/* <label>Search by date</label><br/> */}
             <div className="grid grid-cols-2 gap-1  mb-4">
               <div><small>Start</small><br />
-                <input type="date" placeholder="Search by date" className="w-2/3 p-2 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
+                <input type="date" style={{fontSize: "14px"}} placeholder="Search by date" className="w-2/3 p-1 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
               </div>
               <div><small>End</small><br />
-                <input type="date" placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-2 border border-gray-300 rounded-md" />
+                <input type="date"  style={{fontSize: "14px"}}  placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
               </div>
             </div>
           </div>
@@ -243,11 +243,11 @@ export default function ViewDepreciationHistoryView() {
 
           <a >
             <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
-              <CheckCircle size={16} style={{ paddingRight: "1%" }} />  Last run: 5 hr ago
+              <CheckCircle size={16} style={{ paddingRight: "1%" }} /> <small> Last run: --</small>
             </Badge>
 
             <Badge style={{ padding: "2%" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
-              <Timer size={16} style={{ paddingRight: "1%" }} />  Next run: {nextRun()} days
+              <Timer size={16} style={{ paddingRight: "1%" }} /> <small> Next run: {nextRun()} days</small>
             </Badge> </a>
           {/* <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
           <CheckCircle size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days   
@@ -263,7 +263,8 @@ export default function ViewDepreciationHistoryView() {
 
 
 
-                  {canDepr.length} assets need to be updated          
+                  {canDepr.length}
+                   {/* assets need to be updated           */}
                 </Badge>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[400px]">
@@ -313,7 +314,7 @@ export default function ViewDepreciationHistoryView() {
 
 
             <Badge style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
-              <PowerCircle size={16} style={{ paddingRight: "1%" }} />  Trigger run
+              <PowerCircle size={16} style={{ paddingRight: "1%" }} /><small>  Trigger run</small>
             </Badge>
           </a>
 

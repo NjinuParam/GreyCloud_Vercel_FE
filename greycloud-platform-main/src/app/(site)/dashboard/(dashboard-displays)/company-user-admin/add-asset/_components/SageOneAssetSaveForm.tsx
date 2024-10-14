@@ -516,7 +516,7 @@ getCategories();
                 name="asset.recoverableAmount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Recoverable Amount (R)</FormLabel>
+                    <FormLabel>Residual Amount (R)</FormLabel>
                     <FormControl>
                       <Input {...field} type="number" min={1} step="1" />
                     </FormControl>

@@ -142,7 +142,7 @@ import moment from "moment";
 
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="apiKey" className="text-xs text-foreground uppercase tracking-wider">
-           Recoverable amount
+           Residual amount
           </Label>
           <p>{formatToRand(asset.residual)}</p>
         </span>

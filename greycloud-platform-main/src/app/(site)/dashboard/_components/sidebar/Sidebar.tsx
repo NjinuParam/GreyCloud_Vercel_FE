@@ -27,10 +27,11 @@ export default async function SideBar() {
         </CardTitle>
       </CardHeader>
 
+<div style={{marginTop:"-80%"}}>
       <CardContent className="p-8">
         <RoleBasedSidebar {...session} />
       </CardContent>
-
+      </div>
       <CardFooter className="flex flex-col gap-6 px-8 py-6">
         <SidebarProfile {...session} />
       </CardFooter>

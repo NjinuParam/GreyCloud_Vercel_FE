@@ -421,7 +421,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       <Dialog>
         <DialogTrigger asChild className="grow">
           <Button variant={"outline"} className="text-destructive">
-            Delete Company
+            Delete 
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[400px]">
