@@ -66,7 +66,7 @@ export const DepreciationGroupList = async () => {
 
         </TableHeader>
         <TableBody>
-          {depreciationGroup?.map((depreciation) => (
+          {depreciationGroup?.map((depreciation:any) => (
 
 
             <TableRow key={""}>
@@ -77,7 +77,7 @@ export const DepreciationGroupList = async () => {
               </TableCell>
 
               <TableCell key={""}>
-                <small>  {depreciation.categoryId} </small>
+                <small>  {depreciation?.categoryId} </small>
               </TableCell>
 
               <TableCell key={""}>
