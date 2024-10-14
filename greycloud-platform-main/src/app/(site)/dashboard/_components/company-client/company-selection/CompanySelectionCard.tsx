@@ -56,28 +56,28 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
           <Label htmlFor="email" className="text-xs text-foreground uppercase tracking-wider">
             Email
           </Label>
-          <p>{company.email ?? "---"}</p>
+          <p><small>{company.email ?? "---"}</small></p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="apiKey" className="text-xs text-foreground uppercase tracking-wider">
             API Key
           </Label>
-          <p>{company.apiKey ?? "---"}</p>
+          <p><small>{company.apiKey ?? "---"}</small></p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="apiKey" className="text-xs text-foreground uppercase tracking-wider">
             Sage Company ID
           </Label>
-          <p>{company.sageCompanyId ?? "---"}</p>
+          <p><small>{company.sageCompanyId ?? "---"}</small></p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
             Record
           </Label>
-          <p>{company.status ?? "---"}</p>
+          <p><small>{company.status ?? "---"}</small></p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">
