@@ -99,10 +99,8 @@ const FormSchema = z.object({
 });
 
 function CreateOrderForm({
-  customers,
   assets,
 }: {
-  customers: any[];
   assets: any;
 }) {
   const [isLoading, setIsLoading] = useState(false);
