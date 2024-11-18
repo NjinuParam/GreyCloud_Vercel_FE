@@ -410,7 +410,7 @@ getCategories();
                 )}
               />
 
-
+{/* 
                 <FormField
                 control={form.control}
                 name="asset.location.location"
@@ -423,7 +423,7 @@ getCategories();
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <FormField
                 control={form.control}
