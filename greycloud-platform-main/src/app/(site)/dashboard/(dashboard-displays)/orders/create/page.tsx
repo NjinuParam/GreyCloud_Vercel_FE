@@ -54,7 +54,7 @@ async function CreateOrder() {
     }),
   ]);
   
-  return <CreateOrderForm assets={assets.data} customers={customers} />;
+  return <CreateOrderForm assets={assets.data} />;
 }
 
 export default CreateOrder;
