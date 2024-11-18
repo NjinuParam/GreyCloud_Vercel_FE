@@ -14,7 +14,7 @@ export default function AssetsTableActions({ asset }: { asset: EnrichedAssetType
 
 toast.info("Updating asset...");
 
-const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/14999`, {
+const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/14999`, {
   method: "GET",
   headers: {
     "Content-Type": "application/json",
@@ -44,7 +44,7 @@ if (response) {
       location: address,
       gps: "0,0"
     }
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/UpdateLocation/${assetId}/14999`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/UpdateLocation/${assetId}/14999`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

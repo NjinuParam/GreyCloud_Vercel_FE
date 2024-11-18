@@ -107,7 +107,7 @@ export default function ViewDepreciationHistoryView() {
   async function canDepreciate(assetId: number) {
     toast.info("Fetching depreciation history...");
 
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/Depreciation/CanDepreciate/${assetId}`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/Depreciation/CanDepreciate/${assetId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -158,7 +158,7 @@ export default function ViewDepreciationHistoryView() {
   async function depreciationRun() {
     toast.info("Processing...");
     // setFetchingDepreciation(true);
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/Depreciation/DepreciationRun`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/Depreciation/DepreciationRun`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

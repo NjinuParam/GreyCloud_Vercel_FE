@@ -334,7 +334,7 @@ usage:string
               <DropdownMenuLabel>
                 <a
                 target="_blank"
-                  href={`https://localhost:7195/SageOneOrder/SalesOrderNew/GetInvoice/${order.id}`}
+                  href={`${apiUrl}/GetInvSalesOrderNew/GetInvoice/${order.id}`}
                   download
                 >
                   Download Invoice

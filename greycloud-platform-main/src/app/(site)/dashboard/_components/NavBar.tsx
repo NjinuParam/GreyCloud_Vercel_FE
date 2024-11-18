@@ -85,7 +85,7 @@ export default async function NavBar() {
         heading: "Assets",
         links: [
           {
-            title: "Trasact",
+            title: "Transact",
             path: "/dashboard/orders/create",
             icon: <ShoppingCartIcon />,
           },

@@ -50,7 +50,7 @@ export default function AssetDepreciationDialog({
 async function fatchFutureDepreciation(assetId:string){
   toast.info("Fetching depreciation history...");
   
-  const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/Depreciation/CalculateFutureepreciation/${assetId}/${selectedPeriod}`, {
+  const response = await fetch(`https://systa-api.azurewebsites.net/Depreciation/CalculateFutureepreciation/${assetId}/${selectedPeriod}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

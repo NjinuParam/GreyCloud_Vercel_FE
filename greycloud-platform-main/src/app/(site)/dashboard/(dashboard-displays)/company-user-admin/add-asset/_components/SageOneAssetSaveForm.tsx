@@ -24,6 +24,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import AutoComplete from "react-google-autocomplete";
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
@@ -85,6 +86,7 @@ export default function SageOneAssetSaveForm({
         location: {
           id: 10220,
           description: "Product Description",
+          location:"e.g. Room 403"
         },
         locName: "",
         datePurchased: new Date(),
@@ -177,7 +179,7 @@ export default function SageOneAssetSaveForm({
     toast.info("Saving asset...");
     input.id = 0;
     
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=${qty}`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=${qty}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -229,6 +231,11 @@ export default function SageOneAssetSaveForm({
         //   ),
         //   assetId: 0,
         // },
+        location:{
+          // id: 10220,
+          description: "Location Description",
+          location:"e.g. Room 403"
+        },
         assetDepreciationGroupRequestModel: null,
         billingType: {
           type: billingType == "daily" ? 0 : billingType == "onceoff" ? 1 : billingType == "onceoffusage" ? 2 : 3,
@@ -361,12 +368,57 @@ getCategories();
 
               <FormField
                 control={form.control}
-                name="asset.location.description"
+                name="asset.description"
                 render={({ field }) => (
                   <FormItem className="flex-1 grow min-w-full">
                     <FormLabel>Asset Description</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+                  <FormField
+                control={form.control}
+                name="asset.location.description"
+                render={({ field }) => (
+                  <FormItem className="flex-1 grow min-w-full">
+                    <FormLabel>Asset Address</FormLabel>
+                    <FormControl>
+                      {/* <Input placeholder="" {...field} /> */}
+                      <AutoComplete
+                            style={{zIndex:99999999}}
+                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
+                             defaultValue={""}
+                                apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                                onPlaceSelected={(place:any) => {
+                                
+                                
+                                  // ass[i].address = place?.formatted_address;
+                                  // ass[i].gps = `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`
+                                                                  
+                                }}
+                                options={{
+                                  types: ["geocode", "establishment"],//Must add street addresses not just cities
+                                  componentRestrictions: { country: "za" },
+                                }}
+                              />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+
+                <FormField
+                control={form.control}
+                name="asset.location.location"
+                render={({ field }) => (
+                  <FormItem className="flex-1 grow min-w-full">
+                    <FormLabel>Asset Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Room 403" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -524,7 +576,7 @@ getCategories();
                   </FormItem>
                 )}
               />
-           {billingType === "usage" && 
+           {(billingType === "usage" || billingType==="onceoffusage") && 
               <FormField
                 control={form.control}
                 name="asset.usage"

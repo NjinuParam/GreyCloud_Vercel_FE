@@ -122,7 +122,7 @@ function AddDepreciationGroup() {
   async function fetchAccounts(assetId:string){
     toast.info("Fetching depreciation history...");
     
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/GreyCloud/Admin/Get-Accounts/14999`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/GreyCloud/Admin/Get-Accounts/14999`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

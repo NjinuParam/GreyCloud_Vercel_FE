@@ -84,7 +84,7 @@ export default function CompanyUserRegisterForm() {
       contactNumber:""
     }
 
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/GreyCloud/Customer/Create-Sage-Company`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/GreyCloud/Customer/Create-Sage-Company`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -117,7 +117,7 @@ export default function CompanyUserRegisterForm() {
     async function fetchAccounts(payload:any){
       toast.info("Fetching company details...");
       
-      const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneCompany/Company/CheckStatus`, {
+      const response = await fetch(`https://systa-api.azurewebsites.net/SageOneCompany/Company/CheckStatus`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

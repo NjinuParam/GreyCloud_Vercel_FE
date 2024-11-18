@@ -127,7 +127,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
   const [password, setPassword] = useState<string>("Systa.io123!");
   
   async function fetchUsage(assetId:string){
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/UserCompany/Get-All-Company-User?companyId=${company.id}`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/UserCompany/Get-All-Company-User?companyId=${company.id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -156,7 +156,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       role: isAdmin? "Company_Admin": "Company_User"
     };
 
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/UserCompany/Create-User`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/UserCompany/Create-User`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

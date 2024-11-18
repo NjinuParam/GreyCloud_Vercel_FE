@@ -55,7 +55,7 @@ import moment from "moment";
   const [prevUsage, setPrevUsage] = useState<any[]>([]);
 
   async function fetchUsage(assetId:string){
-    const response = await fetch(`https://grey-cloud-uat.azurewebsites.net/SageOneAsset/Asset/GetUsage/${assetId}`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/GetUsage/${assetId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
