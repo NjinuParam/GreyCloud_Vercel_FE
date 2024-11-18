@@ -162,7 +162,7 @@ export default function UpdateSageOneAssetForm({
   }, []);
 
   
-  const [isRental, setIsRental] = useState<boolean>(asset?.billingType?.amount!==0??false);
+  const [isRental, setIsRental] = useState<boolean>(asset?.billingType?.amount!==0);
   const [billingType, setBillingType] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
   const [category, setCategory] = useState("0");
