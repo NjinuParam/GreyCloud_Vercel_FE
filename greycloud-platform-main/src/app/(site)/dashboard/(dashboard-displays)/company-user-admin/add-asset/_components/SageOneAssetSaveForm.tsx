@@ -86,7 +86,7 @@ export default function SageOneAssetSaveForm({
         location: {
           id: 10220,
           description: "Product Description",
-          location:"e.g. Room 403"
+          // location:"e.g. Room 403"
         },
         locName: "",
         datePurchased: new Date(),
