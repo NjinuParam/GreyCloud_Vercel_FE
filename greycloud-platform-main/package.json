@@ -43,6 +43,7 @@
     "react-day-picker": "^8.10.0",
     "react-dom": "^18",
     "react-export-table-to-excel": "^1.0.6",
+    "react-google-autocomplete": "^2.7.3",
     "react-hook-form": "^7.49.3",
     "react-responsive-modal": "^6.4.2",
     "react-select": "^5.8.0",
