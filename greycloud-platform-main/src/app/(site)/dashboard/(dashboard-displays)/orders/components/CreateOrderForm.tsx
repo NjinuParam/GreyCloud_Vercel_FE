@@ -566,7 +566,7 @@ setCompanyId(sageCompanyId);
                   <FormItem>
                     <FormLabel>Deposit</FormLabel>
                     <FormControl>
-                      <Input  defaultValue={"0"}  type="number" {...field} />
+                      <Input  defaultValue={0}  type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

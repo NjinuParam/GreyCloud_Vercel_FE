@@ -278,12 +278,30 @@ export default function UpdateSageOneAssetForm({
                 name="asset.location.description"
                 render={({ field }) => (
                   <FormItem className="flex-1 grow min-w-full">
-                    <FormLabel>Location Description</FormLabel>
+                    <FormLabel>Street Address</FormLabel>
                     <FormControl>
                       <Input 
                       // disabled={true}
                       defaultValue={asset.locName??""} 
                       placeholder={asset.locName??""}
+                      {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+<FormField
+                control={form.control}
+                name="asset.location.physicalLocation"
+                render={({ field }) => (
+                  <FormItem className="flex-1 grow min-w-full">
+                    <FormLabel>Physical location</FormLabel>
+                    <FormControl>
+                      <Input 
+                      // disabled={true}
+                      defaultValue={asset?.physicalLocation??""} 
+                      placeholder={asset?.physicalLocation??""}
                       {...field} />
                     </FormControl>
                     <FormMessage />

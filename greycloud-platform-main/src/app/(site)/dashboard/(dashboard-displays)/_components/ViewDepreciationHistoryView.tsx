@@ -28,6 +28,7 @@ import moment from "moment";
 
 export default function ViewDepreciationHistoryView() {
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [depreciationHistoryAll, setDepreciationHistoryAll] = useState<any>();
 
   const [assets, setAssets] = useState<any>();
@@ -107,7 +108,7 @@ export default function ViewDepreciationHistoryView() {
   async function canDepreciate(assetId: number) {
     toast.info("Fetching depreciation history...");
 
-    const response = await fetch(`https://systa-api.azurewebsites.net/Depreciation/CanDepreciate/${assetId}`, {
+    const response = await fetch(`${apiUrl}Depreciation/CanDepreciate/${assetId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -158,7 +159,7 @@ export default function ViewDepreciationHistoryView() {
   async function depreciationRun() {
     toast.info("Processing...");
     // setFetchingDepreciation(true);
-    const response = await fetch(`https://systa-api.azurewebsites.net/Depreciation/DepreciationRun`, {
+    const response = await fetch(`${apiUrl}Depreciation/DepreciationRun`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -226,7 +227,7 @@ export default function ViewDepreciationHistoryView() {
         <div className="grid grid-cols-4 gap-1  mb-4">
 
           <div>
-            {filteredData?.length &&
+            {filteredData?.length>0 &&
               <ExcelDownloder
                 data={ summaryData }
                 filename={`DepreciationExport_${new Date().toDateString()}`}

@@ -85,8 +85,8 @@ export default function SageOneAssetSaveForm({
         },
         location: {
           id: 10220,
-          description: "Product Description",
-          // location:"e.g. Room 403"
+          description: "Location Description",
+          physicalLocation:"e.g. Room 403"
         },
         locName: "",
         datePurchased: new Date(),
@@ -179,7 +179,7 @@ export default function SageOneAssetSaveForm({
     toast.info("Saving asset...");
     input.id = 0;
     
-    const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/Save?Companyid=14999&quantity=${qty}`, {
+    const response = await fetch(`${apiUrl}SageOneAsset/Asset/Save?Companyid=14999&quantity=${qty}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -233,9 +233,11 @@ export default function SageOneAssetSaveForm({
         // },
         location:{
           // id: 10220,
-          description: "Location Description",
-          location:"e.g. Room 403"
-        },
+          description: streetAddress,
+          physicalLocation:values.asset.location.physicalLocation,
+          gps:gpsLocation,
+          // streetAddress: streetAddress
+        },  
         assetDepreciationGroupRequestModel: null,
         billingType: {
           type: billingType == "daily" ? 0 : billingType == "onceoff" ? 1 : billingType == "onceoffusage" ? 2 : 3,
@@ -247,7 +249,7 @@ export default function SageOneAssetSaveForm({
 
       quantity: qty,
     };
-    
+    debugger;
     // execute(formattedValues);
     createAsset(formattedValues.asset);
   }
@@ -265,6 +267,8 @@ export default function SageOneAssetSaveForm({
   const [usageOrDailyAmount, setUsageOrDailyAmount] = useState(0);
   const [onceOffAmount, setOnceOffAmount] = useState(0);
   const [createAnother, setCreateAnother] = useState(true);
+  const [gpsLocation, setGPSLocation] = useState<string>(null);
+  const [streetAddress, setStreetAddress] = useState<string>(null);
 
   return (
     <>
@@ -325,7 +329,7 @@ export default function SageOneAssetSaveForm({
                   <DialogContent className="sm:max-w-[400px]">
 
                     <SageOneAssetCategorySaveForm callBack={()=>{
-getCategories();
+                      getCategories();
                     }} />
 
                     <DialogFooter>
@@ -384,7 +388,7 @@ getCategories();
                 name="asset.location.description"
                 render={({ field }) => (
                   <FormItem className="flex-1 grow min-w-full">
-                    <FormLabel>Asset Address</FormLabel>
+                    <FormLabel>Street Address</FormLabel>
                     <FormControl>
                       {/* <Input placeholder="" {...field} /> */}
                       <AutoComplete
@@ -394,6 +398,8 @@ getCategories();
                                 apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
                                 onPlaceSelected={(place:any) => {
                                 
+                                  setGPSLocation( `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`);
+                                  setStreetAddress(place?.formatted_address)
                                 
                                   // ass[i].address = place?.formatted_address;
                                   // ass[i].gps = `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`
@@ -410,20 +416,20 @@ getCategories();
                 )}
               />
 
-{/* 
+
                 <FormField
                 control={form.control}
-                name="asset.location.location"
+                name="asset.location.physicalLocation"
                 render={({ field }) => (
                   <FormItem className="flex-1 grow min-w-full">
-                    <FormLabel>Asset Location</FormLabel>
+                    <FormLabel>Physical Location</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. Room 403" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
+              />
 
               <FormField
                 control={form.control}
