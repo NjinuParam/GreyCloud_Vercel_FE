@@ -76,7 +76,8 @@ export default function SageOneAssetSaveForm({
     defaultValues: {
       SageCompanyId: Number(SageCompanyId),
       asset: {
-        description: "Product Name",
+        name:"Product Name",
+        description: "Product Description",
         category: {
           description: "Electronics",
           id: 8184,
@@ -292,7 +293,7 @@ export default function SageOneAssetSaveForm({
 
               <FormField
                 control={form.control}
-                name="asset.description"
+                name="asset.name"
                 render={({ field }) => (
                   <FormItem className="flex-1 grow min-w-full">
                     <FormLabel>Asset Name</FormLabel>

@@ -126,6 +126,7 @@ export type IdGetCompanyAssetType = z.infer<
 >;
 
 export const SageOneAssetTypeSchema = z.object({
+  name:z.string(),
   description: z.string(),
   category: z.object({
     description: z.string(),

@@ -20,9 +20,9 @@ export const CompanySelectionList = async () => {
     <Card className="min-h-full w-full p-8 max-w-7xl bg-transparent overflow-y-auto">
       <CardContent className="p-1 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-scroll">
         {session.companyProfile?.companiesList
-          ?.filter(
-            (c) => c.companyId !== session.companyProfile.loggedInCompanyId
-          )
+          // ?.filter(
+          //   (c) => c.companyId !== session.companyProfile.loggedInCompanyId
+          // )
           .sort((a, b) => a.companyName.localeCompare(b.companyName))
           .map((company) => (
             <CompanySelectionCard key={company.companyId} company={company} />

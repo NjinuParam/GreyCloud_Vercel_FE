@@ -1,13 +1,26 @@
 
 "use client";
 import React, { useEffect, useState } from "react";
+import {
+
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/table";
+
+
 import { getGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greycloud-admin-actions";
 import { getAllAssetDepreciationHistory } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
 import { DataTable } from "@/components/ui/data-table";
 import { getIronSessionData } from "@/lib/auth/auth";
 import { AssetDepreciationHistoryTableTypes, assetDepreciationHistoryColumns } from "../../_components/grey-cloud-admin/DataTableColumns";
 import { getSageOneCompanyAssets } from "@/app/actions/sage-one-assets-actions/sage-one-assets-actions";
-import { CheckCircle, FileSpreadsheet, FileWarning, FileWarningIcon, LucideMessageSquareWarning, MailWarning, PowerCircle, Timer } from "lucide-react";
+import { CheckCircle, FileSpreadsheet, FileWarning, FileWarningIcon, LucideMessageSquareWarning, MailWarning, PowerCircle, Timer, UploadCloud } from "lucide-react";
 import { Badge } from "../../../../../components/ui/badge";
 import { getAllCompanyDepreciationGroups } from "../../../../actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
 import { toast } from "sonner";
@@ -24,6 +37,11 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "../../../../../components/ui/label";
 import moment from "moment";
+import { debug } from "node:console";
+import { Button } from "../../../../../components/ui/button";
+import { Checkbox } from "../../../../../components/ui/checkbox";
+import { FormLabel } from "../../../../../components/ui/form";
+import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 
 
 export default function ViewDepreciationHistoryView() {
@@ -37,9 +55,12 @@ export default function ViewDepreciationHistoryView() {
   const [endDate, setEndDate] = useState<string>("");
 
   const [transformedData, setTransformedData] = useState<any>();
+  const [auditData, setAuditData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any>();
   const [summaryData, setSummaryData] = useState<any>();
   const [canDepr, setCanDepreciate] = useState<any[]>([]);
+
+  const [audit, setAudit] = useState<any[]>([]);
   const { ExcelDownloder, Type } = useExcelDownloder();
 
 
@@ -52,16 +73,19 @@ export default function ViewDepreciationHistoryView() {
       const _myCompany = comp.companyProfile.companiesList?.find((company: any) => company.companyId === comp.companyProfile.loggedInCompanyId);
       setMyCompany(_myCompany)
 
+      fetchAudit(Number(_myCompany?.sageCompanyId));
+
       getAllAssetDepreciationHistory({ sageCompanyId: Number(_myCompany?.sageCompanyId) }).then((depreHistoryFull: any) => {
 
         const depreHistory = depreHistoryFull.data.data;
         const summary = depreHistoryFull.data.summary;
+        const audit = depreHistoryFull.data.audit.filter(x=>x.posted==true);
 
-        const full = {fullExport: depreHistory, summary: summary};
-        
+        const full = { fullExport: depreHistory, summary: summary, audit: audit };
+
 
         setSummaryData(full);
-        
+
         setDepreciationHistoryAll(depreHistory)
         getSageOneCompanyAssets({ SageCompanyId: Number(_myCompany?.sageCompanyId) }).then((_assets: any) => {
 
@@ -105,10 +129,12 @@ export default function ViewDepreciationHistoryView() {
   }, []);
 
 
+
+
   async function canDepreciate(assetId: number) {
     toast.info("Fetching depreciation history...");
 
-    const response = await fetch(`${apiUrl}Depreciation/CanDepreciate/${assetId}`, {
+    const response = await fetch(`${apiUrl}Depreciation/CanDepreciate/14999`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -116,7 +142,7 @@ export default function ViewDepreciationHistoryView() {
     });
 
     if (response) {
-      
+
       const res = await response.json();
       setCanDepreciate(res);
 
@@ -187,6 +213,37 @@ export default function ViewDepreciationHistoryView() {
     // setFetchingDepreciation(false);
   }
 
+  async function fetchAudit(companyId: any) {
+    // setFetchingDepreciation(true);
+
+    const response = await fetch(`${apiUrl}Depreciation/GetSageAudit/14999`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    if (response) {
+
+      const res = await response.json();
+      debugger;
+      setAuditData(res);
+      //   const res = await response.json();
+      //   const newTransformedData = res?.map((depHistory: any) => ({
+      //     ...depHistory,
+      //     companyName: "company",
+      //   })) as AssetDepreciationHistoryTableTypes[];
+      //   // _setTransformedData(newTransformedData);
+
+
+      // } else {
+      //   toast.error("Depreciation run failed", {
+      //     description: "Please try again.",
+      //   });
+    }
+
+    // setFetchingDepreciation(false);
+  }
+
   function nextRun() {
     var a = moment().endOf('month');
     var b = moment();
@@ -209,16 +266,16 @@ export default function ViewDepreciationHistoryView() {
         <div className="grid grid-cols-2 gap-2 justify-center mb-4">
           <div>
             <small>Search by asset name</small><br />
-            <input  style={{fontSize: "14px"}}  onChange={(e) => filterByName(e.target.value)} type="text" placeholder="Search asset name" className="w-1/2 p-1 border border-gray-300 rounded-md" />
+            <input style={{ fontSize: "14px" }} onChange={(e) => filterByName(e.target.value)} type="text" placeholder="Search asset name" className="w-1/2 p-1 border border-gray-300 rounded-md" />
           </div>
           <div>
             {/* <label>Search by date</label><br/> */}
             <div className="grid grid-cols-2 gap-1  mb-4">
               <div><small>Start</small><br />
-                <input type="date" style={{fontSize: "14px"}} placeholder="Search by date" className="w-2/3 p-1 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
+                <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" className="w-2/3 p-1 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
               </div>
               <div><small>End</small><br />
-                <input type="date"  style={{fontSize: "14px"}}  placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
+                <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
               </div>
             </div>
           </div>
@@ -227,9 +284,11 @@ export default function ViewDepreciationHistoryView() {
         <div className="grid grid-cols-4 gap-1  mb-4">
 
           <div>
-            {filteredData?.length>0 &&
+
+
+            {filteredData?.length > 0 &&
               <ExcelDownloder
-                data={ summaryData }
+                data={summaryData}
                 filename={`DepreciationExport_${new Date().toDateString()}`}
                 type={Type.Button} // or type={'button'}
               >
@@ -237,10 +296,13 @@ export default function ViewDepreciationHistoryView() {
                   <FileSpreadsheet style={{ float: "left" }} /> <small>Export spreadsheet</small>
                 </a>
               </ExcelDownloder>
+
             }
+
+
           </div>
 
-         
+
 
           <a >
             <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
@@ -254,7 +316,7 @@ export default function ViewDepreciationHistoryView() {
           <CheckCircle size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days   
           </Badge>  */}
           <div></div>
-          <a onClick={() => { depreciationRun() }} style={{ cursor: canDepr.length == 0 ? "pointer" : "none" }}>
+          <a style={{ cursor: canDepr.length == 0 ? "pointer" : "none" }}>
 
             <Dialog>
               <DialogTrigger asChild className="grow">
@@ -265,7 +327,7 @@ export default function ViewDepreciationHistoryView() {
 
 
                   {canDepr.length}
-                   {/* assets need to be updated           */}
+                  {/* assets need to be updated           */}
                 </Badge>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[400px]">
@@ -275,20 +337,6 @@ export default function ViewDepreciationHistoryView() {
                   </DialogTitle>
                 </DialogHeader>
                 <DialogDescription className="text-base">
-                  {/* <Label style={{marginTop:"10px"}}>Last location: {newAddress!=""? newAddress :asset.locName}</Label>
-            <AutoComplete
-              style={{zIndex:99999999}}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
-              //  defaultValue={a.postalAddress01??""}
-                  apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                  onPlaceSelected={(place:any) => {
-                    _setAddress(`${place?.formatted_address}(${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()})`);
-                  }}
-                  options={{
-                    types: ["geocode", "establishment"],//Must add street addresses not just cities
-                    componentRestrictions: { country: "za" },
-                  }}  
-                /> */}
 
                   {canDepr.map((x: any) => {
                     return <> <Label>Asset: {x}</Label> <br /></>
@@ -299,13 +347,55 @@ export default function ViewDepreciationHistoryView() {
 
                 <DialogFooter>
                   <DialogClose asChild>
-                    {/* <Button onClick={()=>{ updateLocation();
-         
-              
-              }
-               
-               } variant={"outline"}>Update location</Button> */}
+
                   </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+
+            <Dialog>
+              <DialogTrigger asChild>
+
+                <Badge style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
+
+
+
+
+
+
+                  <PowerCircle size={16} style={{ paddingRight: "1%" }} /><small>  Trigger run</small>
+                </Badge>
+
+              </DialogTrigger>
+              <DialogContent className="">
+                <DialogHeader>
+                  <DialogTitle>Run Depreciation</DialogTitle>
+                  <DialogDescription>
+                    Please update the usage on the following assets to proceed
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  {canDepr.map((x: any) => {
+                    return <>
+                      <div>
+
+
+                        <label style={{ float: "left", width: "60%" }}>Asset: {x}</label>
+                        <input style={{ fontSize: "14px", float: "left", width: "40%" }} type="text" placeholder="0" className="w-1/2 p-1 border border-gray-300 rounded-md" />
+                      </div>
+                    </>
+                  })}
+                </div>
+                <label className="text-muted-foreground"> <Checkbox id="pushtosage" checked={false} /> Push journals to SAGE? </label>
+
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    onClick={() => { depreciationRun() }}
+                  >
+                    Run
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -314,9 +404,74 @@ export default function ViewDepreciationHistoryView() {
 
 
 
-            <Badge style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
-              <PowerCircle size={16} style={{ paddingRight: "1%" }} /><small>  Trigger run</small>
-            </Badge>
+
+
+
+            <Dialog>
+              <DialogTrigger asChild>
+
+                <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
+                  <UploadCloud size={16} style={{ paddingRight: "1%" }} /><small>  Post journals</small>
+                </Badge>
+
+              </DialogTrigger>
+              <DialogContent className="md:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Post journals</DialogTitle>
+                  <DialogDescription>
+                    Proceeding will post the following entries to SAGE
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead >Date</TableHead>
+                        <TableHead>Category Name</TableHead>
+                        <TableHead>Depreciation amount</TableHead>
+                        {/* <TableHead>Serial Number</TableHead>
+                          <TableHead>Billing type</TableHead>
+                          <TableHead>Price</TableHead> */}
+                      </TableRow>
+
+                    </TableHeader>
+                    <TableBody>
+                      {auditData.filter(x=>x.posted==false)?.map((x: any) => (
+                        <TableRow>
+                          <TableCell>{moment(x.createdDate).format('DD/MM/YYYY')}</TableCell>
+                          <TableCell>{x.categoryName}</TableCell>
+                          <TableCell>
+                            R{x.totalCategoryDepreciation}.00</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+
+
+                </div>
+                {/* <label className="text-muted-foreground"> <Checkbox id="pushtosage" checked={false} /> Push journals to SAGE? </label> */}
+
+                <DialogFooter>
+                  <Button
+                  className="w-full"
+                    type="submit"
+                    onClick={() => { depreciationRun() }}
+                  >
+                    Push to Sage Journals
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+
+
+
+
+
+
+
           </a>
 
         </div>
