@@ -79,7 +79,7 @@ export default function ViewDepreciationHistoryView() {
 
         const depreHistory = depreHistoryFull.data.data;
         const summary = depreHistoryFull.data.summary;
-        const audit = depreHistoryFull.data.audit.filter(x=>x.posted==true);
+        const audit = depreHistoryFull.data.audit.filter((x:any)=>x.posted==true);
 
         const full = { fullExport: depreHistory, summary: summary, audit: audit };
 

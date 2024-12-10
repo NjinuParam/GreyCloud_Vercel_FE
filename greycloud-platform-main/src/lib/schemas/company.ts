@@ -138,7 +138,7 @@ export const SageOneAssetTypeSchema = z.object({
     .object({
       id: z.coerce.number(),
       description: z.string(),
-      physicalLocation:z.string().nullable()
+      physicalLocation:z.string()
     })
     .nullable(),
   datePurchased: z.coerce.date(),
@@ -216,7 +216,7 @@ export type SaveSageOneAssetCategoryType = z.infer<
 export const SageOneAssetLocationSchema = SageCompanyIdSchema.extend({
   id: z.coerce.number(),
   description: z.string(),
-  physicalLocation:z.string().nullable()
+  physicalLocation:z.string()
 });
 
 export type SageOneAssetLocationType = z.infer<

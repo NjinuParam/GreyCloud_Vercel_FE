@@ -268,8 +268,8 @@ export default function SageOneAssetSaveForm({
   const [usageOrDailyAmount, setUsageOrDailyAmount] = useState(0);
   const [onceOffAmount, setOnceOffAmount] = useState(0);
   const [createAnother, setCreateAnother] = useState(true);
-  const [gpsLocation, setGPSLocation] = useState<string>(null);
-  const [streetAddress, setStreetAddress] = useState<string>(null);
+  const [gpsLocation, setGPSLocation] = useState<string>("");
+  const [streetAddress, setStreetAddress] = useState<string>("");
 
   return (
     <>

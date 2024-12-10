@@ -300,8 +300,8 @@ export default function UpdateSageOneAssetForm({
                   <FormControl>
                     <Input
                       // disabled={true}
-                      defaultValue={asset?.physicalLocation ?? ""}
-                      placeholder={asset?.physicalLocation ?? ""}
+                      defaultValue={asset?.location?.physicalLocation ?? ""}
+                      placeholder={asset?.location?.physicalLocation ?? ""}
                       {...field} />
                   </FormControl>
                   <FormMessage />

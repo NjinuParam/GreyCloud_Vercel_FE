@@ -22,10 +22,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "../../../../../../components/ui/input";
+import { useState } from "react";
 
 export const CompanySelectionCard = ({ company }: { company: CompanyResponseTypeForUser }) => {
   const router = useRouter();
-
+  const [accounts, setAccounts] = useState([]);
   const handleCompanySelection = () => {
     execute({
       companyId: company.companyId,
@@ -166,7 +167,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
 
 
         <div style={{ opacity: cId ? "1" : "0.3", cursor: cId ? "pointer" : "not-allowed" }}>
-          <CardContent onClick={cId ? handleCompanySelection : {}} className="flex flex-col gap-6 py-2">
+          <CardContent onClick={cId ? handleCompanySelection : ()=>{}} className="flex flex-col gap-6 py-2">
             <span className="flex flex-col gap-1 text-muted-foreground">
               <Label htmlFor="email" className="text-xs text-foreground uppercase tracking-wider">
                 Email
