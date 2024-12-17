@@ -366,6 +366,7 @@ export default async function NavBar() {
           <h1 className="text-lg dark:text-primary/70 text-primary/80 tracking-widest uppercase font-normal text-center">{adminNavBarText}</h1> */}
 
 <ul className="top-level-menu">
+  
 <li>
         <a style={{textAlign:"center"}} href="#">Assets</a>
         <ul className="second-level-menu">
