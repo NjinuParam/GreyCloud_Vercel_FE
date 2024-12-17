@@ -126,7 +126,7 @@ export default function ShowCustomer() {
     //  let currentCompanyId = comp.companyId;
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      const com = comp.companyProfile.companiesList.find(x=>x.companyId ==currentCompanyId).sageCompanyId
+      const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
 
       debugger;
       getCustomers(com);

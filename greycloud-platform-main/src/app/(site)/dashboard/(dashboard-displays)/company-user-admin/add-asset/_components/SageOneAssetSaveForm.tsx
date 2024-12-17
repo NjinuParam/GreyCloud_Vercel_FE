@@ -134,7 +134,7 @@ export default function SageOneAssetSaveForm({
     getIronSessionData().then((comp: any) => {
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      const com = comp.companyProfile.companiesList.find(x=>x.companyId ==currentCompanyId).sageCompanyId
+      const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
 
       fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`)
         .then((res) => res.json().then((data) => { setCategories(data.results); }))

@@ -144,7 +144,7 @@ export default function UpdateSageOneAssetForm({
     getIronSessionData().then((comp: any) => {
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      const com = comp.companyProfile.companiesList.find(x=>x.companyId ==currentCompanyId).sageCompanyId
+      const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
 
 
       fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`)

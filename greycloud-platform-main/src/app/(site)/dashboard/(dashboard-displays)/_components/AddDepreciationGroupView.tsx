@@ -42,7 +42,7 @@ function AddDepreciationGroup() {
       
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      const com = comp.companyProfile.companiesList.find(x=>x.companyId ==currentCompanyId).sageCompanyId
+      const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
 
 
       let name = comp.companyProfile.companiesList.find(
