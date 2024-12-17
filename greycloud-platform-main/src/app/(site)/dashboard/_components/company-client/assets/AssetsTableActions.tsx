@@ -5,16 +5,19 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { BookOpen } from "lucide-react";
 import AssetCard  from "./AssetCard";
 import { EnrichedAssetType } from "./assets-columns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getIronSessionData } from "../../../../../../lib/auth/auth";
 
 export default function AssetsTableActions({ asset }: { asset: EnrichedAssetType }) {
 
+  const [compId, setCompanyId] = useState<number>(14999);
   async function updateAsset(assetId:string, usage:string) {
 
 toast.info("Updating asset...");
 
-const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/14999`, {
+
+const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/${compId}`, {
   method: "GET",
   headers: {
     "Content-Type": "application/json",
@@ -36,6 +39,17 @@ if (response) {
 
   }
 
+  useEffect(()=>{
+    getIronSessionData().then(x=>{
+    
+      const compId = x.companyProfile.loggedInCompanyId;
+
+      const com = x.companyProfile.companiesList.find(x=>x.companyId ==compId).sageCompanyId
+      
+      setCompanyId(com);
+    });
+  },[])
+
   async function updateAddress(assetId:string, address:string) {
     toast.info("Updating asset...");
 
@@ -44,7 +58,7 @@ if (response) {
       location: address,
       gps: "0,0"
     }
-    const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/UpdateLocation/${assetId}/14999`, {
+    const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/UpdateLocation/${assetId}/${compId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

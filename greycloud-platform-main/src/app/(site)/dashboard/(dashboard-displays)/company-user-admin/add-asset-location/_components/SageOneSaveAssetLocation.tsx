@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -11,13 +11,16 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { SageOneAssetLocationSchema, SageOneAssetLocationType } from "@/lib/schemas/company";
 import { saveSageOneAssetLocation } from "@/app/actions/sage-one-assets-actions/sage-one-assets-actions";
+import { getIronSessionData } from "../../../../../../../lib/auth/auth";
 
 export default function SageOneAssetLocationSaveForm() {
   // Define the form:
+  
+  const [compId, setCompanyId] = useState<number>(14999);
   const form = useForm<SageOneAssetLocationType>({
     resolver: zodResolver(SageOneAssetLocationSchema),
     defaultValues: {
-      SageCompanyId: 14999,
+      SageCompanyId: compId,
       description: "Food",
       id: 0,
     },
@@ -58,6 +61,18 @@ export default function SageOneAssetLocationSaveForm() {
     execute(values);
   }
 
+  useEffect(()=>{
+    getIronSessionData().then(x=>{
+    
+      const compId = x.companyProfile.loggedInCompanyId;
+
+      const com = x.companyProfile.companiesList.find(x=>x.companyId ==compId).sageCompanyId
+      
+      setCompanyId(com);
+    });
+  },[])
+  
+  
   return (
     <>
       <Form {...form}>

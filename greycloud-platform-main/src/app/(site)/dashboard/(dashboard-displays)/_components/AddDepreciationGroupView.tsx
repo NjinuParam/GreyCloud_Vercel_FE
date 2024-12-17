@@ -39,19 +39,17 @@ import Select from 'react-select';
 function AddDepreciationGroup() {
   useEffect(() => {
     getIronSessionData().then((comp: any) => {
-      let currentCompanyId = comp.companyId;
-      const sageCompanyId = comp.companyProfile.companiesList.find(
-        (x:any) => x.companyId == comp.companyId
-      ).sageCompanyId;
-      setCompanyId(sageCompanyId);
+      
+      const currentCompanyId = comp.companyProfile.loggedInCompanyId;
+
+      const com = comp.companyProfile.companiesList.find(x=>x.companyId ==currentCompanyId).sageCompanyId
+
 
       let name = comp.companyProfile.companiesList.find(
         (x:any) => x.companyId == currentCompanyId
       )?.companyName;
 
-      let sageId = comp.companyProfile.companiesList.find(
-        (x:any) => x.companyId == currentCompanyId
-      )?.sageCompanyId;
+      let sageId = com
 
       setUserId(comp.email);
 
@@ -119,31 +117,9 @@ function AddDepreciationGroup() {
     }
   }
 
-  async function fetchAccounts(assetId:string){
-    toast.info("Fetching depreciation history...");
-    
-    const response = await fetch(`https://systa-api.azurewebsites.net/GreyCloud/Admin/Get-Accounts/14999`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
-  
-    if (response) {
-      const res = await response.json();
-      var data = res.results;
-      
-      setAccounts(data);
-      
-     
-    } else {
-      
-    }
-  }
-
   useEffect(() => { 
 
-    fetchAccounts("14999");
+   
    }, []);
 
   

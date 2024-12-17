@@ -160,10 +160,9 @@ function CreateOrderForm({
   const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.GET.CUSTOMER_GET_FOR_COMPANY}`;
   React.useEffect(() => {
     getIronSessionData().then((comp: any) => {
-      let currentCompanyId = comp.companyId;
-      let sageCompanyId = comp.companyProfile.companiesList.find(
-        (c:any) => c.companyId == currentCompanyId
-      ).sageCompanyId;
+      const compId = comp.companyProfile.loggedInCompanyId;
+
+      const sageCompanyId = comp.companyProfile.companiesList.find(x=>x.companyId ==compId).sageCompanyId
 setCompanyId(sageCompanyId);
       getCustomers(sageCompanyId);
       GetAddresses(sageCompanyId);
@@ -340,7 +339,7 @@ setCompanyId(sageCompanyId);
       toast.success(`Order created!`, {
         description: "The order was created successfully.",
       });
-      router.push("/dashboard/orders/show");
+      router.push("/dashboard/greycloud-admin/manage-companies");
     } catch (e) {
       console.log(e);
     }

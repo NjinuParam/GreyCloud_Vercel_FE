@@ -26,18 +26,59 @@ import { useState } from "react";
 
 export const CompanySelectionCard = ({ company }: { company: CompanyResponseTypeForUser }) => {
   const router = useRouter();
-  const [accounts, setAccounts] = useState([]);
+  const [accounts, setAccounts] = useState([]);  
+  const [username, setUsername] = useState("");
+  const [companyId, setCompanyId] = useState();
+  const [password, setPassword] = useState("");
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const handleCompanySelection = () => {
     execute({
       companyId: company.companyId,
     });
   };
 
+  async function addCompany(){
+    const payload = {
+      Email:username,
+      password:password,
+      SageCompanyId: companyId
+    };
+    debugger;
+    const response = await fetch(`${apiUrl}SageOneCompany/Company/OnBoardNewCompany`, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.     
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      redirect: "follow", // manual, *follow, error
+      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify(payload), // body data type must match "Content-Type" header
+    });
+    const res = await response.json();
+    debugger;
 
-  async function onboard(assetId:string){
+    if(res?.error){
+      toast.error(`Error adding company`, {
+        description: "Please check your sage credentials and try again",
+      });
+      
+    
+    }else{
+      toast.success(`Company has been created!`, {
+        description: "The order was created successfully.",
+      });
+     
+      router.push("/company-picker");
+    }
+
+
+  }
+
+
+  async function onboard(companyId:string){
     toast.info("Fetching depreciation history...");
     
-    const response = await fetch(`https://systa-api.azurewebsites.net/GreyCloud/Admin/Get-Accounts/14999`, {
+    const response = await fetch(`${apiUrl}GreyCloud/Admin/Get-Accounts/${companyId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -76,6 +117,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
   });
 
   const cId = company?.companyId;
+
   return (
     <>
       <Card
@@ -91,7 +133,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
                 <DialogTrigger asChild className="grow">
 
                   <Button
-
+                    onClick={()=>{setCompanyId(company.sageCompanyId)}}
                     size={"sm"}
                     type="submit"
                     className={cn(" ml-6 mr-4", status === "executing" ? "animate-pulse" : null)}
@@ -106,7 +148,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
                   <>
                     Please note, adding a new company will add to your monthly bill.
 
-                    <form>
+                    {/* <form> */}
                       <div className="grid grid-cols-2 ">
 
                         <div className="flex flex-col space-y-1.5 p-4">
@@ -117,7 +159,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
                               style={{ float: 'left' }}
                               placeholder="Name"
                             // value={depName}
-                            // onChange={(e:any) => setDepName(e.target.value)}
+                             onChange={(e:any) => setUsername(e.target.value)}
                             />
                           </>
 
@@ -131,22 +173,22 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
                               id="password"
                               placeholder="Password"
                             // value={depName}
-                            // onChange={(e:any) => setDepName(e.target.value)}
+                             onChange={(e:any) => setPassword(e.target.value)}
                             />
                           </>
                         </div>
                       </div>
                       
                   <Button
-
+                  onClick={()=>{addCompany()}}
                   size={"sm"}
-                  type="submit"
+                  // type="submit"
                   className={cn("w-full  mt-5 pl-4 pr-4", status === "executing" ? "animate-pulse" : null)}
                   disabled={status === "executing"}
                   >
                   Add company
                   </Button>
-                    </form>
+                    {/* </form> */}
 
                   </>
                   <DialogFooter>

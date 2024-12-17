@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -52,6 +52,7 @@ import {
 } from "@/lib/api-endpoints/sage-one-customer";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
+import { getIronSessionData } from "../../../../../../lib/auth/auth";
 
 const FormSchema = z.object({
   // dob: z.date({
@@ -126,6 +127,19 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
     resolver: zodResolver(FormSchema),
   });
 
+  
+  const [compId, setCompanyId] = useState<number>(14999);
+  useEffect(()=>{
+    getIronSessionData().then(x=>{
+    
+      const compId = x.companyProfile.loggedInCompanyId;
+
+      const com = x.companyProfile.companiesList.find(x=>x.companyId ==compId).sageCompanyId
+      
+      setCompanyId(com);
+    });
+  },[])
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const values = {
       ...data,
@@ -199,7 +213,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
         created: "2024-04-16T01:40:15.341Z",
         modified: "2024-04-16T01:40:15.341Z",
         taxTypeDefaultUID: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        companyId: 14999,
+        companyId: compId,
         dueDateMethodId: 0,
         dueDateMethodValue: 0,
         cityId: 0,
@@ -213,7 +227,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
       },
     };
 
-    const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.POST.CUSTOMER_SAVE}/14999`;
+    const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.POST.CUSTOMER_SAVE}/${compId}`;
 
     try {
       toast.info("Creating customer");

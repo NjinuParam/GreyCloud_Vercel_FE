@@ -142,13 +142,12 @@ export default function UpdateSageOneAssetForm({
 
   useEffect(() => {
     getIronSessionData().then((comp: any) => {
-      let currentCompanyId = comp.companyId;
+      const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      let sageId = comp.companyProfile.companiesList.find(
-        (x: any) => x.companyId == currentCompanyId
-      )?.sageCompanyId;
+      const com = comp.companyProfile.companiesList.find(x=>x.companyId ==currentCompanyId).sageCompanyId
 
-      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
+
+      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`)
         .then((res) =>
           res.json().then((data) => {
             setCategories(data.results);

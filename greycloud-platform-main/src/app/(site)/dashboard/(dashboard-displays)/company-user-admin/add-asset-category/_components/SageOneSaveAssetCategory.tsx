@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { SaveSageOneAssetCategorySchema, SaveSageOneAssetCategoryType } from "@/lib/schemas/company";
 import { saveSageOneAssetCategory } from "@/app/actions/sage-one-assets-actions/sage-one-assets-actions";
 import { useRouter } from "next/navigation";
+import { getIronSessionData } from "../../../../../../../lib/auth/auth";
 
 type SageOneAssetCategorySaveFormProps = {
   callBack?:Function
@@ -20,10 +21,14 @@ type SageOneAssetCategorySaveFormProps = {
 
 export default function SageOneAssetCategorySaveForm({callBack}: SageOneAssetCategorySaveFormProps) {
   // Define the form:
-  const form = useForm<SaveSageOneAssetCategoryType>({
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [compId, setCompanyId] = useState<number>(14999);
+const router = useRouter();  
+const form = useForm<SaveSageOneAssetCategoryType>({
     resolver: zodResolver(SaveSageOneAssetCategorySchema),
     defaultValues: {
-      SageCompanyId: 14999,
+      SageCompanyId: compId,
       assetCategory: {
         description: "",
         id: Number(0),
@@ -33,15 +38,13 @@ export default function SageOneAssetCategorySaveForm({callBack}: SageOneAssetCat
     },
   });
 
-  const [loading, setLoading] = useState<boolean>(false);
-const router = useRouter();
-  async function createAssetCategory(data:any, companyId:string="14999") {
+  async function createAssetCategory(data:any) {
 
     try {
       
     const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-      await fetch(`${apiUrl}SageOneAsset/AssetCategory/Save?CompanyId=${companyId}`, {
+      await fetch(`${apiUrl}SageOneAsset/AssetCategory/Save?CompanyId=${compId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,13 +63,6 @@ const router = useRouter();
     }
   }
 
-  // // Define a submit handler:
-  // function onSubmit(values: SaveSageOneAssetCategoryType) {
-   
-
-  // }
-
-
   function create(values: SaveSageOneAssetCategoryType) {
     
     const formattedValues = {
@@ -82,6 +78,16 @@ const router = useRouter();
     
   }
   
+  useEffect(()=>{
+    getIronSessionData().then(x=>{
+    
+      const compId = x.companyProfile.loggedInCompanyId;
+
+      const com = x.companyProfile.companiesList.find(x=>x.companyId ==compId).sageCompanyId
+      
+      setCompanyId(com);
+    });
+  },[])
   
   return (
     <>

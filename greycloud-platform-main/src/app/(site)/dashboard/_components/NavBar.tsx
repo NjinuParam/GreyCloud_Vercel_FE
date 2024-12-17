@@ -20,12 +20,11 @@ import {
   ShoppingCart,
   ShoppingCartIcon,
   Settings2, // For adding notes
-  FolderPlus, Menu, MoreHorizontal, Search,
+  FolderPlus,  MoreHorizontal, Search,
   PowerCircle
 } from "lucide-react";
 
 import { getIronSessionData } from "@/lib/auth/auth";
-
 import Link from "next/link";
 import { cn } from "../../../../lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../../../../components/ui/dropdown-menu";
@@ -357,7 +356,7 @@ export default async function NavBar() {
     <Card className="min-w-full flex flex-row bg-gradient-to-b from-primary/5 dark:from-primary/10 to-transparent justify-between items-center p-4">
       <CardHeader className="flex flex-col items-center justify-center p-0">
         <Button variant={"ghost"} size="icon">
-          <Menu className="size-6" />
+          {/* <Menu className="size-6" /> */}
         </Button>
       </CardHeader>
 
@@ -366,7 +365,65 @@ export default async function NavBar() {
           {/* <h1 className="text-lg dark:text-primary/90 text-primary/100 tracking-widest uppercase font-bold text-center">{companyName}</h1>
           <h1 className="text-lg dark:text-primary/70 text-primary/80 tracking-widest uppercase font-normal text-center">{adminNavBarText}</h1> */}
 
-          {roleMenu.map((section, index) => (
+<ul className="top-level-menu">
+<li>
+        <a style={{textAlign:"center"}} href="#">Assets</a>
+        <ul className="second-level-menu">
+            <li><a  href="/dashboard/company-user/add-asset">Add asset</a></li>
+            <li><a  href="/dashboard/company-user/manage-assets">List of assets</a></li>
+            <li>
+                <a href="#">Transact</a>
+                <ul className="third-level-menu">
+                    <li><a href="/dashboard/company-user-admin/manage-depreciation-history">Run depreciation</a></li>
+                    <li><a href="#">Change location</a></li>
+                    <li><a href="#">Write off asset</a></li>
+                    <li><a href="#">Revalue asset</a></li>
+                    <li><a href="/dashboard/company-user-admin/manage-depreciation-history">Reports</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="#" style={{textAlign:"center"}}>Customers</a>
+        <ul className="second-level-menu">
+            <li><a href="/dashboard/customers/create">Add customer</a></li>
+            <li><a href="/dashboard/customers/show">List of customers</a></li>
+            <li>
+                <a href="#">Transact</a>
+                <ul className="third-level-menu">
+                    <li><a href="/dashboard/orders/create">Create quote</a></li>
+                    <li><a href="/dashboard/orders/create">Create order</a></li>
+                    <li><a href="/dashboard/orders/show">List of orders</a></li>
+                    <li><a href="dashboard/orders/show">Invoices</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a style={{textAlign:"center"}} href="#">Reports</a>
+        <ul className="second-level-menu"> 
+            <li><a href="/dashboard/company-user-admin/manage-depreciation-history">Depreciation</a></li>
+            <li><a href="#">Asset</a></li>
+            <li><a href="#">Customer</a></li>
+            <li><a href="#">Order</a></li>
+           
+        </ul>
+    </li>
+    <li>
+        <a style={{textAlign:"center"}} href="#">Company</a>
+        <ul className="second-level-menu">
+            <li><a href="/dashboard/greycloud-admin/add-company">Add company</a></li>
+            <li><a href="/dashboard/greycloud-admin/manage-companies">List of companies</a></li>
+            <li><a href="#">Users</a></li>
+           
+        </ul>
+    </li>
+   
+    <li><a style={{textAlign:"center"}} href="#">Help</a></li>
+</ul>
+
+
+          {/* {roleMenu.map((section, index) => (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 p-5">
@@ -378,13 +435,7 @@ export default async function NavBar() {
                   <>
                     
                     <DropdownMenuItem>
-                    {/* <Link
-                      style={{cursor: "pointer"}}
-                      href={link.path}
-                      className={isActive(link.path) ? "font-bold" : ""}
-                    >
-                     <DropdownMenuLabel> {link.title}    </DropdownMenuLabel>
-                    </Link> */}
+                   
                       <Link href={link.path} legacyBehavior>
                       {link.title}  
                       </Link>
@@ -393,7 +444,7 @@ export default async function NavBar() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          ))}
+          ))} */}
 
         </div>
       </CardContent>

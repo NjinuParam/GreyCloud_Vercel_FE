@@ -131,10 +131,10 @@ export default function ViewDepreciationHistoryView() {
 
 
 
-  async function canDepreciate(assetId: number) {
+  async function canDepreciate(companyId: number) {
     toast.info("Fetching depreciation history...");
 
-    const response = await fetch(`${apiUrl}Depreciation/CanDepreciate/14999`, {
+    const response = await fetch(`${apiUrl}Depreciation/CanDepreciate/${companyId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -215,8 +215,8 @@ export default function ViewDepreciationHistoryView() {
 
   async function fetchAudit(companyId: any) {
     // setFetchingDepreciation(true);
-
-    const response = await fetch(`${apiUrl}Depreciation/GetSageAudit/14999`, {
+debugger;
+    const response = await fetch(`${apiUrl}Depreciation/GetSageAudit/${companyId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -253,7 +253,16 @@ export default function ViewDepreciationHistoryView() {
 
   useEffect(() => {
 
-    canDepreciate(14999);
+    getIronSessionData().then(x=>{
+    
+      const compId = x.companyProfile.loggedInCompanyId;
+
+      const com = x.companyProfile.companiesList.find(x=>x.companyId ==compId).sageCompanyId
+      debugger;
+      canDepreciate(com);
+    });
+
+    
 
   }, []);
 

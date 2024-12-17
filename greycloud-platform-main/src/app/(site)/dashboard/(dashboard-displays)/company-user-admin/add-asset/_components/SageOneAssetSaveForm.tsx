@@ -132,12 +132,11 @@ export default function SageOneAssetSaveForm({
 
   function getCategories() {
     getIronSessionData().then((comp: any) => {
-      let currentCompanyId = comp.companyId;
+      const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      let sageId = comp.companyProfile.companiesList.find(
-        (x: any) => x.companyId == currentCompanyId
-      )?.sageCompanyId;
-      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
+      const com = comp.companyProfile.companiesList.find(x=>x.companyId ==currentCompanyId).sageCompanyId
+
+      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`)
         .then((res) => res.json().then((data) => { setCategories(data.results); }))
         .catch((e) => console.log(e));
     });
@@ -177,10 +176,18 @@ export default function SageOneAssetSaveForm({
 
   async function createAsset(input: any) {
 
+    getIronSessionData().then(async (comp: any) => {
+      let currentCompanyId = comp.companyProfile.loggedInCompanyId;
+
+      let sageId = comp.companyProfile.companiesList.find(
+        (x: any) => x.companyId == currentCompanyId
+      )?.sageCompanyId;
+
+
     toast.info("Saving asset...");
     input.id = 0;
     
-    const response = await fetch(`${apiUrl}SageOneAsset/Asset/Save?Companyid=14999&quantity=${qty}`, {
+    const response = await fetch(`${apiUrl}SageOneAsset/Asset/Save?Companyid=${sageId}&quantity=${qty}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -201,6 +208,7 @@ export default function SageOneAssetSaveForm({
         description: "Please try again.",
       });
     }
+  });
   }
 
 

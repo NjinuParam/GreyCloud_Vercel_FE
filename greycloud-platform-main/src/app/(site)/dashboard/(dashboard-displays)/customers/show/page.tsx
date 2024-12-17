@@ -123,11 +123,13 @@ export default function ShowCustomer() {
   const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.GET.CUSTOMER_GET_FOR_COMPANY}`;
   React.useEffect(() => {
     getIronSessionData().then((comp: any) => {
-      let currentCompanyId = comp.companyId;
-      let sageCompanyId = comp.companyProfile.companiesList.find(
-        (c:any) => c.companyId == currentCompanyId
-      ).sageCompanyId;
-      getCustomers(sageCompanyId);
+    //  let currentCompanyId = comp.companyId;
+      const currentCompanyId = comp.companyProfile.loggedInCompanyId;
+
+      const com = comp.companyProfile.companiesList.find(x=>x.companyId ==currentCompanyId).sageCompanyId
+
+      debugger;
+      getCustomers(com);
     });
   }, []);
 

@@ -21,7 +21,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const saveSageOneAsset = action(SaveSageOneAssetSchema, async ({ SageCompanyId, ...assets }) => {
 
-  const endpoint = `http://localhost:5022/SageOneAsset/Asset/Save?Companyid=14999&quantity=1`;
+  const endpoint = `http://localhost:5022/SageOneAsset/Asset/Save?Companyid=${SageCompanyId}&quantity=1`;
 
   try {
     const response = await fetch(endpoint, {

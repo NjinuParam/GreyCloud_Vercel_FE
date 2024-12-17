@@ -73,14 +73,15 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
 
   const [startOrderAssets, setStartOrderAssets] = React.useState<any[]>([]);
   const [completeOrderAssets, setCompleteOrderAssets] = React.useState<any[]>([]);
-
+  const [compId, setCompanyId] = React.useState<number>(14999);
   React.useEffect(() => {
     getIronSessionData().then((comp: any) => {
-      let currentCompanyId = comp.companyId;
-      let sageCompanyId = comp.companyProfile.companiesList.find(
-        (c:any) => c.companyId == currentCompanyId
-      ).sageCompanyId;
-      getOrders(sageCompanyId);
+      const currentCompanyId = comp.companyProfile.loggedInCompanyId;
+
+      const com = comp.companyProfile.companiesList.find(x=>x.companyId ==currentCompanyId).sageCompanyId
+
+      getOrders(com);
+      
     });
   }, []);
 
@@ -127,7 +128,7 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
         description: "The order was updated successfully.",
       });
       
-      getOrders(14999);
+      getOrders(compId);
     } catch (e) {
       toast.error(`Error occured!`, {
         description: "Please try again.",
@@ -184,7 +185,7 @@ async function updateStartOrderAssets(payload:any,orderId:string){
     toast.success(`Order updated!`, {
       description: "The order was updated successfully.",
     });
-    getOrders(14999);
+    getOrders(compId);
   } catch (e) {
     toast.error(`Error occured!`, {
       description: "Please try again.",
