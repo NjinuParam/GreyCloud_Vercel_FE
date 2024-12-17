@@ -253,13 +253,13 @@ debugger;
 
   useEffect(() => {
 
-    getIronSessionData().then(x=>{
+    getIronSessionData().then(comp=>{
     
-      const compId = x.companyProfile.loggedInCompanyId;
+      const compId = comp?.companyProfile?.loggedInCompanyId;
 
-      const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
+      const com = comp?.companyProfile?.companiesList?.find((x:any)=>{x.companyId ==compId})?.sageCompanyId
       debugger;
-      canDepreciate(com);
+      canDepreciate(com??14999);
     });
 
     

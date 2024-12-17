@@ -40,13 +40,13 @@ if (response) {
   }
 
   useEffect(()=>{
-    getIronSessionData().then(x=>{
+    getIronSessionData().then((x:any)=>{
     
       const compId = x.companyProfile.loggedInCompanyId;
 
-     const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
+     const com = x?.companyProfile?.companiesList?.find((x:any)=>{x.companyId ==compId}).sageCompanyId
       
-      setCompanyId(com);
+      setCompanyId(com ??14999);
     });
   },[])
 

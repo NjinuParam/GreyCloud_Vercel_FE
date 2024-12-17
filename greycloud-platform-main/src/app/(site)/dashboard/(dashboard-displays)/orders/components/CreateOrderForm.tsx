@@ -162,7 +162,7 @@ function CreateOrderForm({
     getIronSessionData().then((comp: any) => {
       const compId = comp.companyProfile.loggedInCompanyId;
 
-      const sageCompanyId = comp.companyProfile.companiesList.find(x=>x.companyId ==compId).sageCompanyId
+      const sageCompanyId = comp.companyProfile.companiesList.find((x:any)=>x.companyId ==compId).sageCompanyId
 setCompanyId(sageCompanyId);
       getCustomers(sageCompanyId);
       GetAddresses(sageCompanyId);

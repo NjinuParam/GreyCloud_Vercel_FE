@@ -32,12 +32,12 @@ export const CompaniesList = ({ companies }: { companies: SageCompanyResponseTyp
 
 
   useEffect(() => {
-    getIronSessionData().then(x=>{
+    getIronSessionData().then((x:any)=>{
       if(x.role=="GreyCloud_Admin"){
         setCompanies(companies)
       }else{
-        // const _comp = companies.filter((_com)=>{return x.companyProfile?.companiesList?.find((company) => company.companyId === _com.id)});
-        const _comp = companies.filter((_com)=>{return x.companyProfile?.companiesList?.find((company) => true)});
+        // const _comp = companies.filter((_com)=>{return x?.companyProfile?.companiesList?.find((company) => company.companyId === _com.id)});
+        const _comp = companies.filter((_com)=>{return x?.companyProfile?.companiesList?.find((company:any) => true)});
        
         setCompanies(_comp)
       }

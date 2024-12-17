@@ -28,7 +28,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
   const router = useRouter();
   const [accounts, setAccounts] = useState([]);  
   const [username, setUsername] = useState("");
-  const [companyId, setCompanyId] = useState();
+  const [companyId, setCompanyId] = useState(14999);
   const [password, setPassword] = useState("");
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const handleCompanySelection = () => {
@@ -133,7 +133,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
                 <DialogTrigger asChild className="grow">
 
                   <Button
-                    onClick={()=>{setCompanyId(company.sageCompanyId)}}
+                    onClick={()=>{setCompanyId(company?.sageCompanyId??0)}}
                     size={"sm"}
                     type="submit"
                     className={cn(" ml-6 mr-4", status === "executing" ? "animate-pulse" : null)}
