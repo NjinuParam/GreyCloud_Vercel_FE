@@ -215,7 +215,7 @@ export default function ViewDepreciationHistoryView() {
 
   async function fetchAudit(companyId: any) {
     // setFetchingDepreciation(true);
-debugger;
+
     const response = await fetch(`${apiUrl}Depreciation/GetSageAudit/${companyId}`, {
       method: "GET",
       headers: {
@@ -225,7 +225,7 @@ debugger;
     if (response) {
 
       const res = await response.json();
-      debugger;
+      
       setAuditData(res);
       //   const res = await response.json();
       //   const newTransformedData = res?.map((depHistory: any) => ({
@@ -258,7 +258,7 @@ debugger;
       const compId = comp?.companyProfile?.loggedInCompanyId;
 
       const com = comp?.companyProfile?.companiesList?.find((x:any)=>{x.companyId ==compId})?.sageCompanyId
-      debugger;
+      
       canDepreciate(com??14999);
     });
 
@@ -313,6 +313,11 @@ debugger;
 
 
 
+       
+          {/* <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
+          <CheckCircle size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days   
+          </Badge>  */}
+          <div></div>
           <a >
             <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
               <CheckCircle size={16} style={{ paddingRight: "1%" }} /> <small> Last run: --</small>
@@ -321,10 +326,6 @@ debugger;
             <Badge style={{ padding: "2%" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
               <Timer size={16} style={{ paddingRight: "1%" }} /> <small> Next run: {nextRun()} days</small>
             </Badge> </a>
-          {/* <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
-          <CheckCircle size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days   
-          </Badge>  */}
-          <div></div>
           <a style={{ cursor: canDepr.length == 0 ? "pointer" : "none" }}>
 
             <Dialog>
@@ -390,13 +391,13 @@ debugger;
                       <div>
 
 
-                        <label style={{ float: "left", width: "60%" }}>Asset: {x}</label>
-                        <input style={{ fontSize: "14px", float: "left", width: "40%" }} type="text" placeholder="0" className="w-1/2 p-1 border border-gray-300 rounded-md" />
+                        <label style={{fontSize: "12px", float: "left", width: "60%" }}>Asset: {x}</label>
+                        <input style={{ fontSize: "10px", float: "left", width: "40%" }} type="text" placeholder="0" className="w-1/2 p-1 border border-gray-300 rounded-md" />
                       </div>
                     </>
                   })}
                 </div>
-                <label className="text-muted-foreground"> <Checkbox id="pushtosage" checked={false} /> Push journals to SAGE? </label>
+                <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>Push journals to SAGE?</label> </label>
 
                 <DialogFooter>
                   <Button

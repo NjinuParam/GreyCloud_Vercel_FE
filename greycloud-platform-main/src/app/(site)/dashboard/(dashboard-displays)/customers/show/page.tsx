@@ -128,7 +128,7 @@ export default function ShowCustomer() {
 
       const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
 
-      debugger;
+      
       getCustomers(com);
     });
   }, []);

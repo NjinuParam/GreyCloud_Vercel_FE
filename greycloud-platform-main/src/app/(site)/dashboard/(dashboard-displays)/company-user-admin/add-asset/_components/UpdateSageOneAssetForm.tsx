@@ -166,7 +166,7 @@ export default function UpdateSageOneAssetForm({
   const [categories, setCategories] = useState<any[]>([]);
   const [category, setCategory] = useState("0");
 
-  // debugger;
+  // 
 
   return (
     <>

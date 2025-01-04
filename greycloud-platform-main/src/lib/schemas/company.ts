@@ -297,6 +297,7 @@ export const UpdateSageCompanyUserPassswordSchema = z.object({
 export const SageCompanyResponseSchema = z.object({
   id: z.string(),
   companyName: z.string(),
+  companyId:z.string().nullable(),
   email: z.string().email(),
   apiKey: z.string(),
   contactName: z.string(),

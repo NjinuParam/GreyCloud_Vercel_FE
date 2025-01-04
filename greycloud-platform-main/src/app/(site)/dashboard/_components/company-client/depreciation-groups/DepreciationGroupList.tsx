@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 export const DepreciationGroupList = async () => {
   const { data: depreciationGroup } = await getAllCompanyDepreciationGroups({});
 
-  debugger;
+  
 
   return (
     <>

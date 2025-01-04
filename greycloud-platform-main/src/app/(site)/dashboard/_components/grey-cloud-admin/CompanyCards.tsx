@@ -28,23 +28,53 @@ import { getIronSessionData } from "../../../../../lib/auth/auth";
 import { toBase64 } from "../../../../../lib/utils";
 
 export const CompaniesList = ({ companies }: { companies: SageCompanyResponseType[] }) => {
-  const [_companies, setCompanies] = useState<any[]>([]);
 
+  const [_companies, setCompanies] = useState<any[]>([]);
+  const [accounts, setAccounts] = useState([]);
+  const [username, setUsername] = useState("");
+  const [companyId, setCompanyId] = useState(14999);
+  const [password, setPassword] = useState("");
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
-    getIronSessionData().then((x:any)=>{
-      if(x.role=="GreyCloud_Admin"){
-        setCompanies(companies)
-      }else{
+    getIronSessionData().then((x: any) => {
+
+      if (x.role == "GreyCloud_Admin" || x.role == "Company_Admin") {
+
+        setCompanies(x?.companyProfile?.companiesList)
+
+      } else {
         // const _comp = companies.filter((_com)=>{return x?.companyProfile?.companiesList?.find((company) => company.companyId === _com.id)});
-        const _comp = companies.filter((_com)=>{return x?.companyProfile?.companiesList?.find((company:any) => true)});
-       
+        const _comp = companies.filter((_com) => { return x?.companyProfile?.companiesList?.find((company: any) => false) });
         setCompanies(_comp)
       }
-       
-      });
+
+    });
   }, []);
- 
+
+  async function onboard(companyId: string) {
+    toast.info("Fetching depreciation history...");
+
+    const response = await fetch(`${apiUrl}GreyCloud/Admin/Get-Accounts/${companyId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
+    if (response) {
+      const res = await response.json();
+      var data = res.results;
+
+      setAccounts(data);
+
+
+    } else {
+
+    }
+  }
+
+
 
   return (
     <div className="grid grid-cols-3 gap-2 w-full h-full overflow-y-scroll">
@@ -56,13 +86,15 @@ export const CompaniesList = ({ companies }: { companies: SageCompanyResponseTyp
 };
 
 export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) => {
-  
+  debugger;
+
+
 
   return (
     <Card className="flex flex-col gap-2">
       <CardHeader className="pb-0">
         <CardTitle>{company.companyName}</CardTitle>
-        <CardDescription>{company.email}</CardDescription>
+        {company.apiKey != "Not Found" ? <CardDescription>{company.email}</CardDescription> : "--"}
       </CardHeader>
 
       <Separator className="my-2" />
@@ -126,35 +158,35 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
   const [isDeleteUser, setDeleteUser] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("Systa.io123!");
-  
-  async function fetchUsage(assetId:string){
+
+  async function fetchUsage(assetId: string) {
     const response = await fetch(`https://systa-api.azurewebsites.net/UserCompany/Get-All-Company-User?companyId=${company.id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       }
     });
-  
+
     if (response) {
-     
+
       const res = await response.json();
-    setUsers(res);
-    
-     
+      setUsers(res);
+
+
     } else {
-      
+
     }
 
-  } 
-  
-  async function assignUser(){
+  }
+
+  async function assignUser() {
     var payload = {
       email: email,
       surname: surname,
       name: firstName,
       companyId: company.id,
       password: toBase64(password),
-      role: isAdmin? "Company_Admin": "Company_User"
+      role: isAdmin ? "Company_Admin" : "Company_User"
     };
 
     const response = await fetch(`https://systa-api.azurewebsites.net/UserCompany/Create-User`, {
@@ -164,23 +196,23 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       },
       body: JSON.stringify(payload),
     });
-  
+
     if (response) {
-      
+
       const res = await response.json();
-      
-     
-     
+
+
+
     } else {
-      
+
     }
 
-  }    
+  }
 
-  
+
   useEffect(() => {
-      fetchUsage(company.id);
-    },[]);
+    fetchUsage(company.id);
+  }, []);
 
 
   const { execute, result, status, reset } = useAction(deleteGreyCloudCompany, {
@@ -207,201 +239,249 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
     },
   });
 
-  function AddUser(){
+  function AddUser() {
     assignUser();
   }
 
   const [isAdmin, setAdmin] = useState(false);
+  const [username, setUsername] = useState("");
+  const [companyId, setCompanyId] = useState(14999);
+  const [_password, set_Password] = useState("");
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+  
+  async function addCompany() {
+    const payload = {
+      Email: username,
+      password: password,
+      SageCompanyId: companyId
+    };
+    debugger;
+    const response = await fetch(`${apiUrl}SageOneCompany/Company/OnBoardNewCompany`, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.     
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      redirect: "follow", // manual, *follow, error
+      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify(payload), // body data type must match "Content-Type" header
+    });
+    const res = await response.json();
+    debugger;
+
+    if (res?.error) {
+      toast.error(`Error adding company`, {
+        description: "Please check your sage credentials and try again",
+      });
+
+
+    } else {
+      toast.success(`Company has been created!`, {
+        description: "The order was created successfully.",
+      });
+
+      // router.push("/company-picker");
+    }
+
+
+  }
+
+debugger;
   return (
     <div className="flex flex-row gap-2 items-center w-full">
-      <Dialog>
-        <DialogTrigger asChild className="grow">
-          <Button variant={"outline"} className="text-primary">
-            Edit Company
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">Edit Company</DialogTitle>
-          </DialogHeader>
 
-          <div className="w-full mt-2">
-            <UpdateSageCompanyForm company={company} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      {company.apiKey != "Not Found" ?
+        <>
 
-      <Dialog>
-        <DialogTrigger asChild className="grow">
-          <Button variant={"outline"} className="text-primary">
-            Assign users
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>
-              <span className="text-muted-foreground">Manage admin users to </span> {company.companyName}
-            </DialogTitle>
-            <small style={{float:"left", cursor:"pointer"}}><a onClick={()=>{setResetPassword(""); setDeleteUser("")}} style={{color:"blue"}}>Create new user</a></small>
-          </DialogHeader>
-          <DialogDescription className="text-base">
-           
-             <Table>
-                <TableHeader>
-                  <TableRow>   
-                    <TableHead >Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Actions</TableHead>
-                    {/* <TableHead>Serial Number</TableHead>
+
+          <Dialog>
+            <DialogTrigger asChild className="grow">
+              <Button variant={"outline"} className="text-primary">
+                Edit
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Edit Company</DialogTitle>
+              </DialogHeader>
+
+              <div className="w-full mt-2">
+                <UpdateSageCompanyForm company={company} />
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger asChild className="grow">
+              <Button variant={"outline"} className="text-primary">
+                Users
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>
+                  <span className="text-muted-foreground">Manage admin users to </span> {company.companyName}
+                </DialogTitle>
+                <small style={{ float: "left", cursor: "pointer" }}><a onClick={() => { setResetPassword(""); setDeleteUser("") }} style={{ color: "blue" }}>Create new user</a></small>
+              </DialogHeader>
+              <DialogDescription className="text-base">
+
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead >Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Actions</TableHead>
+                      {/* <TableHead>Serial Number</TableHead>
                     <TableHead>Billing type</TableHead>
                     <TableHead>Price</TableHead> */}
-                  </TableRow>
-                
-                </TableHeader>
-                <TableBody>
-                {users?.map((itm:any) => (
-                    <TableRow>
-                       <TableCell>{itm.name}</TableCell>
-                       <TableCell>{itm.email}</TableCell>
-                       <TableCell>
-                        <small style={{float:"left", cursor:"pointer"}}><a onClick={()=>{setDeleteUser(itm.id); setResetPassword("")}} style={{color:"blue"}}>Delete user</a></small><br/>
-                        <small style={{float:"left", cursor:"pointer"}}><a onClick={()=>{setResetPassword(itm.id); setDeleteUser("")}} style={{color:"blue"}}>Change password</a></small>
+                    </TableRow>
+
+                  </TableHeader>
+                  <TableBody>
+                    {users?.map((itm: any) => (
+                      <TableRow>
+                        <TableCell>{itm.name}</TableCell>
+                        <TableCell>{itm.email}</TableCell>
+                        <TableCell>
+                          <small style={{ float: "left", cursor: "pointer" }}><a onClick={() => { setDeleteUser(itm.id); setResetPassword("") }} style={{ color: "blue" }}>Delete user</a></small><br />
+                          <small style={{ float: "left", cursor: "pointer" }}><a onClick={() => { setResetPassword(itm.id); setDeleteUser("") }} style={{ color: "blue" }}>Change password</a></small>
                         </TableCell>
-            </TableRow>
-            ))}
-                </TableBody>
-              </Table>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
 
-{isResetPassword!=""?<>
-  <div className="grid grid-cols-2 gap-4 mt-4 p-4">
-        <div> <p style={{fontWeight:"bold"}} className="text-muted-foreground">Update password</p> </div><div></div>
-        
-        <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="name"><small>Password</small></Label>
-          <Input
-            id="email"
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            defaultValue={password}
-           />
-        </div>
-        <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="name"><small>Confirm Password</small></Label>
-          <Input
-            id="password"
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            defaultValue={password}
-           />
-        </div>
-        <div></div>
-<div>    
-  <Button
-                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
-                size={"lg"}
-                onClick={() => {
-                  AddUser()
-                }}
-                disabled={status === "executing" || !email || !firstName || !surname}
-                // variant={"primary"}
-              >
-                {status === "executing" ? "Updating users..." : "Update users"}
-              </Button>
-              
-              </div>
-        </div>
+                {isResetPassword != "" ? <>
+                  <div className="grid grid-cols-2 gap-4 mt-4 p-4">
+                    <div> <p style={{ fontWeight: "bold" }} className="text-muted-foreground">Update password</p> </div><div></div>
 
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="name"><small>Password</small></Label>
+                      <Input
+                        id="email"
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Email"
+                        defaultValue={password}
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="name"><small>Confirm Password</small></Label>
+                      <Input
+                        id="password"
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Password"
+                        defaultValue={password}
+                      />
+                    </div>
+                    <div></div>
+                    <div>
+                      <Button
+                        className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                        size={"lg"}
+                        onClick={() => {
+                          AddUser()
+                        }}
+                        disabled={status === "executing" || !email || !firstName || !surname}
+                      // variant={"primary"}
+                      >
+                        {status === "executing" ? "Updating users..." : "Update users"}
+                      </Button>
 
-</> :<>
-{isDeleteUser!=""?<>
-
-  <div className="grid grid-cols-1 gap-4 mt-4 p-4">
-        <div> <p style={{fontWeight:"bold"}} className="text-muted-foreground">Delete user</p> </div><div></div>
-
-        <Button
-                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
-                size={"lg"}
-                // onClick={() => {
-                //   execute({
-                //     id: company.id,
-                //   });
-                // }}
-                disabled={status === "executing"}
-                variant={"destructive"}
-              >
-                {status === "executing" ? "Deleting User..." : "Delete User"}
-              </Button>
-        <div></div>
-
-        </div>
-
-</>:<>
+                    </div>
+                  </div>
 
 
-<div className="grid grid-cols-2 gap-4 mt-4 p-4">
-        <div> <p style={{fontWeight:"bold"}} className="text-muted-foreground">Create new user</p> </div>
-        <div>
-        <input style={{marginLeft:"3%"}} onChange={(e)=>{setAdmin(!isAdmin)}} checked={isAdmin} type="checkbox"/> <small>Is Admin </small><br/>
-        </div>
+                </> : <>
+                  {isDeleteUser != "" ? <>
 
-        <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="name"><small>Name</small></Label>
-          <Input
-          onChange={(e) => setFirstName(e.target.value)}
-            id="name"
-            placeholder="Name"
-          />
-        </div>
-        <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="name"><small>Surname</small></Label>
-          <Input
-          onChange={(e) => setSurname(e.target.value)}
-            id="surname"
-            placeholder="Surname"
-          />
-        </div>
-        
-        <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="name"><small>Email</small></Label>
-          <Input
-            id="email"
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-           />
-        </div>
-        <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="name"><small>Password</small></Label>
-          <Input
-            id="password"
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            defaultValue={password}
-           />
-        </div>
-        <div></div>
-<div>    
-  <Button
-                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
-                size={"lg"}
-                onClick={() => {
-                  AddUser()
-                }}
-                disabled={status === "executing" || !email || !firstName || !surname}
-                // variant={"primary"}
-              >
-                {status === "executing" ? "Updating users..." : "Update users"}
-              </Button>
-              
-              </div>
-        </div></>}
-  </> }
-           
-            </DialogDescription>
+                    <div className="grid grid-cols-1 gap-4 mt-4 p-4">
+                      <div> <p style={{ fontWeight: "bold" }} className="text-muted-foreground">Delete user</p> </div><div></div>
 
-          <DialogFooter>
-            <DialogClose asChild>
-              {/* <Button
+                      <Button
+                        className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                        size={"lg"}
+                        // onClick={() => {
+                        //   execute({
+                        //     id: company.id,
+                        //   });
+                        // }}
+                        disabled={status === "executing"}
+                        variant={"destructive"}
+                      >
+                        {status === "executing" ? "Deleting User..." : "Delete User"}
+                      </Button>
+                      <div></div>
+
+                    </div>
+
+                  </> : <>
+
+
+                    <div className="grid grid-cols-2 gap-4 mt-4 p-4">
+                      <div> <p style={{ fontWeight: "bold" }} className="text-muted-foreground">Create new user</p> </div>
+                      <div>
+                        <input style={{ marginLeft: "3%" }} onChange={(e) => { setAdmin(!isAdmin) }} checked={isAdmin} type="checkbox" /> <small>Is Admin </small><br />
+                      </div>
+
+                      <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor="name"><small>Name</small></Label>
+                        <Input
+                          onChange={(e) => setFirstName(e.target.value)}
+                          id="name"
+                          placeholder="Name"
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor="name"><small>Surname</small></Label>
+                        <Input
+                          onChange={(e) => setSurname(e.target.value)}
+                          id="surname"
+                          placeholder="Surname"
+                        />
+                      </div>
+
+                      <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor="name"><small>Email</small></Label>
+                        <Input
+                          id="email"
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="Email"
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor="name"><small>Password</small></Label>
+                        <Input
+                          id="password"
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Password"
+                          defaultValue={password}
+                        />
+                      </div>
+                      <div></div>
+                      <div>
+                        <Button
+                          className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                          size={"lg"}
+                          onClick={() => {
+                            AddUser()
+                          }}
+                          disabled={status === "executing" || !email || !firstName || !surname}
+                        // variant={"primary"}
+                        >
+                          {status === "executing" ? "Updating users..." : "Update users"}
+                        </Button>
+
+                      </div>
+                    </div></>}
+                </>}
+
+              </DialogDescription>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  {/* <Button
                 className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
                 size={"lg"}
                 onClick={() => {
@@ -414,46 +494,122 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
               >
                 {status === "executing" ? "Deleting Company..." : "Delete Company"}
               </Button> */}
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-      <Dialog>
-        <DialogTrigger asChild className="grow">
-          <Button variant={"outline"} className="text-destructive">
-            Delete 
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle>
-              <span className="text-muted-foreground">Delete</span> {company.companyName}?
-            </DialogTitle>
-          </DialogHeader>
-          <DialogDescription className="text-base">This action cannot be undone. This will permanently delete the company account.</DialogDescription>
-
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
-                size={"lg"}
-                onClick={() => {
-                  execute({
-                    id: company.id,
-                  });
-                }}
-                disabled={status === "executing"}
-                variant={"destructive"}
-              >
-                {status === "executing" ? "Deleting Company..." : "Delete Company"}
+          <Dialog>
+            <DialogTrigger asChild className="grow">
+              <Button variant={"outline"} className="text-destructive">
+                Delete
               </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[400px]">
+              <DialogHeader>
+                <DialogTitle>
+                  <span className="text-muted-foreground">Delete</span> {company.companyName}?
+                </DialogTitle>
+              </DialogHeader>
+              <DialogDescription className="text-base">This action cannot be undone. This will permanently delete the company account.</DialogDescription>
 
-   
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button
+                    className={cn("w-full font-bold", status === "executing" ? "animate-pulse" : null)}
+                    size={"lg"}
+                    onClick={() => {
+                      execute({
+                        id: company.id,
+                      });
+                    }}
+                    disabled={status === "executing"}
+                    variant={"destructive"}
+                  >
+                    {status === "executing" ? "Deleting Company..." : "Delete Company"}
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+
+        </> : <>
+          {!company?.companyId ?
+            <Dialog>
+              <DialogTrigger asChild className="grow">
+
+                <Button
+                  onClick={() => { setCompanyId(company?.sageCompanyId ?? 0) }}
+                  size={"sm"}
+                  type="submit"
+                  className={cn(" mt-6 ml-6 mr-4", status === "executing" ? "animate-pulse" : null)}
+                  disabled={status === "executing"}
+                >
+                  Add company
+                </Button>
+
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+
+                <>
+                  Please note, adding a new company will add to your monthly bill.
+
+                  {/* <form> */}
+                  <div className="grid grid-cols-2 ">
+
+                    <div className="flex flex-col space-y-1.5 p-4">
+                      <>
+                        <Label style={{ float: 'left' }} htmlFor="name">Sage username</Label>
+                        <Input
+                          id="name"
+                          style={{ float: 'left' }}
+                          placeholder="Name"
+                          // value={depName}
+                          onChange={(e: any) => setUsername(e.target.value)}
+                        />
+                      </>
+
+                    </div>
+                    <div className="flex flex-col space-y-1.5 p-4">
+
+                      <>
+                        <Label style={{ float: 'left' }} htmlFor="password">Sage password</Label>
+                        <Input
+                          style={{ float: 'left' }}
+                          id="password"
+                          placeholder="Password"
+                          // value={depName}
+                          onChange={(e: any) => setPassword(e.target.value)}
+                        />
+                      </>
+                    </div>
+                  </div>
+            
+                  <Button
+                    onClick={() => { addCompany() }}
+                    size={"sm"}
+                    // type="submit"
+                    className={cn("w-full  mt-5 pl-4 pr-4", status === "executing" ? "animate-pulse" : null)}
+                    disabled={status === "executing"}
+                  >
+                    Add company
+                  </Button>
+                  {/* </form> */}
+
+                </>
+                <DialogFooter>
+                  <DialogClose asChild>
+
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog> : ""
+
+          }
+        </>}
+
+
 
     </div>
   );

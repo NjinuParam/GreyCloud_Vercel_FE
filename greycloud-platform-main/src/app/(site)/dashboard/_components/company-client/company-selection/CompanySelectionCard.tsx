@@ -127,8 +127,8 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
       >
         <CardHeader className="flex flex-col gap-2 pb-0">
           <CardTitle>{company.companyName}
-
-            {!company.companyId ?
+<br/><br/>
+            {!company?.companyId ?
               <Dialog>
                 <DialogTrigger asChild className="grow">
 
@@ -136,7 +136,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
                     onClick={()=>{setCompanyId(company?.sageCompanyId??0)}}
                     size={"sm"}
                     type="submit"
-                    className={cn(" ml-6 mr-4", status === "executing" ? "animate-pulse" : null)}
+                    className={cn("w-full", status === "executing" ? "animate-pulse" : null)}
                     disabled={status === "executing"}
                   >
                     Add company

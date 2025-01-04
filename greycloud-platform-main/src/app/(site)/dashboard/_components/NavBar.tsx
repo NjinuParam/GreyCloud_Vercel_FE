@@ -35,7 +35,7 @@ export default async function NavBar() {
 
   const session = await getIronSessionData();
 
-  debugger;
+  
   if (!session.isLoggedIn) {
     return null;
   }

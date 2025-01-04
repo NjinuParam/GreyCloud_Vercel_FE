@@ -258,7 +258,7 @@ export default function SageOneAssetSaveForm({
 
       quantity: qty,
     };
-    debugger;
+    
     // execute(formattedValues);
     createAsset(formattedValues.asset);
   }
