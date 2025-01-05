@@ -404,9 +404,9 @@ export default async function NavBar() {
         <a style={{textAlign:"center"}} href="#">Reports</a>
         <ul className="second-level-menu"> 
             <li><a href="/dashboard/company-user-admin/manage-depreciation-history">Depreciation</a></li>
-            <li><a href="#">Asset</a></li>
-            <li><a href="#">Customer</a></li>
-            <li><a href="#">Order</a></li>
+            <li><a href="/dashboard/company-user/manage-assets">Asset</a></li>
+            <li><a href="/dashboard/customers/show">Customer</a></li>
+            <li><a href="/dashboard/orders/show">Order</a></li>
            
         </ul>
     </li>

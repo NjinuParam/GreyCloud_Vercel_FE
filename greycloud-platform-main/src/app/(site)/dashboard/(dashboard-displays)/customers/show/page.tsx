@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, FileSpreadsheet, MoreHorizontal } from "lucide-react";
 
 import { Button } from "../../../../../../components/ui/button";
 import { Checkbox } from "../../../../../../components/ui/checkbox";
@@ -41,6 +41,7 @@ import {
   SAGE_ONE_CUSTOMER_NEW,
 } from "../../../../../../lib/api-endpoints/sage-one-customer";
 import { getIronSessionData } from "../../../../../../lib/auth/auth";
+import { useExcelDownloder } from "react-xls";
 
 const columns: ColumnDef<any>[] = [
   {
@@ -126,9 +127,9 @@ export default function ShowCustomer() {
     //  let currentCompanyId = comp.companyId;
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
-
-      
+      //const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
+      const com =comp.companyProfile.companiesList.find((x:any)=>{return x.companyId == comp.companyId})?.sageCompanyId
+      debugger;
       getCustomers(com);
     });
   }, []);
@@ -168,6 +169,8 @@ export default function ShowCustomer() {
     },
   });
 
+  const { ExcelDownloder, Type } = useExcelDownloder();
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
@@ -179,6 +182,7 @@ export default function ShowCustomer() {
           }
           className="max-w-sm"
         />
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -206,6 +210,20 @@ export default function ShowCustomer() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+     
+                {customers?.length > 0 &&
+        <ExcelDownloder
+          data={{customers:customers}}
+          filename={`CustomerExport_${new Date().toDateString()}`}
+          type={Type.Button} // or type={'button'}
+        >
+          <a style={{ cursor: "pointer" }}>
+            <FileSpreadsheet style={{ float: "left" }} /> <small>Export spreadsheet</small>
+          </a>
+        </ExcelDownloder>
+
+      }
+      <br/><br/>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -223,6 +241,7 @@ export default function ShowCustomer() {
                     </TableHead>
                   );
                 })}
+              
               </TableRow>
             ))}
           </TableHeader>

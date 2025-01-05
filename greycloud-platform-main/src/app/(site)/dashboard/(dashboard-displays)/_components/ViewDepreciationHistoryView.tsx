@@ -59,6 +59,7 @@ export default function ViewDepreciationHistoryView() {
   const [filteredData, setFilteredData] = useState<any>();
   const [summaryData, setSummaryData] = useState<any>();
   const [canDepr, setCanDepreciate] = useState<any[]>([]);
+  const [updatedUsageAssets, setUpdatedUsageAssets] = useState<any[]>([]);
 
   const [audit, setAudit] = useState<any[]>([]);
   const { ExcelDownloder, Type } = useExcelDownloder();
@@ -161,7 +162,7 @@ export default function ViewDepreciationHistoryView() {
   }
 
   function filterByDate(start: string, end: string) {
-
+debugger;
     if (start != "" && end != "") {
 
       var startDate = new Date(start);
@@ -173,8 +174,10 @@ export default function ViewDepreciationHistoryView() {
   }
 
   function changeStartDate(date: string) {
+
     setStartDate(date)
     filterByDate(date, endDate);
+
   }
 
   function changeEndDate(date: string) {
@@ -213,6 +216,71 @@ export default function ViewDepreciationHistoryView() {
     // setFetchingDepreciation(false);
   }
 
+  async function postDepreciation() {
+    toast.info("Processing...");
+    // setFetchingDepreciation(true);
+    const response = await fetch(`${apiUrl}Depreciation/DepreciationRun`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
+    if (response) {
+      toast.success(`Complete!`, {
+        description: "The depreciation run completed succesfully.",
+      });
+      const res = await response.json();
+      const newTransformedData = res?.map((depHistory: any) => ({
+        ...depHistory,
+        companyName: "company",
+      })) as AssetDepreciationHistoryTableTypes[];
+      // _setTransformedData(newTransformedData);
+
+
+    } else {
+      toast.error("Depreciation run failed", {
+        description: "Please try again.",
+      });
+    }
+
+    // setFetchingDepreciation(false);
+  }
+
+ async function POST_depreciationRun(payload:any) {
+    toast.info("Processing...");
+    
+    // setFetchingDepreciation(true);
+    const response = await fetch(`${apiUrl}Depreciation/PostDepreciationRun`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response) {
+      toast.success(`Complete!`, {
+        description: "The depreciation run completed succesfully.",
+      });
+      const res = await response.json();
+      const newTransformedData = res?.map((depHistory: any) => ({
+        ...depHistory,
+        companyName: "company",
+      })) as AssetDepreciationHistoryTableTypes[];
+      // _setTransformedData(newTransformedData);
+
+
+    } else {
+      toast.error("Depreciation run failed", {
+        description: "Please try again.",
+      });
+    }
+
+    // setFetchingDepreciation(false);
+  }
+
+
   async function fetchAudit(companyId: any) {
     // setFetchingDepreciation(true);
 
@@ -227,21 +295,8 @@ export default function ViewDepreciationHistoryView() {
       const res = await response.json();
       
       setAuditData(res);
-      //   const res = await response.json();
-      //   const newTransformedData = res?.map((depHistory: any) => ({
-      //     ...depHistory,
-      //     companyName: "company",
-      //   })) as AssetDepreciationHistoryTableTypes[];
-      //   // _setTransformedData(newTransformedData);
 
-
-      // } else {
-      //   toast.error("Depreciation run failed", {
-      //     description: "Please try again.",
-      //   });
     }
-
-    // setFetchingDepreciation(false);
   }
 
   function nextRun() {
@@ -349,7 +404,7 @@ export default function ViewDepreciationHistoryView() {
                 <DialogDescription className="text-base">
 
                   {canDepr.map((x: any) => {
-                    return <> <Label>Asset: {x}</Label> <br /></>
+                    return <> <Label>Asset: {x.name}</Label> <br /></>
                   })}
 
 
@@ -387,12 +442,30 @@ export default function ViewDepreciationHistoryView() {
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   {canDepr.map((x: any) => {
+                    
                     return <>
                       <div>
 
 
-                        <label style={{fontSize: "12px", float: "left", width: "60%" }}>Asset: {x}</label>
-                        <input style={{ fontSize: "10px", float: "left", width: "40%" }} type="text" placeholder="0" className="w-1/2 p-1 border border-gray-300 rounded-md" />
+                        <label style={{fontSize: "12px", float: "left", width: "60%" }}>Asset: {x.name}</label>
+                        <input 
+                        onChange={(e:any)=>{
+                          debugger;
+                            var up= {
+                              assetId:x.id,
+                              usage:e.target.value,
+                              sageCompanyId:myCompany?.sageCompanyId,
+                              categoryId:x.categoryId
+                            };
+
+                            var newUp = updatedUsageAssets.filter((a:any)=>{return a.assetId!==x.id});
+
+                            setUpdatedUsageAssets([...newUp,up]);
+                            debugger;
+                        }}
+                        style={{ fontSize: "10px", float: "left", width: "40%" }}
+                         type="text" placeholder="0" 
+                         className="w-1/2 p-1 border border-gray-300 rounded-md" />
                       </div>
                     </>
                   })}
@@ -402,19 +475,15 @@ export default function ViewDepreciationHistoryView() {
                 <DialogFooter>
                   <Button
                     type="submit"
-                    onClick={() => { depreciationRun() }}
+                    onClick={
+                      () => { POST_depreciationRun(updatedUsageAssets)}
+                  }
                   >
                     Run
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-
-
-
-
-
-
 
 
             <Dialog>
@@ -469,7 +538,7 @@ export default function ViewDepreciationHistoryView() {
                     type="submit"
                     onClick={() => { depreciationRun() }}
                   >
-                    Push to Sage Journals
+                    Upload journals
                   </Button>
                 </DialogFooter>
               </DialogContent>

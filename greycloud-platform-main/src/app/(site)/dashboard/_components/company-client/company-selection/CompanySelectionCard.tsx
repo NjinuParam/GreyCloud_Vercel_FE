@@ -32,6 +32,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
   const [password, setPassword] = useState("");
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const handleCompanySelection = () => {
+    debugger;
     execute({
       companyId: company.companyId,
     });

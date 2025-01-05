@@ -78,8 +78,9 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
     getIronSessionData().then((comp: any) => {
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
-
+      // const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
+      const com =comp.companyProfile.companiesList.find((x:any)=>{return x.companyId == comp.companyId})?.sageCompanyId
+      
       getOrders(com);
       
     });
@@ -335,7 +336,7 @@ usage:string
               <DropdownMenuLabel>
                 <a
                 target="_blank"
-                  href={`${apiUrl}/GetInvSalesOrderNew/GetInvoice/${order.id}`}
+                  href={`${apiUrl}SageOneOrder/SalesOrderNew/GetInvoice/${order.id}`}
                   download
                 >
                   Download Invoice
