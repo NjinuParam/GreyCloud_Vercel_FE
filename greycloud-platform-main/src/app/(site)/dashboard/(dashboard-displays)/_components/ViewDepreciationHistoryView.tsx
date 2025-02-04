@@ -72,10 +72,13 @@ export default function ViewDepreciationHistoryView() {
         return null;
       }
       const _myCompany = comp.companyProfile.companiesList?.find((company: any) => company.companyId === comp.companyProfile.loggedInCompanyId);
+
+      debugger;
       setMyCompany(_myCompany)
 
       fetchAudit(Number(_myCompany?.sageCompanyId));
-
+ 
+      canDepreciate(_myCompany?.sageCompanyId??14999);
       getAllAssetDepreciationHistory({ sageCompanyId: Number(_myCompany?.sageCompanyId) }).then((depreHistoryFull: any) => {
 
         const depreHistory = depreHistoryFull.data.data;
@@ -145,6 +148,7 @@ export default function ViewDepreciationHistoryView() {
     if (response) {
 
       const res = await response.json();
+      debugger;
       setCanDepreciate(res);
 
     } else {
@@ -251,7 +255,7 @@ debugger;
     toast.info("Processing...");
     
     // setFetchingDepreciation(true);
-    const response = await fetch(`${apiUrl}Depreciation/PostDepreciationRun`, {
+    const response = await fetch(`${apiUrl}Depreciation/PostDepreciationRun/${myCompany?.sageCompanyId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -306,20 +310,31 @@ debugger;
     return a.diff(b, 'days');
   }
 
-  useEffect(() => {
 
-    getIronSessionData().then(comp=>{
-    
-      const compId = comp?.companyProfile?.loggedInCompanyId;
 
-      const com = comp?.companyProfile?.companiesList?.find((x:any)=>{x.companyId ==compId})?.sageCompanyId
-      
-      canDepreciate(com??14999);
+  async function postJournals(compId){
+    toast.info("Processing...");
+    // setFetchingDeprecipostation(true);
+    const response = await fetch(`${apiUrl}/Depreciation/PostJournals/${compId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
     });
 
+    if (response) {
+      toast.success(`Complete!`, {
+        description: "Journals posted succesfuly.",
+      });
+      const res = await response.json();
     
 
-  }, []);
+    } else {
+      toast.error("Posting journals failed", {
+        description: "Please try again.",
+      });
+    }
+  }
 
 
 
@@ -536,7 +551,7 @@ debugger;
                   <Button
                   className="w-full"
                     type="submit"
-                    onClick={() => { depreciationRun() }}
+                    onClick={() => { postJournals(myCompany.sageCompanyId) }}
                   >
                     Upload journals
                   </Button>

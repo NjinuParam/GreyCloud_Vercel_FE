@@ -43,7 +43,7 @@ function AddDepreciationGroup() {
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
       const com = comp.companyProfile.companiesList.find((x:any)=>x.companyId ==currentCompanyId).sageCompanyId
-
+setCompanyId(com);
 
       let name = comp.companyProfile.companiesList.find(
         (x:any) => x.companyId == currentCompanyId
@@ -85,6 +85,28 @@ function AddDepreciationGroup() {
   const [sageRevaluationJournalCode, setSageRevaluationJournalCode] =
     useState("");
 
+    async function fetchAccounts(){
+      toast.info("Fetching depreciation history...");
+      
+      const response = await fetch(`https://systa-api.azurewebsites.net/GreyCloud/Admin/Get-Accounts/14999`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+    
+      if (response) {
+        const res = await response.json();
+        var data = res.results;
+        
+        setAccounts(data);
+        
+       
+      } else {
+        
+      }
+    }
+    
   async function save() {
     
     let obj = {
@@ -120,7 +142,7 @@ function AddDepreciationGroup() {
   }
 
   useEffect(() => { 
-
+    fetchAccounts();
    
    }, []);
 

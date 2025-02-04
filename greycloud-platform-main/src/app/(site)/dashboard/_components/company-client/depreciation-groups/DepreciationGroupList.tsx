@@ -8,9 +8,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Button } from "../../../../../../components/ui/button";
 import { BookOpen } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../../../../../components/ui/dialog";
+import { getIronSessionData } from "../../../../../../lib/auth/auth";
 
 export const DepreciationGroupList = async () => {
+
+  const payload = await getIronSessionData();
+const user = payload.companyProfile?.loggedInCompanyId;
+const companyId = payload.companyProfile?.companiesList?.filter((x:any)=>{return x.companyId ==user})[0];
+//  const [compId, setCompanyId] = useState<any[]>([]);
+debugger;
+
+
+
   const { data: depreciationGroup } = await getAllCompanyDepreciationGroups({});
+
+  const filtered = depreciationGroup?.filter((x:any)=>{return x.companyId == companyId?.sageCompanyId});
 
   
 
@@ -66,7 +78,7 @@ export const DepreciationGroupList = async () => {
 
         </TableHeader>
         <TableBody>
-          {depreciationGroup?.map((depreciation:any) => (
+          {filtered?.map((depreciation:any) => (
 
 
             <TableRow key={""}>

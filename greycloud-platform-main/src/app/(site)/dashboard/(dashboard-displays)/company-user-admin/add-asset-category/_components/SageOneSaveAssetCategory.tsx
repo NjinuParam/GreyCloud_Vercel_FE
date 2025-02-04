@@ -24,6 +24,7 @@ export default function SageOneAssetCategorySaveForm({callBack}: SageOneAssetCat
 
   const [loading, setLoading] = useState<boolean>(false);
   const [compId, setCompanyId] = useState<number>(14999);
+
 const router = useRouter();  
 const form = useForm<SaveSageOneAssetCategoryType>({
     resolver: zodResolver(SaveSageOneAssetCategorySchema),
@@ -83,9 +84,9 @@ const form = useForm<SaveSageOneAssetCategoryType>({
     
       const compId = x.companyProfile.loggedInCompanyId;
 
-     const com = x?.companyProfile?.companiesList?.find((x:any)=>{x.companyId ==compId})?.sageCompanyId
-      
-      setCompanyId(com ??14999);
+     const com = x.companyProfile?.companiesList?.filter((x:any)=>{return x.companyId ==compId})[0];
+ debugger;
+      setCompanyId(com?.sageCompanyId ??14999);
     });
   },[])
   

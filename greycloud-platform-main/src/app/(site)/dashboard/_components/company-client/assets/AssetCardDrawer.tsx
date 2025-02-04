@@ -15,7 +15,9 @@ export default function AssetCardDrawer({ asset, depreciationGroups, sageCompany
           <FilePenLine className="size-5" />
         </Button>
       </DrawerTrigger>
-      <DrawerContent>
+      <div style={{  }}>
+
+      <DrawerContent id="drawer-content" className="w-full">
         <div className="max-w-3xl mx-auto m-4 mb-8 w-full">
           <DrawerHeader>
             <DrawerTitle className="text-2xl">Edit Asset</DrawerTitle>
@@ -27,6 +29,8 @@ export default function AssetCardDrawer({ asset, depreciationGroups, sageCompany
           </div>
         </div>
       </DrawerContent>
+      </div>
+      
     </Drawer>
   );
 }

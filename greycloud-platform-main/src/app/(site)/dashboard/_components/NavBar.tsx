@@ -345,7 +345,7 @@ export default async function NavBar() {
   const isActive = (path: string) => pathname === path;
   const roleMenu = menuItems[session.role ?? "Company_User"] ?? [];
 
-  console.log("TEESESSE", roleMenu);
+  // console.log("TEESESSE", roleMenu);
   const AnchorWithRef = forwardRef<HTMLAnchorElement, { name: string }>(
     function AnchorWithRef({ name }, forwardedRef) {
       return <a ref={forwardedRef}>{name}</a>;
@@ -372,6 +372,13 @@ export default async function NavBar() {
         <ul className="second-level-menu">
             <li><a  href="/dashboard/company-user/add-asset">Add asset</a></li>
             <li><a  href="/dashboard/company-user/manage-assets">List of assets</a></li>
+            <li>
+                <a href="/dashboard/company-user/manage-depreciation-groups">Asset categories</a>
+                <ul className="third-level-menu">
+                <li><a href="/dashboard/company-user-admin/manage-depreciation-groups">List of categories</a></li>      
+                    <li><a href="/dashboard/company-user-admin/add-depreciation-group">Add category</a></li>                 
+                </ul>
+            </li>
             <li>
                 <a href="#">Transact</a>
                 <ul className="third-level-menu">
@@ -413,9 +420,13 @@ export default async function NavBar() {
     <li>
         <a style={{textAlign:"center"}} href="#">Company</a>
         <ul className="second-level-menu">
+
             <li><a href="/dashboard/greycloud-admin/add-company">Add company</a></li>
             <li><a href="/dashboard/greycloud-admin/manage-companies">List of companies</a></li>
-            <li><a href="#">Users</a></li>
+            <li><a href="/dashboard/company-user-admin/add-depreciation-group">Add group</a></li>
+            <li><a href="/dashboard/company-user-admin/manage-depreciation-groups">List of groups</a></li>
+            <li><a href="/dashboard/company-user-admin/add-user">Add user</a></li>
+            <li><a href="/dashboard/company-user-admin/manage-users">List of users</a></li>
            
         </ul>
     </li>
