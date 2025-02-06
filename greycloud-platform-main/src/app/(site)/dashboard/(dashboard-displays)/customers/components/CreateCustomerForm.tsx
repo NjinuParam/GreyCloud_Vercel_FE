@@ -133,11 +133,15 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
     getIronSessionData().then((x:any)=>{
     
       const compId = x.companyProfile.loggedInCompanyId;
-
-     const com = x?.companyProfile?.companiesList?.find((x:any)=>{x.companyId ==compId}).sageCompanyId
       
-      setCompanyId(com ??14999);
+      const companyId = x.companyProfile?.companiesList?.filter((y:any)=>{return y.companyId ==compId})[0]?.sageCompanyId;
+     //const p = com[0].sageCompanyId;
+    
+      setCompanyId(companyId ??14999);
     });
+    
+
+    
   },[])
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -348,7 +352,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
 
                 <div id="personal-details" className="space-y-2">
                   <p className="mb-5 text-lg text-white">.</p>
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="creditLimit"
                     render={({ field }) => (
@@ -365,7 +369,7 @@ function CreateCustomerForm({ companyId }: { companyId: any }) {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
 
                   <FormField
                     control={form.control}
