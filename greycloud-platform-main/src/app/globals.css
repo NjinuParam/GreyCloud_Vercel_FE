@@ -111,7 +111,7 @@
   }
 }
 .third-level-menu
-{z-index: 9999999999999999999999999;
+{z-index: 999999999999999999999;
   
     position: absolute;
     top: 0;
@@ -125,7 +125,7 @@
 
 .third-level-menu > li
 {
-  z-index: 999999999999999999999999999;
+  z-index: 9999999999999999999999;
     height: 30px;
     background: rgba(228, 228, 228, 0.85);
 }
@@ -145,7 +145,7 @@ height: 20% !important;
 }
 
 .second-level-menu
-{z-index: 9999999999999999999999999;
+{z-index: 999999999999999999;
     position: absolute;
     top: 30px;
     left: 0;
@@ -158,7 +158,7 @@ height: 20% !important;
 
 .second-level-menu > li
 {
-  z-index: 999999999999999999999999999;
+  z-index: 9999999999999999999;
     position: relative;
     height: 30px;
     background: rgba(228, 228, 228, 0.85);
@@ -170,11 +170,11 @@ height: 20% !important;
     list-style: none;
     padding: 0;
     margin: 0;
-    z-index: 9999999999999999999999999;
+    z-index: 999999999999999999999;
 }
 
 .top-level-menu > li
-{ z-index: 999999999999999999999999999;
+{ z-index: 9999999999999999999999;
     position: relative;
     float: left;
     height: 30px;
@@ -185,7 +185,7 @@ height: 20% !important;
 .top-level-menu a:hover { color: white }
 
 .top-level-menu li:hover > ul
-{z-index: 9999999999999999999999999;
+{z-index: 99999999999999999999;
     /* On hover, display the next level's menu */
     display: inline;
 }
