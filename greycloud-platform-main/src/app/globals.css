@@ -111,7 +111,7 @@
   }
 }
 .third-level-menu
-{
+{z-index: 9999999999999999999999999;
   
     position: absolute;
     top: 0;
@@ -145,7 +145,7 @@ height: 20% !important;
 }
 
 .second-level-menu
-{
+{z-index: 9999999999999999999999999;
     position: absolute;
     top: 30px;
     left: 0;
@@ -185,7 +185,7 @@ height: 20% !important;
 .top-level-menu a:hover { color: white }
 
 .top-level-menu li:hover > ul
-{
+{z-index: 9999999999999999999999999;
     /* On hover, display the next level's menu */
     display: inline;
 }
