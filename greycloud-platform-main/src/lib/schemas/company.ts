@@ -125,6 +125,56 @@ export type IdGetCompanyAssetType = z.infer<
   typeof IdGetCompanyAssetByCompanyIdSchema
 >;
 
+export interface ISageOneAssetType {
+  name: string | null;
+  description: string | null;
+  category: {
+    description: string | null;
+    id: number | null;
+    modified: Date | null;
+    created: Date | null;
+  };
+  location: {
+    id: number | null;
+    description: string | null;
+    physicalLocation: string | null;
+  } | null;
+  datePurchased: Date | null;
+  depreciationStart: Date | null;
+  serialNumber: string | null;
+  boughtFrom: string | null;
+  purchasePrice: number | null;
+  currentValue: number | null;
+  replacementValue: number | null;
+  textField1: string | null;
+  textField2: string | null;
+  textField3: string | null;
+  locName: string | null;
+  numericField1: number | null;
+  numericField2: number | null;
+  numericField3: number | null;
+  yesNoField1: boolean;
+  yesNoField2: boolean;
+  yesNoField3: boolean;
+  dateField1: Date;
+  dateField2: Date;
+  dateField3: Date;
+  billingType: {
+    type: number | null;
+    amount: number | null;
+    usageType: string | null;
+    usageRate: number;
+  } | null;
+  id: string | null;
+  code: string | null;
+  usage: number | null;
+  recoverableAmount: number | null;
+  residual: number | null;
+}
+
+
+
+
 export const SageOneAssetTypeSchema = z.object({
   name:z.string(),
   description: z.string(),
@@ -176,6 +226,7 @@ export const SageOneAssetTypeSchema = z.object({
   residual: z.coerce.number().default(0)
   // locName: z.string().nullable(),
 });
+
 
 
 export type SageOneAssetTypeType = z.infer<typeof SageOneAssetTypeSchema>;

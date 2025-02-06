@@ -16,7 +16,7 @@ export const DepreciationGroupList = async () => {
 const user = payload.companyProfile?.loggedInCompanyId;
 const companyId = payload.companyProfile?.companiesList?.filter((x:any)=>{return x.companyId ==user})[0];
 //  const [compId, setCompanyId] = useState<any[]>([]);
-debugger;
+;
 
 
 

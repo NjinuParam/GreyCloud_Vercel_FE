@@ -86,7 +86,7 @@ export const CompaniesList = ({ companies }: { companies: SageCompanyResponseTyp
 };
 
 export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) => {
-  debugger;
+  ;
 
 
 
@@ -256,7 +256,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       password: password,
       SageCompanyId: companyId
     };
-    debugger;
+    ;
     const response = await fetch(`${apiUrl}SageOneCompany/Company/OnBoardNewCompany`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.     
       headers: {
@@ -268,7 +268,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       body: JSON.stringify(payload), // body data type must match "Content-Type" header
     });
     const res = await response.json();
-    debugger;
+    ;
 
     if (res?.error) {
       toast.error(`Error adding company`, {
@@ -287,7 +287,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
 
   }
 
-debugger;
+;
   return (
     <div className="flex flex-row gap-2 items-center w-full">
 

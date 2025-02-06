@@ -43,7 +43,8 @@ import {
 import { PlatformUserType } from "@/lib/schemas/common-schemas";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getIronSessionData } from "@/lib/auth/auth";
-
+import AutoComplete from "react-google-autocomplete";
+import ButtonSubmitForm from "../../../../../../(auth)/admin/_components/ButtonSubmitForm";
 export type UpdateSageOneAssetFormProps = {
   asset: SageOneAssetTypeType;
   depreciationGroups: GetCompanyDepreciationGroupResponseType[];
@@ -59,21 +60,28 @@ export default function UpdateSageOneAssetForm({
   depreciationGroups,
   sageCompanyId,
 }: UpdateSageOneAssetFormProps) {
-  const form = useForm<SaveSageOneAssetType>({
-    resolver: zodResolver(SaveSageOneAssetSchema),
-    defaultValues: {
-      SageCompanyId: Number(sageCompanyId),
-      asset: {
-        ...asset,
-        assetDepreciationGroupRequestModel: {
-          active: depreciationGroups[0]?.active,
-          assetId: Number(asset.id),
-          creatingUser: depreciationGroups[0]?.creatingUser,
-          depGroupId: depreciationGroups[0]?.depGroupId,
-        },
-      },
-    },
-  });
+  // const [sageCompanyId, setSageCompanyId] = useState('');
+  const [assetName, setAssetName] = useState('');
+  const [assetCode, setAssetCode] = useState('');
+  const [assetDescription, setAssetDescription] = useState('');
+  const [streetAddress, setStreetAddress] = useState('');
+  const [physicalLocation, setPhysicalLocation] = useState('');
+  const [datePurchased, setDatePurchased] = useState<Date | undefined>(undefined);
+  const [depreciationStart, setDepreciationStart] = useState<Date | undefined>(undefined);
+  const [serialNumber, setSerialNumber] = useState('');
+  const [boughtFrom, setBoughtFrom] = useState('');
+  const [purchasePrice, setPurchasePrice] = useState('');
+  const [replacementValue, setReplacementValue] = useState('');
+  const [recoverableAmount, setRecoverableAmount] = useState('');
+  const [companyId, setCompanyId] = useState('');
+  const [usage, setUsage] = useState('');
+  const [_Id, setId] = useState('');
+  // const [category, setCategory] = useState('');
+  // const [isRental, setIsRental] = useState(false);
+  // const [billingType, setBillingType] = useState('');
+  const [isCollection, setIsCollection] = useState(false);
+  const [qty, setQty] = useState(0);
+  const [createAnother, setCreateAnother] = useState(false);
 
 
   const { execute, status } = useAction(saveSageOneAsset, {
@@ -104,39 +112,6 @@ export default function UpdateSageOneAssetForm({
   });
 
   // Define a submit handler:
-  function onSubmit(values: SaveSageOneAssetType) {
-
-    const formattedValues: SaveSageOneAssetType = {
-      ...values,
-      SageCompanyId: Number(values.SageCompanyId),
-      asset: {
-        ...values.asset,
-        purchasePrice: Number(values.asset.purchasePrice),
-        currentValue: Number(values.asset.currentValue),
-        replacementValue: Number(values.asset.replacementValue),
-        code: values.asset.code,
-        usage: Number(values.asset.usage),
-        recoverableAmount: Number(values.asset.recoverableAmount),
-        numericField1: Number(values.asset.numericField1),
-        numericField2: Number(values.asset.numericField2),
-        numericField3: Number(values.asset.numericField3),
-        assetDepreciationGroupRequestModel: {
-          ...values.asset.assetDepreciationGroupRequestModel,
-          active: Boolean(
-            values?.asset?.assetDepreciationGroupRequestModel?.active ?? true,
-          ),
-          assetId:
-            values?.asset?.assetDepreciationGroupRequestModel?.assetId ?? 0
-          ,
-          depGroupId: "",
-          creatingUser: ""
-        },
-      },
-    };
-
-
-    execute(formattedValues);
-  }
 
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -146,8 +121,9 @@ export default function UpdateSageOneAssetForm({
 
       // const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
 
-      const com =comp.companyProfile.companiesList.find((x:any)=>{return x.companyId == comp.companyId})?.sageCompanyId
-      
+      const com = comp.companyProfile.companiesList.filter((x: any) => { return x.companyId == currentCompanyId })[0]?.sageCompanyId
+
+      setCompanyId(com);
       fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`)
         .then((res) =>
           res.json().then((data) => {
@@ -157,7 +133,37 @@ export default function UpdateSageOneAssetForm({
             }, 1000);
           })
         )
-        .catch((e) => console.log(e));
+        .catch((e:any) => console.log(e));
+      const p = asset as any;
+      fetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`)
+        .then((res) =>
+          res.json().then((data) => {
+            // setSageCompanyId(data.sageCompanyId.toString());
+            ;
+            setAssetName(data.description);
+            setAssetCode(data.code);
+            setAssetDescription(data.description);
+            setStreetAddress(data.locName);
+            setPhysicalLocation(data.physicalLocation);
+            setDatePurchased(new Date(data.datePurchased));
+            setDepreciationStart(data.depreciationStartDate ? new Date(data.depreciationStartDate) : undefined);
+            setSerialNumber(data.serialNumber);
+            setBoughtFrom(data.boughtFrom);
+            setPurchasePrice(data.purchasePrice.toString());
+            setReplacementValue(data.replacementValue.toString());
+            setRecoverableAmount(data.residual.toString());
+            setUsage(data.usage.toString());
+            setCategory(data.catDescription || '');
+            setIsRental(data.rentalAsset);
+          setCategoryId(data.catIid);
+            setBillingType(data.billingType.type.toString());
+            setIsCollection(false); // Assuming this is not part of the response
+            setQty(0); // Assuming this is not part of the response
+            setCreateAnother(false); // Assuming this is not part of the response
+            setId(data.id)
+          })
+        )
+        .catch((e:any) => console.log(e));
     });
   }, []);
 
@@ -167,72 +173,132 @@ export default function UpdateSageOneAssetForm({
   const [categories, setCategories] = useState<any[]>([]);
   const [category, setCategory] = useState("0");
 
+  const [categoryId, setCategoryId] = useState(0);
+
   // 
+
+  async function updateAsset() {
+    // execute(formattedValues);
+debugger;
+const _asset = asset as any;
+    const payload = {
+      assetid: _asset.assetid,
+      description: assetName,
+      code: assetCode,
+      catDescription: categories.filter(x=>x.id == categoryId)[0]?.description,
+      catId:categoryId,
+      locName: streetAddress,
+      physicalLocation: physicalLocation,
+      datePurchased: datePurchased,
+      depreciationStartDate: depreciationStart,
+      serialNumber: serialNumber,
+      boughtFrom: boughtFrom,
+      purchasePrice: purchasePrice,
+      replacementValue: replacementValue,
+      residual: recoverableAmount,
+      usage: usage,
+      rentalAsset: isRental,
+      isCollection: isCollection,
+      qty: qty,
+      textField1: "",
+      textField2: "",
+      textField3: "",
+      _id: _Id,
+      location: {
+        id: 0,
+        description: "",
+        physicalLocation: "",
+        gps: ""
+      },
+      category: {
+        description: "",
+        id: 0,
+        // modified: "",
+        // created: ""
+      },
+
+      billingType: {
+        type: 0,
+        amount: 0,
+        usageType: "",
+        usageRate: 0
+      },
+    }
+
+    ;
+    try {
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+      await fetch(`${apiUrl}SageOneAsset/Asset/Update?CompanyId=${companyId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      toast.success(`Asset updated!`, {
+        description: "The asset updated was stored successfully.",
+      });
+
+
+
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+
+  }
+
+
+
+  const handleSubmit = (e:any) => {
+    ;
+    e.preventDefault();
+    updateAsset();
+    // Handle form submission
+  };
+
 
   return (
     <>
-      {/* <Form {...form}> */}
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-2 gap-6 justify-center mb-4">
-            <FormField
-              control={form.control}
-              name="asset.description"
-              render={({ field }) => (
-                <FormItem className="flex-1 grow min-w-full">
-                  <FormLabel>Asset Description</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+
+
+      {/* <Form> */}
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-2 gap-6 justify-center mb-4">
+
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Asset name</label>
+            <Input
+              className="mt-2"
+              defaultValue={assetName}
+              value={assetName}
+              onChange={(e:any) => setAssetName(e.target.value)}
+              placeholder=""
             />
-
-            <FormField
-              control={form.control}
-              name="asset.code"
-              render={({ field }) => (
-                <FormItem className="flex-1 grow min-w-full">
-                  <FormLabel>Asset Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+          </div>
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Asset code</label>
+            <Input
+              className="mt-2"
+              value={assetCode}
+              onChange={(e:any) => setAssetCode(e.target.value)}
+              placeholder=""
             />
-
-            {/* <FormField
-                control={form.control}
-                name="asset.category.description"
-                render={({ field }) => (
-                  <FormItem className="flex-1 grow min-w-full">
-                    <FormLabel>Asset Category Description</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
-
-            <div className="flex flex-col mt-8">
+          </div>
+          <div>
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Category</label>
+            <div style={{ marginTop: "7px" }}>
               <Select
-                onValueChange={(e) => {
-                  const cat = categories && categories.find((x) => x.description == e).id;
-                  setCategory(cat);
-                  asset.category = cat;
-                }}
+                onValueChange={(value) => {setCategoryId(parseInt(value));}}
+                
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Category" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Category</SelectLabel>
-                    {categories.map((c: any) => (
-                      <SelectItem key={c.id} value={c.description}>
+                    {categories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
                         {c.description}
                       </SelectItem>
                     ))}
@@ -240,358 +306,187 @@ export default function UpdateSageOneAssetForm({
                 </SelectContent>
               </Select>
             </div>
-
-            <FormField
-              control={form.control}
-              name="SageCompanyId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company ID</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="number" min={0} disabled />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="asset.id"
-              render={({ field }) => (
-                <FormItem className="flex-1 grow min-w-full">
-                  <FormLabel>Asset ID</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={form.control._defaultValues.asset?.id?.toString()}
-                      {...field}
-                      disabled
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="asset.location.description"
-              render={({ field }) => (
-                <FormItem className="flex-1 grow min-w-full">
-                  <FormLabel>Street Address</FormLabel>
-                  <FormControl>
-                    <Input
-                      // disabled={true}
-                      defaultValue={asset.locName ?? ""}
-                      placeholder={asset.locName ?? ""}
-                      {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="asset.location.physicalLocation"
-              render={({ field }) => (
-                <FormItem className="flex-1 grow min-w-full">
-                  <FormLabel>Physical location</FormLabel>
-                  <FormControl>
-                    <Input
-                      // disabled={true}
-                      defaultValue={asset?.location?.physicalLocation ?? ""}
-                      placeholder={asset?.location?.physicalLocation ?? ""}
-                      {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="asset.datePurchased"
-              render={({ field }) => (
-                <FormItem className="flex flex-col w-full grow min-w-full">
-                  <FormLabel>Date Purchased</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date > new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="asset.serialNumber"
-              render={({ field }) => (
-                <FormItem className="flex-1 grow min-w-full">
-                  <FormLabel>Serial Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="asset.boughtFrom"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bought From</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="asset.purchasePrice"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Purchase Price</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder=""
-                      {...field}
-                      type="number"
-                      min={0}
-                      step="0.01"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="asset.replacementValue"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Replacement Value</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder=""
-                      {...field}
-                      type="number"
-                      min={0}
-                      step="0.01"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="asset.currentValue"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Current Value</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder=""
-                      {...field}
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      disabled={true}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+          </div>
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Description</label>
+            <Input
+              className="mt-2"
+              value={assetDescription}
+              onChange={(e:any) => setAssetDescription(e.target.value)}
+              placeholder=""
             />
           </div>
 
-          <div>
-            <div className="items-top flex space-x-2">
-              <Checkbox
-                id="terms1"
-                checked={isRental}
-                onCheckedChange={(e) => {
-                  setIsRental(!isRental);
-                }}
-              />
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Street address</label>
+            <AutoComplete
 
-              <div className="flex flex-col w-full">
-                <div className="grid gap-1.5 leading-none">
-                  <label
-                    htmlFor="terms1"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Rental
-                  </label>
-                  <p className="text-sm text-muted-foreground">
-                    Mark this asset as a rental.
-                  </p>
-                </div>
+              style={{ zIndex: 99999999 }}
+              className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
+              defaultValue={streetAddress}
+              apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+              onPlaceSelected={(place) => {
+                setStreetAddress(place?.formatted_address);
+              }}
+              options={{
+                types: ["geocode", "establishment"],
+                componentRestrictions: { country: "za" },
+              }}
+            />
+          </div>
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Physical location</label>
+            <Input
+              className="mt-2"
+              value={physicalLocation}
+              onChange={(e:any) => setPhysicalLocation(e.target.value)}
+              placeholder="e.g. Room 403"
+            />
+          </div>
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Purchase date</label>
+            <br /> <input type="date"
+              className="mt-2"
+              onChange={(e:any) => {
 
-                {isRental ? (
-                  <div className="mt-4 flex gap-4">
-                    <Select value={
-                      billingType == "" ?
-                        (asset?.billingType?.type == 0 ? "daily" :
-                          asset?.billingType?.type == 1 ? "onceoff" :
-                            asset?.billingType?.type == 2 ? "onceoffusage" :
-                              asset?.billingType?.type == 4 ? "usage" : ""
-                        ) : ""
-                    } onValueChange={(e) => setBillingType(e)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Billing type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Billing type</SelectLabel>
-                          <SelectItem value="daily">Daily</SelectItem>
-                          <SelectItem value="onceoff">Once Off</SelectItem>
-                          <SelectItem value="onceoffusage">
-                            Once Off + Usage
-                          </SelectItem>
-                          <SelectItem value="usage">Usage</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+              }}
 
-                    {((billingType == "" && asset && asset?.billingType?.type == 0) || billingType === "daily") ? (
-                      <div className="w-full">
-                        <Input
-                          className="w-full"
-                          type="number"
-                          defaultValue={asset?.billingType?.amount}
-                          placeholder="Price"
-                        />
-                      </div>
-                    ) : (
-                      <></>
-                    )}
+            />
+          </div>
 
-                    {((billingType == "" && asset && asset?.billingType?.type == 1) || billingType === "onceoff") ? (
-                      <div className="w-full">
-                        <Input
-                          className="w-full"
-                          type="number"
-                          defaultValue={asset?.billingType?.amount}
-                          placeholder="Price"
-                        />
-                      </div>
-                    ) : (
-                      <></>
-                    )}
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Depreciation start date</label>
+            <br />   <input type="date"
+              className="mt-2"
+              onChange={(e:any) => {
 
-                    {((billingType == "" && asset && asset?.billingType?.type == 2) || billingType === "onceoffusage") ? (
-                      <div className="flex flex-row gap-4 w-full">
-                        <Input
-                          className="w-full"
-                          type="number"
-                          placeholder="Price"
-                          defaultValue={asset?.billingType?.amount}
-                        />
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Usage type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Usage type</SelectLabel>
-                              <SelectItem value="km">KM</SelectItem>
-                              <SelectItem value="hours">Hours</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          className="w-full"
-                          type="number"
-                          placeholder="Usage type price"
-                        />
-                      </div>
-                    ) : (
-                      <></>
-                    )}
+              }}
 
-                    {((billingType == "" && asset && asset?.billingType?.type == 3) || billingType === "usage") ? (
-                      <div className="flex flex-row gap-4 w-full">
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Usage type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Usage type</SelectLabel>
-                              <SelectItem value="km">KM</SelectItem>
-                              <SelectItem value="hours">Hours</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          className="w-full"
-                          type="number"
-                          placeholder="Usage type price"
-                          defaultValue={asset?.billingType?.amount}
-                        />
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                ) : (
-                  <></>
-                )}
+            />
+          </div>
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Serial number</label>
+            <Input
+              className="mt-2"
+              value={serialNumber}
+              onChange={(e:any) => setSerialNumber(e.target.value)}
+              placeholder=""
+            />
+          </div>
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Purchased from</label>
+            <Input
+              className="mt-2"
+              value={boughtFrom}
+              onChange={(e:any) => setBoughtFrom(e.target.value)}
+              placeholder=""
+            />
+          </div>
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Purchase price</label>
+
+            <Input
+              className="mt-2"
+              value={purchasePrice}
+              onChange={(e:any) => setPurchasePrice(e.target.value)}
+              type="number"
+              min={0}
+              step="0.01"
+            />
+          </div>
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Replacement value</label>
+            <Input
+              className="mt-2"
+              value={replacementValue}
+              onChange={(e:any) => setReplacementValue(e.target.value)}
+              type="number"
+              min={0}
+              step="0.01"
+            />
+          </div>
+          <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Recoverable amount</label>
+
+            <Input
+              className="mt-2"
+              value={recoverableAmount}
+              onChange={(e:any) => setRecoverableAmount(e.target.value)}
+              type="number"
+              min={1}
+              step="1"
+
+            />
+          </div>
+
+          {/* <div className="items-top flex space-x-2 mt-5">
+            <div className="flex flex-col w-full">
+              <div className="grid gap-1.5 leading-none">
+                <label
+                  htmlFor="terms1"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Mark asset as a collection
+                </label>
+                <p className="text-sm text-muted-foreground">
+                  Create multiple identical assets
+                </p>
               </div>
             </div>
-          </div>
+          </div> */}
+        </div>
+        <div>
+          <div className="items-top flex space-x-2 mt-5">
+            <Checkbox
+              id="terms1"
+              checked={isRental}
+              onCheckedChange={(e:any) => setIsRental(e.valueOf().toString() === "true")}
+            />
 
-          <div className="w-full pt-2">
-            <Button
-              className={cn(
-                "w-full font-bold",
-                status === "executing" ? "animate-pulse" : null
+            <div className="flex flex-col w-full">
+              <div className="grid gap-1.5 leading-none">
+                <label
+                  htmlFor="terms1"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Rental
+                </label>
+                <p className="text-sm text-muted-foreground">
+                  Mark this asset as a rental.
+                </p>
+              </div>
+
+              {isRental ? (
+                <div className="mt-4 flex gap-4">
+                  <Select
+                    onValueChange={(value) => setBillingType(value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Billing type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Billing type</SelectLabel>
+                        <SelectItem value="daily">Daily</SelectItem>
+                        <SelectItem value="onceoff">Once Off</SelectItem>
+                        <SelectItem value="onceoffusage">
+                          Once Off + Usage
+                        </SelectItem>
+                        <SelectItem value="usage">Usage</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <></>
               )}
-              size={"lg"}
-              type="submit"
-            // disabled={status === "executing"}
-            >
-              {status === "executing" ? "Edting Asset..." : "Edit Asset"}
-            </Button>
+            </div>
           </div>
-        </form>
-      </Form>
+        </div>
+
+        <div className="w-full pt-4">
+          <Button type="submit" >Update Asset</Button>
+        </div>
+
+        {/* <div style={{ float: "right", marginTop: "15px" }}>
+          <p style={{ float: "left", marginRight: "5px" }} className="text-sm text-muted-foreground">
+            Add another
+          </p>
+        </div> */}
+      </form>
       {/* </Form> */}
+
+
     </>
   );
 }

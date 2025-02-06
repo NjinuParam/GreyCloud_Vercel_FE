@@ -85,7 +85,7 @@ const form = useForm<SaveSageOneAssetCategoryType>({
       const compId = x.companyProfile.loggedInCompanyId;
 
      const com = x.companyProfile?.companiesList?.filter((x:any)=>{return x.companyId ==compId})[0];
- debugger;
+ ;
       setCompanyId(com?.sageCompanyId ??14999);
     });
   },[])

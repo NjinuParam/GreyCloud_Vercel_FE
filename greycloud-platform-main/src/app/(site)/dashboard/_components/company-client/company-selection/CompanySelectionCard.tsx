@@ -32,7 +32,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
   const [password, setPassword] = useState("");
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const handleCompanySelection = () => {
-    debugger;
+    ;
     execute({
       companyId: company.companyId,
     });
@@ -44,7 +44,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
       password:password,
       SageCompanyId: companyId
     };
-    debugger;
+    ;
     const response = await fetch(`${apiUrl}SageOneCompany/Company/OnBoardNewCompany`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.     
       headers: {
@@ -56,7 +56,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
       body: JSON.stringify(payload), // body data type must match "Content-Type" header
     });
     const res = await response.json();
-    debugger;
+    ;
 
     if(res?.error){
       toast.error(`Error adding company`, {

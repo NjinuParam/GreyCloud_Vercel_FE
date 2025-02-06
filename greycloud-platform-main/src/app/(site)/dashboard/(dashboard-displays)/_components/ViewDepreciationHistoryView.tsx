@@ -73,7 +73,7 @@ export default function ViewDepreciationHistoryView() {
       }
       const _myCompany = comp.companyProfile.companiesList?.find((company: any) => company.companyId === comp.companyProfile.loggedInCompanyId);
 
-      debugger;
+      ;
       setMyCompany(_myCompany)
 
       fetchAudit(Number(_myCompany?.sageCompanyId));
@@ -148,7 +148,7 @@ export default function ViewDepreciationHistoryView() {
     if (response) {
 
       const res = await response.json();
-      debugger;
+      ;
       setCanDepreciate(res);
 
     } else {
@@ -166,7 +166,7 @@ export default function ViewDepreciationHistoryView() {
   }
 
   function filterByDate(start: string, end: string) {
-debugger;
+;
     if (start != "" && end != "") {
 
       var startDate = new Date(start);
@@ -312,7 +312,7 @@ debugger;
 
 
 
-  async function postJournals(compId){
+  async function postJournals(compId:any){
     toast.info("Processing...");
     // setFetchingDeprecipostation(true);
     const response = await fetch(`${apiUrl}/Depreciation/PostJournals/${compId}`, {
@@ -465,7 +465,7 @@ debugger;
                         <label style={{fontSize: "12px", float: "left", width: "60%" }}>Asset: {x.name}</label>
                         <input 
                         onChange={(e:any)=>{
-                          debugger;
+                          ;
                             var up= {
                               assetId:x.id,
                               usage:e.target.value,
@@ -476,7 +476,7 @@ debugger;
                             var newUp = updatedUsageAssets.filter((a:any)=>{return a.assetId!==x.id});
 
                             setUpdatedUsageAssets([...newUp,up]);
-                            debugger;
+                            ;
                         }}
                         style={{ fontSize: "10px", float: "left", width: "40%" }}
                          type="text" placeholder="0" 

@@ -129,7 +129,7 @@ export default function ShowCustomer() {
 
       //const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
       const com =comp.companyProfile.companiesList.find((x:any)=>{return x.companyId == comp.companyId})?.sageCompanyId
-      debugger;
+      ;
       getCustomers(com);
     });
   }, []);

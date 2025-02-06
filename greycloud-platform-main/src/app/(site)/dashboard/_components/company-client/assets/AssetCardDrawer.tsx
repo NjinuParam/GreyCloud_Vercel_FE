@@ -8,6 +8,8 @@ import UpdateSageOneAssetForm, {
 import { FilePenLine } from "lucide-react";
 
 export default function AssetCardDrawer({ asset, depreciationGroups, sageCompanyId }: UpdateSageOneAssetFormProps) {
+  ;
+  
   return (
     <Drawer>
       <DrawerTrigger asChild className="grow">
