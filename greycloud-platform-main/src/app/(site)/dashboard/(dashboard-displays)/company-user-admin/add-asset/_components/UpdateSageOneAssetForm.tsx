@@ -31,15 +31,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { GetCompanyDepreciationGroupResponseType } from "@/lib/schemas/depreciation";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import Select from 'react-select';
 import { PlatformUserType } from "@/lib/schemas/common-schemas";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getIronSessionData } from "@/lib/auth/auth";
@@ -72,7 +64,7 @@ export default function UpdateSageOneAssetForm({
   const [boughtFrom, setBoughtFrom] = useState('');
   const [purchasePrice, setPurchasePrice] = useState('');
   const [replacementValue, setReplacementValue] = useState('');
-  const [recoverableAmount, setRecoverableAmount] = useState('');
+  const [recoverableAmount, setRecoverableAmount] = useState("1");
   const [companyId, setCompanyId] = useState('');
   const [usage, setUsage] = useState('');
   const [_Id, setId] = useState('');
@@ -155,7 +147,7 @@ export default function UpdateSageOneAssetForm({
             setUsage(data.usage.toString());
             setCategory(data.catDescription || '');
             setIsRental(data.rentalAsset);
-          setCategoryId(data.catIid);
+            setCategoryId(data.catIid);
             setBillingType(data.billingType.type.toString());
             setIsCollection(false); // Assuming this is not part of the response
             setQty(0); // Assuming this is not part of the response
@@ -175,11 +167,13 @@ export default function UpdateSageOneAssetForm({
 
   const [categoryId, setCategoryId] = useState(0);
 
+  const [GPSLocation, setGPSLocation] = useState(0);
+
   // 
 
   async function updateAsset() {
     // execute(formattedValues);
-debugger;
+
 const _asset = asset as any;
     const payload = {
       assetid: _asset.assetid,
@@ -188,6 +182,7 @@ const _asset = asset as any;
       catDescription: categories.filter(x=>x.id == categoryId)[0]?.description,
       catId:categoryId,
       locName: streetAddress,
+      streetAddress:streetAddress,
       physicalLocation: physicalLocation,
       datePurchased: datePurchased,
       depreciationStartDate: depreciationStart,
@@ -206,9 +201,9 @@ const _asset = asset as any;
       _id: _Id,
       location: {
         id: 0,
-        description: "",
-        physicalLocation: "",
-        gps: ""
+        description: streetAddress,
+        physicalLocation: physicalLocation,
+        gps: GPSLocation
       },
       category: {
         description: "",
@@ -223,9 +218,11 @@ const _asset = asset as any;
         usageType: "",
         usageRate: 0
       },
-    }
+    };
 
-    ;
+    debugger;
+
+
     try {
 
       const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -258,6 +255,18 @@ const _asset = asset as any;
     // Handle form submission
   };
 
+  const customStyle = {
+    option: (base:any) => ({
+      ...base,
+      backgroundColor: "white",
+      font:"black !important",
+      zIndex:999999999999999
+    }),
+     menuPortal: (base:any) => ({ ...base, zIndex: 999999999999999999 }) 
+  }
+
+  const mappedCategories = categories.map(x=>{return {label:x.description,value:x.id}});
+
 
   return (
     <>
@@ -286,8 +295,8 @@ const _asset = asset as any;
           </div>
           <div>
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Category</label>
-            <div style={{ marginTop: "7px" }}>
-              <Select
+            <div style={{ marginTop: "10px" }}>
+              {/* <Select
                 onValueChange={(value) => {setCategoryId(parseInt(value));}}
                 
               >
@@ -304,7 +313,18 @@ const _asset = asset as any;
                     ))}
                   </SelectGroup>
                 </SelectContent>
-              </Select>
+              </Select> */}
+
+              <Select
+                     styles={customStyle}
+                      value = {
+                        mappedCategories.filter(option => 
+                           option.value == categoryId )
+                     }
+                  onChange={(value) => {setCategoryId(parseInt(value?.value??"0"));}}
+                  options={mappedCategories}
+                />
+
             </div>
           </div>
           <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Description</label>
@@ -324,12 +344,15 @@ const _asset = asset as any;
               defaultValue={streetAddress}
               apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
               onPlaceSelected={(place) => {
+                debugger;
+                // setGPSLocation( `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`);
                 setStreetAddress(place?.formatted_address);
               }}
               options={{
                 types: ["geocode", "establishment"],
                 componentRestrictions: { country: "za" },
               }}
+              
             />
           </div>
           <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Physical location</label>
@@ -344,8 +367,9 @@ const _asset = asset as any;
             <br /> <input type="date"
               className="mt-2"
               onChange={(e:any) => {
-
+                setDatePurchased(e.target.value);
               }}
+              defaultValue={datePurchased ? format(datePurchased, "yyyy-MM-dd") : ""}
 
             />
           </div>
@@ -353,9 +377,11 @@ const _asset = asset as any;
           <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Depreciation start date</label>
             <br />   <input type="date"
               className="mt-2"
-              onChange={(e:any) => {
 
+              onChange={(e:any) => {
+                setDepreciationStart(e.target.value);
               }}
+              defaultValue={depreciationStart ? format(depreciationStart, "yyyy-MM-dd") : ""}
 
             />
           </div>
@@ -399,6 +425,7 @@ const _asset = asset as any;
           <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Recoverable amount</label>
 
             <Input
+            defaultValue={recoverableAmount}
               className="mt-2"
               value={recoverableAmount}
               onChange={(e:any) => setRecoverableAmount(e.target.value)}
@@ -446,7 +473,7 @@ const _asset = asset as any;
                 </p>
               </div>
 
-              {isRental ? (
+              {/* {isRental ? (
                 <div className="mt-4 flex gap-4">
                   <Select
                     onValueChange={(value) => setBillingType(value)}
@@ -469,7 +496,7 @@ const _asset = asset as any;
                 </div>
               ) : (
                 <></>
-              )}
+              )} */}
             </div>
           </div>
         </div>

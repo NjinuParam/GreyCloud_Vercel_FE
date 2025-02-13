@@ -336,7 +336,22 @@ export default function ViewDepreciationHistoryView() {
     }
   }
 
+function filter(option:any){
+const endDate = new Date().toString()
+  if(option=="0"){
+    clearFilters();
+  }
+  if(option =="1"){
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 7);
+    filterByDate(startDate.toString(), endDate);
+  }
+}
 
+
+function clearFilters(){
+  transformedData && setFilteredData(transformedData);
+}
 
   return (
     <div className="mx-auto min-w-full min-h-full">
@@ -349,6 +364,30 @@ export default function ViewDepreciationHistoryView() {
           </div>
           <div>
             {/* <label>Search by date</label><br/> */}
+            {/* <div className="grid grid-cols-2 gap-1  mb-4">
+              <div><small>Start</small><br />
+                <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" className="w-2/3 p-1 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
+              </div>
+              <div><small>End</small><br />
+                <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
+              </div>
+            </div> */}
+
+            
+          </div>
+          
+
+        </div>
+        <div className="grid grid-cols-2 gap-2 justify-center mb-4">
+          <div>
+            <small>Date filters</small><br />
+            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e:any)=>{if(e==true){ filter(1)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>This month</label> </label><br/>
+            <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>Last 4 months</label> </label><br/>
+            <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>Last 6 months</label> </label><br/>
+            <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>Year to date</label> </label>
+            </div>
+          <div>
+            {/* <label>Search by date</label><br/> */}
             <div className="grid grid-cols-2 gap-1  mb-4">
               <div><small>Start</small><br />
                 <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" className="w-2/3 p-1 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
@@ -357,7 +396,10 @@ export default function ViewDepreciationHistoryView() {
                 <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
               </div>
             </div>
+
+            
           </div>
+          
 
         </div>
         <div className="grid grid-cols-4 gap-1  mb-4">
@@ -393,9 +435,11 @@ export default function ViewDepreciationHistoryView() {
               <CheckCircle size={16} style={{ paddingRight: "1%" }} /> <small> Last run: --</small>
             </Badge>
 
-            <Badge style={{ padding: "2%" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
+            {/* <Badge style={{ padding: "2%" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
               <Timer size={16} style={{ paddingRight: "1%" }} /> <small> Next run: {nextRun()} days</small>
-            </Badge> </a>
+            </Badge>  */}
+            
+            </a>
           <a style={{ cursor: canDepr.length == 0 ? "pointer" : "none" }}>
 
             <Dialog>

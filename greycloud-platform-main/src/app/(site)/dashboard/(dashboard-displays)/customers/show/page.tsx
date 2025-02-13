@@ -128,7 +128,7 @@ export default function ShowCustomer() {
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
       //const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
-      const com =comp.companyProfile.companiesList.find((x:any)=>{return x.companyId == comp.companyId})?.sageCompanyId
+      const com =comp.companyProfile.companiesList.filter((x:any)=>{return x.companyId ==currentCompanyId})[0]?.sageCompanyId
       ;
       getCustomers(com);
     });

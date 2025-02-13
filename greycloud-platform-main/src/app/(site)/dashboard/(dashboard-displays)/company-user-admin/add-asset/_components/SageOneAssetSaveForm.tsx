@@ -334,7 +334,7 @@ export default function SageOneAssetSaveForm({
 
                 <Dialog>
                   <DialogTrigger asChild className="grow">
-                    <button className="text-sm text-blue-500 ml-2"><small>Create New</small></button>
+                    <button className="text-sm text-blue-500 ml-2"><small>x</small></button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[400px]">
 
@@ -408,7 +408,7 @@ export default function SageOneAssetSaveForm({
                                 apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
                                 onPlaceSelected={(place:any) => {
                                 
-                                  setGPSLocation( `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`);
+                                  // setGPSLocation( `${place?.geometry?.location?.lat().toString()},${place?.geometry?.location?.lng().toString()}`);
                                   setStreetAddress(place?.formatted_address)
                                 
                                   // ass[i].address = place?.formatted_address;
