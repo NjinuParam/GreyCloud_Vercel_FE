@@ -55,9 +55,10 @@ const form = useForm<SaveSageOneAssetCategoryType>({
       toast.success(`Asset category saved!`, {
                 description: "The asset category was stored successfully.",
               });
-              
+              debugger;
               // router.refresh();
-              callBack && callBack();
+              // callBack && callBack();
+              window?.location?.reload();
 
     } catch (e: any) {
       toast.error(e.message);

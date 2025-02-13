@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
@@ -70,6 +70,15 @@ export default function SageOneAssetSaveForm({
   SageCompanyId,
   children,
 }: SageOneAssetSaveFormProps) {
+  
+    const closeButtonRef = useRef(null);
+  
+    const close = () => {
+      if (closeButtonRef.current) {
+        closeButtonRef.current.click();
+      }
+    };
+
 
   const form = useForm<SaveSageOneAssetType>({
     resolver: zodResolver(SaveSageOneAssetSchema),
@@ -125,12 +134,14 @@ export default function SageOneAssetSaveForm({
 
 
   useEffect(() => {
-
+    
     getCategories();
   }, []);
 
 
   function getCategories() {
+    debugger;
+    close();
     getIronSessionData().then((comp: any) => {
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 

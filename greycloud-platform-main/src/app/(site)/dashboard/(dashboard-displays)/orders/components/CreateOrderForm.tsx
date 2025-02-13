@@ -339,7 +339,7 @@ setCompanyId(sageCompanyId);
       toast.success(`Order created!`, {
         description: "The order was created successfully.",
       });
-      router.push("/dashboard/greycloud-admin/manage-companies");
+      router.push("/dashboard/orders/show");
     } catch (e) {
       console.log(e);
     }

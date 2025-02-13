@@ -57,6 +57,7 @@ export default function ViewDepreciationHistoryView() {
   const [transformedData, setTransformedData] = useState<any>();
   const [auditData, setAuditData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any>();
+  const [selectedDateFilter,setSelectedDateFilter] = useState<any>();
   const [summaryData, setSummaryData] = useState<any>();
   const [canDepr, setCanDepreciate] = useState<any[]>([]);
   const [updatedUsageAssets, setUpdatedUsageAssets] = useState<any[]>([]);
@@ -337,6 +338,8 @@ export default function ViewDepreciationHistoryView() {
   }
 
 function filter(option:any){
+  debugger;
+  setSelectedDateFilter(option);
 const endDate = new Date().toString()
   if(option=="0"){
     clearFilters();
@@ -346,10 +349,27 @@ const endDate = new Date().toString()
     startDate.setDate(startDate.getDate() - 7);
     filterByDate(startDate.toString(), endDate);
   }
+  if(option =="2"){
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    filterByDate(startDate.toString(), endDate);
+  }
+  if(option =="3"){
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 180);
+    filterByDate(startDate.toString(), endDate);
+  }
+  if(option =="4"){
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 365);
+    filterByDate(startDate.toString(), endDate);
+  }
+  
 }
 
 
 function clearFilters(){
+  debugger;
   transformedData && setFilteredData(transformedData);
 }
 
@@ -381,10 +401,10 @@ function clearFilters(){
         <div className="grid grid-cols-2 gap-2 justify-center mb-4">
           <div>
             <small>Date filters</small><br />
-            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e:any)=>{if(e==true){ filter(1)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>This month</label> </label><br/>
-            <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>Last 4 months</label> </label><br/>
-            <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>Last 6 months</label> </label><br/>
-            <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>Year to date</label> </label>
+            <label className="text-muted-foreground"> <Checkbox  onCheckedChange={(e:any)=>{debugger; if(e==true){ filter(1)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={selectedDateFilter==1} /> <label style={{ fontSize: "12px"}}>This month</label> </label><br/>
+            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e:any)=>{if(e==true){ filter(2)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={selectedDateFilter==2} /> <label style={{ fontSize: "12px"}}>Last 4 months</label> </label><br/>
+            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e:any)=>{if(e==true){ filter(3)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={selectedDateFilter==3} /> <label style={{ fontSize: "12px"}}>Last 6 months</label> </label><br/>
+            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e:any)=>{if(e==true){ filter(4)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={selectedDateFilter==4} /> <label style={{ fontSize: "12px"}}>Year to date</label> </label>
             </div>
           <div>
             {/* <label>Search by date</label><br/> */}

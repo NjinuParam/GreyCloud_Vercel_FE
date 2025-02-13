@@ -45,12 +45,14 @@ export type UpdateSageOneAssetFormProps = {
   updateUsage?: Function;
   updateAddress?: Function;
   catDescription?: string;
+  closeFn?:Function;
 };
 
 export default function UpdateSageOneAssetForm({
   asset,
   depreciationGroups,
   sageCompanyId,
+  closeFn
 }: UpdateSageOneAssetFormProps) {
   // const [sageCompanyId, setSageCompanyId] = useState('');
   const [assetName, setAssetName] = useState('');
@@ -238,6 +240,8 @@ const _asset = asset as any;
         description: "The asset updated was stored successfully.",
       });
 
+      closeFn();
+
 
 
     } catch (e: any) {
@@ -252,6 +256,7 @@ const _asset = asset as any;
     ;
     e.preventDefault();
     updateAsset();
+
     // Handle form submission
   };
 

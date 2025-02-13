@@ -67,7 +67,8 @@ export default function ShowOrder() {
   const [ordersFormated, setOrdersFormated] = React.useState<any[]>([]);
   const [ordersFiltered, setOrdersFiltered] = React.useState<any[]>([]);
   const [selectedFilter, setSelectedFilter] = React.useState(-1);
-const [addressToggles, setAddressToggles] = React.useState<any>({});
+  const [addressToggles, setAddressToggles] = React.useState<any>({});
+  const [updatedAssets, setUpdatedAssets] = React.useState<any>([]);
 
   const [loading, setLoading] = React.useState(true);
 
@@ -79,21 +80,21 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
       // const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
-      const com =comp.companyProfile.companiesList.find((x:any)=>{return x.companyId == comp.companyId})?.sageCompanyId
-      
+      const com = comp.companyProfile.companiesList.find((x: any) => { return x.companyId == comp.companyId })?.sageCompanyId
+
       getOrders(com);
-      
+
     });
   }, []);
 
 
-  const filterOrders = (state:number)=>{
-    if(state == -1){
+  const filterOrders = (state: number) => {
+    if (state == -1) {
       setOrdersFiltered(ordersFormated);
       setSelectedFilter(state);
       return;
     }
-    var _filtered = ordersFormated.filter((o:any) => {
+    var _filtered = ordersFormated.filter((o: any) => {
       return o.status == state
 
     });
@@ -102,16 +103,17 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
     setSelectedFilter(state);
   }
 
-  function toggleThis(index:number){
-    
-    setAddressToggles({...addressToggles, i:true})
-  
+  function toggleThis(index: number) {
+
+    setAddressToggles({ ...addressToggles, i: true })
+
   }
- 
+
 
 
   const completeOrder = async (orderId: string, assets: any[]) => {
     try {
+      debugger;
       toast.info("Processing...");
       const response = await fetch(
         `${apiUrl}SageOneOrder/SalesOrderNew/Complete/${orderId}`,
@@ -121,14 +123,14 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({assets:assets}),
+          body: JSON.stringify({ assets: updatedAssets }),
         }
-        
+
       );
       toast.success(`Order updated!`, {
         description: "The order was updated successfully.",
       });
-      
+
       getOrders(compId);
     } catch (e) {
       toast.error(`Error occured!`, {
@@ -143,11 +145,11 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
       setLoading(true)
       const response = await fetch(endpoint + `/${sageCompId}`);
       const res = await response.json();
-      
+
       setOrders(res);
       let fOrders = [] as any[];
 
-      res.forEach((o:any) => {
+      res.forEach((o: any) => {
         let fo = {
           id: o.id,
           customer: o.customer.name,
@@ -168,56 +170,56 @@ const [addressToggles, setAddressToggles] = React.useState<any>({});
     }
   };
 
-  
-async function updateStartOrderAssets(payload:any,orderId:string){
-  toast.info("Processing...");
-  try {
-    const response = await fetch(
-      `${apiUrl}SageOneOrder/SalesOrderNew/Start/${orderId}`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({assets:payload}),
-      }
-    );
-    toast.success(`Order updated!`, {
-      description: "The order was updated successfully.",
-    });
-    getOrders(compId);
-  } catch (e) {
-    toast.error(`Error occured!`, {
-      description: "Please try again.",
-    });
-    console.log(e);
+
+  async function updateStartOrderAssets(payload: any, orderId: string) {
+    toast.info("Processing...");
+    try {
+      const response = await fetch(
+        `${apiUrl}SageOneOrder/SalesOrderNew/Start/${orderId}`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ assets: payload }),
+        }
+      );
+      toast.success(`Order updated!`, {
+        description: "The order was updated successfully.",
+      });
+      getOrders(compId);
+    } catch (e) {
+      toast.error(`Error occured!`, {
+        description: "Please try again.",
+      });
+      console.log(e);
+    }
   }
-}
 
 
-function initStartOrderModal(order:any, assets: any[]){
-  const req =assets.map((asset:any)=>{
-    return {
-      assetId: asset.assetId,
-      address:"",
-      gps:"",
-      usage: ""
+  function initStartOrderModal(order: any, assets: any[]) {
+    const req = assets.map((asset: any) => {
+      return {
+        assetId: asset.assetId,
+        address: "",
+        gps: "",
+        usage: ""
 
-    } as IUpdateOrderUsage;
-  })
+      } as IUpdateOrderUsage;
+    })
 
-  // setStartOrderAssets(req);
+    // setStartOrderAssets(req);
 
 
-}
+  }
 
-interface IUpdateOrderUsage{
-assetId:string;
-address: string;
-gps:string;
-usage:string
-}
+  interface IUpdateOrderUsage {
+    assetId: string;
+    address: string;
+    gps: string;
+    usage: string
+  }
 
 
 
@@ -274,11 +276,11 @@ usage:string
       header: () => <div>Order Status</div>,
       cell: ({ row }) => (
         <div className="">
-           <Badge variant="outline" className={row.getValue("status")=="0" ? `max-w-fit mt-1 bg-green-100 text-green-700`: row.getValue("status")=="4" ?`max-w-fit mt-1 bg-red-100 text-red-700`:  `max-w-fit mt-1 bg-green-100 text-green-700`}>
-           {row.getValue("status")=="0"? "New Order" : row.getValue("status")=="1" ? "Awaiting Delivery" : row.getValue("status")=="2" ? "Ongoing" : row.getValue("status")=="3" ? "Completed": row.getValue("status")=="4" ? "Overdue": "Cancelled"}
+          <Badge variant="outline" className={row.getValue("status") == "0" ? `max-w-fit mt-1 bg-green-100 text-green-700` : row.getValue("status") == "4" ? `max-w-fit mt-1 bg-red-100 text-red-700` : `max-w-fit mt-1 bg-green-100 text-green-700`}>
+            {row.getValue("status") == "0" ? "New Order" : row.getValue("status") == "1" ? "Awaiting Delivery" : row.getValue("status") == "2" ? "Ongoing" : row.getValue("status") == "3" ? "Completed" : row.getValue("status") == "4" ? "Overdue" : "Cancelled"}
           </Badge>
-          
-          </div>
+
+        </div>
       ),
     },
     {
@@ -307,23 +309,26 @@ usage:string
       enableHiding: false,
       cell: ({ row }) => {
         const order = row.original;
-        const _assets = orders.find((x:any) => x.id === order.id) as any;
+        const _assets = orders.find((x: any) => x.id === order.id) as any;
         const assets = _assets?.assets;
         let ass: any[] = [];
-        assets.forEach((a:any) => {
+        let updatedAssets :any[] = [];
+        assets.forEach((a: any) => {
           if (a?.assetDetail?.billingType) {
             ass.push({
               assetId: a.assetId,
               returned: true,
-              assetLocation:a?.assetDetail?.locName,
+              assetLocation: a?.assetDetail?.locName,
               usage: a.assetDetail?.billingType?.usageType
                 ? a?.assetDetail?.billingType?.amount
                 : 0,
-                startUsage: a.startUsage??0
+              startUsage: a.startUsage ?? 0
             });
+            
           }
         });
 
+        
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -335,7 +340,7 @@ usage:string
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
                 <a
-                target="_blank"
+                  target="_blank"
                   href={`${apiUrl}SageOneOrder/SalesOrderNew/GetInvoice/${order.id}`}
                   download
                 >
@@ -345,15 +350,15 @@ usage:string
 
               <Dialog>
                 <DialogTrigger asChild>
-                  {( order.status ==4 || order.status == 2) && 
+                  {(order.status == 4 || order.status == 2) &&
                     <DropdownMenuLabel className="cursor-pointer">
-                    Complete Order
-                  </DropdownMenuLabel>
+                      Complete Order
+                    </DropdownMenuLabel>
                   }
 
-              
 
-                
+
+
                 </DialogTrigger>
                 <DialogContent className="">
                   <DialogHeader>
@@ -365,62 +370,63 @@ usage:string
                   <div className="grid gap-4 py-4">
                     {ass.map((a, i) => (
                       <>
-                      <div  style={{paddingBottom: "20px", paddingTop:"20px"}} className="w-full flex flex-row justify-between items-center">
-                        <div className="w-full">
-                        <h2 style={{fontWeight:"bold"}} >
-                            {
-                              assets.find((x:any) => x.assetId == a.assetId).assetDetail.description
-                            }
-                             <label style={{marginLeft:"15%"}}> <Checkbox checked={true}></Checkbox><small style={{marginLeft:"2%", fontWeight:"normal"}}>Mark as returned  </small></label>
-                              
-                          </h2>
-                          <p>
-                           { (a.billingType?.type==2 || a.billingType==3) && <small>
-                            Starting usage: {
-                              a.startUsage
-                            } {  assets.find((x:any) => x.assetId == a.assetId)
-                              .assetDetail.billingType.usageType}
-                            </small>
-                            }
-                          </p>
-                          <br/>
-                          {a.usage !== 0 ? (
-                            <div>
+                        <div style={{ paddingBottom: "20px", paddingTop: "20px" }} className="w-full flex flex-row justify-between items-center">
+                          <div className="w-full">
+                            <h2 style={{ fontWeight: "bold" }} >
+                              {
+                                assets.find((x: any) => x.assetId == a.assetId).assetDetail.description
+                              }
+                              <label style={{ marginLeft: "15%" }}> <Checkbox checked={true}></Checkbox><small style={{ marginLeft: "2%", fontWeight: "normal" }}>Mark as returned  </small></label>
+
+                            </h2>
+                            <p>
+                              {(a.billingType?.type == 2 || a.billingType == 3) && <small>
+                                Starting usage: {
+                                  a.startUsage
+                                } {assets.find((x: any) => x.assetId == a.assetId)
+                                  .assetDetail.billingType.usageType}
+                              </small>
+                              }
+                            </p>
+                            <br />
+                            {a.usage !== 0 ? (
+                              <div>
                                 <label><small>Set final usage</small></label>
-                              <Input
-                               className="mt-4"
-                                type="number"
-                                placeholder="Usage"
-                                value={a.usage}
-                                onChange={(e) => {
-                                  ass[i].usage = e.target.value;
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <></>
-                          )}
+                                <Input
+                                  className="mt-4"
+                                  type="number"
+                                  placeholder="Usage"
+                                  value={a.usage}
+                                  onChange={(e) => {
+                                    ass[i].usage = e.target.value;
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+
+
                         </div>
-                       
-                       
-                      </div>
-                      <div style={{ borderBottom: "1px solid silver",  paddingBottom: "40px"}}>
-                    
-                    <small> Please enter drop off address or select from your <small onClick={(e)=>{ toggleThis(i)}} style={{color:"blue", cursor:"pointer"}}> saved addresses</small> </small>
+                        <div style={{ borderBottom: "1px solid silver", paddingBottom: "40px" }}>
+
+                          <small> Please enter drop off address or select from your <small onClick={(e) => { toggleThis(i) }} style={{ color: "blue", cursor: "pointer" }}> saved addresses</small> </small>
                           {
-                            addressToggles[i]?<>
-Test      </>:<>
-                            <AutoComplete
-                            style={{zIndex:99999999}}
-                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
-                             defaultValue={order?.address??""}
+                            addressToggles[i] ? <>
+                              Test      </> : <>
+                              <AutoComplete
+                                style={{ zIndex: 99999999 }}
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
+                                defaultValue={order?.address ?? ""}
                                 apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                                onPlaceSelected={(place:any) => {
-                                
-                                
+                                onPlaceSelected={(place: any) => {
+                                  
+                                  setUpdatedAssets([...updatedAssets, {assetId: a.assetId, address: place?.formatted_address, gps: `${place.geometry.location.lat()},${place.geometry.location.lng()}` }])
+                                  
                                   ass[i].address = place?.formatted_address;
                                   ass[i].gps = `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`
-                                                                  
+
                                 }}
                                 options={{
                                   types: ["geocode", "establishment"],//Must add street addresses not just cities
@@ -429,14 +435,14 @@ Test      </>:<>
                               />
                             </>
                           }
-                          
-                       
 
-                      </div>
-                      
-                                          </>
+
+
+                        </div>
+
+                      </>
                     ))}
-               
+
                   </div>
                   <DialogFooter>
                     <Button
@@ -452,17 +458,17 @@ Test      </>:<>
               </Dialog>
               <Dialog>
                 <DialogTrigger asChild>
-                  {order.status ==1 && 
-                    <DropdownMenuLabel onClick={()=>initStartOrderModal(order, ass)} className="cursor-pointer">
-                    Start Order
-                  </DropdownMenuLabel>
+                  {order.status == 1 &&
+                    <DropdownMenuLabel onClick={() => initStartOrderModal(order, ass)} className="cursor-pointer">
+                      Start Order
+                    </DropdownMenuLabel>
                   }
 
-              
 
-                
+
+
                 </DialogTrigger>
-                
+
                 <DialogContent className="">
                   <DialogHeader>
                     <DialogTitle>Start Order</DialogTitle>
@@ -473,99 +479,99 @@ Test      </>:<>
                   <div className="grid gap-2 py-4">
                     {ass.map((a, i) => (
                       <>
-                      <div  style={{paddingTop: "20px"}} className="w-full flex flex-row justify-between items-center">
-                        <div className="w-full">
-                          <h2 style={{fontWeight:"bold"}}>
-                            {
-                              assets.find((x:any) => x.assetId == a.assetId).assetDetail.description
+                        <div style={{ paddingTop: "20px" }} className="w-full flex flex-row justify-between items-center">
+                          <div className="w-full">
+                            <h2 style={{ fontWeight: "bold" }}>
+                              {
+                                assets.find((x: any) => x.assetId == a.assetId).assetDetail.description
+                              }
+                              <label style={{ marginLeft: "15%" }}> <Checkbox checked={true}></Checkbox><small style={{ marginLeft: "2%", fontWeight: "normal" }}>Mark as delivered  </small></label>
+
+                            </h2>
+
+                            <br />
+                            {a.usage !== 0 ? (<p>
+                              <small>
+                                Last recorded usage: {
+                                  a.startUsage
+                                } {assets.find((x: any) => x.assetId == a.assetId)
+                                  .assetDetail.billingType.usageType}
+                              </small>
+                            </p>) : <></>
                             }
-                             <label style={{marginLeft:"15%"}}> <Checkbox checked={true}></Checkbox><small style={{marginLeft:"2%", fontWeight:"normal"}}>Mark as delivered  </small></label>
-                              
-                          </h2>
-                       
-                          <br/>
-                          {a.usage !== 0 ?  (<p>
-                            <small>
-                            Last recorded usage: {
-                              a.startUsage
-                            } {  assets.find((x:any) => x.assetId == a.assetId)
-                              .assetDetail.billingType.usageType}
-                            </small>
-                          </p>):<></>
-                          }
-                          <br/>
-                          {a.usage !== 0 ? (
-                        <div className="grid w-full items-center grid-cols-2 gap-4">
-                           <div className=" justify-between items-center">
-                                <label><small>Enter initial usage</small></label>
-                              <Input
-                                className="mt-4"
-                                type="number"
-                                placeholder="Usage"
-                                value={a.usage}
-                                onChange={(e) => {
-                                  ass[i].usage = e.target.value;
-                                }}
-                              />
-                            </div>
-                            </div>
-                          ) : (
-                            <></>
-                          )}
-                        </div>
-                       
-                       
-                      </div>
-                      <div>
-                    
-                      <small> Please enter pickup address or select from your <a  onClick={(e)=>{ }}  style={{color:"blue", cursor:"pointer"}}> saved addresses</a> </small>
-                            
-                              <AutoComplete
-                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
-                              //  defaultValue={a.postalAddress01??""}
-                                defaultValue={ass[i].assetLocation??""}
-                                  apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                                  onPlaceSelected={(place:any) => {
-                                  
-                                  
-                                    ass[i].address = place?.formatted_address;
-                                    ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
-                                                                    
-                                  }}
-                                  options={{
-                                    types: ["geocode", "establishment"],//Must add street addresses not just cities
-                                    componentRestrictions: { country: "za" },
-                                  }}
-                                />
-                         
+                            <br />
+                            {a.usage !== 0 ? (
+                              <div className="grid w-full items-center grid-cols-2 gap-4">
+                                <div className=" justify-between items-center">
+                                  <label><small>Enter initial usage</small></label>
+                                  <Input
+                                    className="mt-4"
+                                    type="number"
+                                    placeholder="Usage"
+                                    value={a.usage}
+                                    onChange={(e) => {
+                                      ass[i].usage = e.target.value;
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+
 
                         </div>
-                        <div  style={{ borderBottom: "1px solid silver",  paddingBottom: "40px"}}>
-                    
-                      <small> Destination address  </small>
-                            
-                              <AutoComplete
-                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
-                                defaultValue={order.address??""}
-                                  apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                                  onPlaceSelected={(place:any) => {
-                                  
-                                    ass[i].address = place?.formatted_address;
-                                    ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
-                                                                    
-                                  }}
-                                  options={{
-                                    types: ["geocode", "establishment"],//Must add street addresses not just cities
-                                    componentRestrictions: { country: "za" },
-                                  }}
-                                />
-                         
+                        <div>
+
+                          <small> Please enter pickup address or select from your <a onClick={(e) => { }} style={{ color: "blue", cursor: "pointer" }}> saved addresses</a> </small>
+
+                          <AutoComplete
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
+                            //  defaultValue={a.postalAddress01??""}
+                            defaultValue={ass[i].assetLocation ?? ""}
+                            apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                            onPlaceSelected={(place: any) => {
+
+
+                              ass[i].address = place?.formatted_address;
+                              ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
+
+                            }}
+                            options={{
+                              types: ["geocode", "establishment"],//Must add street addresses not just cities
+                              componentRestrictions: { country: "za" },
+                            }}
+                          />
+
+
+                        </div>
+                        <div style={{ borderBottom: "1px solid silver", paddingBottom: "40px" }}>
+
+                          <small> Destination address  </small>
+
+                          <AutoComplete
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
+                            defaultValue={order.address ?? ""}
+                            apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                            onPlaceSelected={(place: any) => {
+
+                              ass[i].address = place?.formatted_address;
+                              ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
+
+                            }}
+                            options={{
+                              types: ["geocode", "establishment"],//Must add street addresses not just cities
+                              componentRestrictions: { country: "za" },
+                            }}
+                          />
+
 
                         </div>
 
-                        </>
+                      </>
                     ))}
-                 
+
                   </div>
                   <DialogFooter>
                     <Button
@@ -574,7 +580,7 @@ Test      </>:<>
                         updateStartOrderAssets(ass, order.id);
                       }}
                     >
-                    Start order
+                      Start order
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -619,105 +625,105 @@ Test      </>:<>
           className="max-w-sm"
         />
         <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               Filter By Status <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-          <DropdownMenuCheckboxItem
-                    key="-1"
-                    className="capitalize"
-                    checked={selectedFilter == -1}
-                    onCheckedChange={(value) =>
-                      filterOrders(-1)
-                    }
-                  >
-                    All orders
-                  </DropdownMenuCheckboxItem>
-             
-                <DropdownMenuCheckboxItem
-                    key="0"
-                    className="capitalize"
-                    checked={selectedFilter == 0}
-                    // checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      filterOrders(0)
-                    }
-                  > 
-                    <Badge variant="outline" className={cn(`bg-green-100 text-green-700`)}>
-                    New Orders
-                    </Badge>
-                  
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    key="1"
-                    className="capitalize"
-                    checked = {selectedFilter == 1}
-                    // checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      filterOrders(1)
-                    }
-                  >
-                  <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`)}>
-                    Awaiting delivery
-                  </Badge>
-               
-                  </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              key="-1"
+              className="capitalize"
+              checked={selectedFilter == -1}
+              onCheckedChange={(value) =>
+                filterOrders(-1)
+              }
+            >
+              All orders
+            </DropdownMenuCheckboxItem>
 
-                  <DropdownMenuCheckboxItem
-                    key="2"
-                    className="capitalize"
-                    checked = {selectedFilter == 2}
-                    // checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      filterOrders(2)
-                    }
-                  >
-                  <Badge variant="outline" className={cn(`max-w-fit mt-1  bg-orange-100 text-orange-700`)}>
-                    Ongoing orders
-                  </Badge>
-               
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    key="4"
-                    className="capitalize"
-                    checked = {selectedFilter == 4}
-                    // checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      filterOrders(4)
-                    }
-                  >
-                  <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`)}>
-                    Overdue orders
-                  </Badge>
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    key="3"
-                    className="capitalize"
-                    checked = {selectedFilter == 3}
-                    // checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      filterOrders(3)
-                    }
-                  >
-                    <Badge variant="outline" className={cn(`max-w-fit mt-1`)}>
-                    Completed orders
-                  </Badge>
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    key="5"
-                    checked = {selectedFilter == 5}
-                    className="capitalize"
-                    // checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      filterOrders(5)
-                    }
-                  >
-                  <Badge variant="outline" className={cn(`max-w-fit mt-1 `)}>
-                    Cancelled orders
-                  </Badge>
-                  </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              key="0"
+              className="capitalize"
+              checked={selectedFilter == 0}
+              // checked={column.getIsVisible()}
+              onCheckedChange={(value) =>
+                filterOrders(0)
+              }
+            >
+              <Badge variant="outline" className={cn(`bg-green-100 text-green-700`)}>
+                New Orders
+              </Badge>
+
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              key="1"
+              className="capitalize"
+              checked={selectedFilter == 1}
+              // checked={column.getIsVisible()}
+              onCheckedChange={(value) =>
+                filterOrders(1)
+              }
+            >
+              <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`)}>
+                Awaiting delivery
+              </Badge>
+
+            </DropdownMenuCheckboxItem>
+
+            <DropdownMenuCheckboxItem
+              key="2"
+              className="capitalize"
+              checked={selectedFilter == 2}
+              // checked={column.getIsVisible()}
+              onCheckedChange={(value) =>
+                filterOrders(2)
+              }
+            >
+              <Badge variant="outline" className={cn(`max-w-fit mt-1  bg-orange-100 text-orange-700`)}>
+                Ongoing orders
+              </Badge>
+
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              key="4"
+              className="capitalize"
+              checked={selectedFilter == 4}
+              // checked={column.getIsVisible()}
+              onCheckedChange={(value) =>
+                filterOrders(4)
+              }
+            >
+              <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`)}>
+                Overdue orders
+              </Badge>
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              key="3"
+              className="capitalize"
+              checked={selectedFilter == 3}
+              // checked={column.getIsVisible()}
+              onCheckedChange={(value) =>
+                filterOrders(3)
+              }
+            >
+              <Badge variant="outline" className={cn(`max-w-fit mt-1`)}>
+                Completed orders
+              </Badge>
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              key="5"
+              checked={selectedFilter == 5}
+              className="capitalize"
+              // checked={column.getIsVisible()}
+              onCheckedChange={(value) =>
+                filterOrders(5)
+              }
+            >
+              <Badge variant="outline" className={cn(`max-w-fit mt-1 `)}>
+                Cancelled orders
+              </Badge>
+            </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <DropdownMenu>
@@ -758,9 +764,9 @@ Test      </>:<>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
@@ -790,7 +796,7 @@ Test      </>:<>
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                    { loading? "Fetching orders..." : "No results."}
+                  {loading ? "Fetching orders..." : "No results."}
                 </TableCell>
               </TableRow>
             )}
