@@ -408,7 +408,7 @@ export default function SageOneAssetSaveForm({
                                 apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
                                 onPlaceSelected={(place:any) => {
                                 
-                                  // setGPSLocation( `${place?.geometry?.location?.lat().toString()},${place?.geometry?.location?.lng().toString()}`);
+                                   setGPSLocation( `${place?.geometry?.location?.lat().toString()},${place?.geometry?.location?.lng().toString()}`);
                                   setStreetAddress(place?.formatted_address)
                                 
                                   // ass[i].address = place?.formatted_address;

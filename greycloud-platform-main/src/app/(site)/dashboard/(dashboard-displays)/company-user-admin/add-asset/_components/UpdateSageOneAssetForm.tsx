@@ -167,7 +167,7 @@ export default function UpdateSageOneAssetForm({
 
   const [categoryId, setCategoryId] = useState(0);
 
-  const [GPSLocation, setGPSLocation] = useState(0);
+  const [GPSLocation, setGPSLocation] = useState("");
 
   // 
 
@@ -345,7 +345,7 @@ const _asset = asset as any;
               apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
               onPlaceSelected={(place) => {
                 debugger;
-                // setGPSLocation( `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`);
+                setGPSLocation( `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`);
                 setStreetAddress(place?.formatted_address);
               }}
               options={{

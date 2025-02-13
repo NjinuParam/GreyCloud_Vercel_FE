@@ -156,7 +156,7 @@ export default function CompanyUserRegisterForm() {
       email: "",
       password: "",
       passwordConfirmation: "",
-      apiKey: "",
+      apiKey: "{3A1FAB7A-D758-49F4-A958-C3AB2765AC9A}",
       role:"Company_Admin"
     },
   });
@@ -287,7 +287,8 @@ export default function CompanyUserRegisterForm() {
             />
           </div> */}
 
-            <FormField
+            {/* <FormField
+
               control={form.control}
               name="apiKey"
               render={({ field }) => (
@@ -299,7 +300,7 @@ export default function CompanyUserRegisterForm() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           <FormField
             control={form.control}
             name="email"
