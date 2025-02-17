@@ -45,6 +45,7 @@ const form = useForm<SaveSageOneAssetCategoryType>({
       
     const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+    
       await fetch(`${apiUrl}SageOneAsset/AssetCategory/Save?CompanyId=${compId}`, {
         method: "POST",
         headers: {
@@ -58,7 +59,10 @@ const form = useForm<SaveSageOneAssetCategoryType>({
               debugger;
               // router.refresh();
               // callBack && callBack();
-              window?.location?.reload();
+              setTimeout(() => {
+                window?.location?.reload();
+              }, 4000);
+             
 
     } catch (e: any) {
       toast.error(e.message);
@@ -81,14 +85,16 @@ const form = useForm<SaveSageOneAssetCategoryType>({
   }
   
   useEffect(()=>{
-    getIronSessionData().then((x:any)=>{
-    
-      const compId = x.companyProfile.loggedInCompanyId;
-
-     const com = x.companyProfile?.companiesList?.filter((x:any)=>{return x.companyId ==compId})[0];
- ;
-      setCompanyId(com?.sageCompanyId ??14999);
-    });
+     getIronSessionData().then((x:any)=>{
+        
+          const compId = x.companyProfile.loggedInCompanyId;
+          
+          const companyId = x.companyProfile?.companiesList?.filter((y:any)=>{return y.companyId ==compId})[0]?.sageCompanyId;
+         //const p = com[0].sageCompanyId;
+        debugger;
+          setCompanyId(companyId ??14999);
+        });
+        
   },[])
   
   return (

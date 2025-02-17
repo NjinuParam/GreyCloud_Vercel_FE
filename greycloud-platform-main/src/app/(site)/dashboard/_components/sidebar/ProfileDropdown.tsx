@@ -133,9 +133,11 @@ export default function ProfileDropdown({ session, children }: { session: Platfo
 
             <DropdownMenuItem
               onClick={() => {
-                router.push("/login");
+                
 
                 isCompanyUser(session.role) ? logoutCUser({}) : logoutGCAdmin({});
+                router.push("/login");
+                window?.location?.reload();
               }}
             >
               Log out

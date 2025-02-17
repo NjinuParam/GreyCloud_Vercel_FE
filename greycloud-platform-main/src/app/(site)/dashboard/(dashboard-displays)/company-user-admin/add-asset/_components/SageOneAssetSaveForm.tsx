@@ -71,11 +71,11 @@ export default function SageOneAssetSaveForm({
   children,
 }: SageOneAssetSaveFormProps) {
   
-    const closeButtonRef = useRef(null);
+    const closeButtonRef = useRef<any>(null);
   
     const close = () => {
       if (closeButtonRef.current) {
-        closeButtonRef.current.click();
+        closeButtonRef.current?.click();
       }
     };
 
@@ -143,12 +143,11 @@ export default function SageOneAssetSaveForm({
     debugger;
     close();
     getIronSessionData().then((comp: any) => {
-      const currentCompanyId = comp.companyProfile.loggedInCompanyId;
-
-      // const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
-      const com =comp.companyProfile.companiesList.find((x:any)=>{return x.companyId == comp.companyId})?.sageCompanyId
-      
-      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`)
+      const compId = comp.companyProfile.loggedInCompanyId;
+          
+      const companyId = comp.companyProfile?.companiesList?.filter((y:any)=>{return y.companyId ==compId})[0]?.sageCompanyId;
+ 
+      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${companyId}`)
         .then((res) => res.json().then((data) => { setCategories(data.results); }))
         .catch((e) => console.log(e));
     });
@@ -345,7 +344,7 @@ export default function SageOneAssetSaveForm({
 
                 <Dialog>
                   <DialogTrigger asChild className="grow">
-                    <button className="text-sm text-blue-500 ml-2"><small>x</small></button>
+                    <button className="text-sm text-blue-500 ml-2"><small>Add new category</small></button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[400px]">
 

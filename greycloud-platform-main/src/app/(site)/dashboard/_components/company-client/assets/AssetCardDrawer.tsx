@@ -12,11 +12,11 @@ import { useRef } from "react";
 
 export default function AssetCardDrawer({ asset, depreciationGroups, sageCompanyId }: UpdateSageOneAssetFormProps) {
 
-  const closeButtonRef = useRef(null);
+  const closeButtonRef =  useRef<any>(null);
 
   const close = () => {
     if (closeButtonRef.current) {
-      closeButtonRef.current.click();
+      closeButtonRef.current?.click();
     }
   };
   

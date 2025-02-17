@@ -43,10 +43,10 @@ if (response) {
     getIronSessionData().then((x:any)=>{
     
       const compId = x.companyProfile.loggedInCompanyId;
-
-     const com = x?.companyProfile?.companiesList?.find((x:any)=>{x.companyId ==compId}).sageCompanyId
       
-      setCompanyId(com ??14999);
+      const companyId = x.companyProfile?.companiesList?.filter((y:any)=>{return y.companyId ==compId})[0]?.sageCompanyId;
+     //const p = com[0].sageCompanyId;
+      setCompanyId(companyId ??14999);
     });
   },[])
 

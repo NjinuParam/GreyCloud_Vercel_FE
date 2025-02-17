@@ -37,6 +37,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { getIronSessionData } from "@/lib/auth/auth";
 import AutoComplete from "react-google-autocomplete";
 import ButtonSubmitForm from "../../../../../../(auth)/admin/_components/ButtonSubmitForm";
+import { SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from "../../../../../../../components/ui/select";
+import { SelectValue } from "@radix-ui/react-select";
 export type UpdateSageOneAssetFormProps = {
   asset: SageOneAssetTypeType;
   depreciationGroups: GetCompanyDepreciationGroupResponseType[];
@@ -45,7 +47,7 @@ export type UpdateSageOneAssetFormProps = {
   updateUsage?: Function;
   updateAddress?: Function;
   catDescription?: string;
-  closeFn?:Function;
+  closeFn?: Function;
 };
 
 export default function UpdateSageOneAssetForm({
@@ -127,7 +129,7 @@ export default function UpdateSageOneAssetForm({
             }, 1000);
           })
         )
-        .catch((e:any) => console.log(e));
+        .catch((e: any) => console.log(e));
       const p = asset as any;
       fetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`)
         .then((res) =>
@@ -157,7 +159,7 @@ export default function UpdateSageOneAssetForm({
             setId(data.id)
           })
         )
-        .catch((e:any) => console.log(e));
+        .catch((e: any) => console.log(e));
     });
   }, []);
 
@@ -166,25 +168,32 @@ export default function UpdateSageOneAssetForm({
   const [billingType, setBillingType] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
   const [category, setCategory] = useState("0");
-
+  const [categoryDesc, setCategoryDesc] = useState("");
   const [categoryId, setCategoryId] = useState(0);
 
   const [GPSLocation, setGPSLocation] = useState("");
-
+  debugger;
   // 
+
+  const options = [
+    { label: "Daily", value: "0" },
+    { label: "Once Off", value: "1" },
+    { label: "Once Off + Usage", value: "2" },
+    { label: "Usage", value: "3" },
+  ];
 
   async function updateAsset() {
     // execute(formattedValues);
 
-const _asset = asset as any;
+    const _asset = asset as any;
     const payload = {
       assetid: _asset.assetid,
       description: assetName,
       code: assetCode,
-      catDescription: categories.filter(x=>x.id == categoryId)[0]?.description,
-      catId:categoryId,
+      catDescription: categories.filter(x => x.id == categoryId)[0]?.description,
+      catId: categoryId,
       locName: streetAddress,
-      streetAddress:streetAddress,
+      streetAddress: streetAddress,
       physicalLocation: physicalLocation,
       datePurchased: datePurchased,
       depreciationStartDate: depreciationStart,
@@ -208,8 +217,8 @@ const _asset = asset as any;
         gps: GPSLocation
       },
       category: {
-        description: "",
-        id: 0,
+        description:categories.filter(x => x.id == categoryId)[0]?.description,
+        id: categoryId
         // modified: "",
         // created: ""
       },
@@ -240,7 +249,7 @@ const _asset = asset as any;
         description: "The asset updated was stored successfully.",
       });
 
-      closeFn();
+      closeFn && closeFn();
 
 
 
@@ -252,7 +261,7 @@ const _asset = asset as any;
 
 
 
-  const handleSubmit = (e:any) => {
+  const handleSubmit = (e: any) => {
     ;
     e.preventDefault();
     updateAsset();
@@ -261,17 +270,19 @@ const _asset = asset as any;
   };
 
   const customStyle = {
-    option: (base:any) => ({
+    option: (base: any) => ({
       ...base,
       backgroundColor: "white",
-      font:"black !important",
-      zIndex:999999999999999
+      font: "black !important",
+      zIndex: 999999999999999
     }),
-     menuPortal: (base:any) => ({ ...base, zIndex: 999999999999999999 }) 
+    menuPortal: (base: any) => ({ ...base, zIndex: 999999999999999999 })
   }
 
-  const mappedCategories = categories.map(x=>{return {label:x.description,value:x.id}});
+  const mappedCategories = categories.map(x => { return { label: x.description, value: x.id } });
 
+  const _hasRental = asset?.billingType?.amount !== 0;
+  debugger;
 
   return (
     <>
@@ -286,7 +297,7 @@ const _asset = asset as any;
               className="mt-2"
               defaultValue={assetName}
               value={assetName}
-              onChange={(e:any) => setAssetName(e.target.value)}
+              onChange={(e: any) => setAssetName(e.target.value)}
               placeholder=""
             />
           </div>
@@ -294,41 +305,25 @@ const _asset = asset as any;
             <Input
               className="mt-2"
               value={assetCode}
-              onChange={(e:any) => setAssetCode(e.target.value)}
+              onChange={(e: any) => setAssetCode(e.target.value)}
               placeholder=""
             />
           </div>
           <div>
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Category</label>
             <div style={{ marginTop: "10px" }}>
-              {/* <Select
-                onValueChange={(value) => {setCategoryId(parseInt(value));}}
-                
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Category</SelectLabel>
-                    {categories.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.description}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select> */}
-
               <Select
-                     styles={customStyle}
-                      value = {
-                        mappedCategories.filter(option => 
-                           option.value == categoryId )
-                     }
-                  onChange={(value) => {setCategoryId(parseInt(value?.value??"0"));}}
-                  options={mappedCategories}
-                />
+                styles={customStyle}
+                value={
+                  mappedCategories.filter(option =>
+                    option.value == categoryId)
+                }
+                onChange={(value) => {
+                   setCategoryId(parseInt(value?.value ?? "0"));
+                  setCategoryDesc(value?.label ?? "");
+                  }}
+                options={mappedCategories}
+              />
 
             </div>
           </div>
@@ -336,7 +331,7 @@ const _asset = asset as any;
             <Input
               className="mt-2"
               value={assetDescription}
-              onChange={(e:any) => setAssetDescription(e.target.value)}
+              onChange={(e: any) => setAssetDescription(e.target.value)}
               placeholder=""
             />
           </div>
@@ -350,28 +345,28 @@ const _asset = asset as any;
               apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
               onPlaceSelected={(place) => {
                 debugger;
-                setGPSLocation( `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`);
+                setGPSLocation(`${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`);
                 setStreetAddress(place?.formatted_address);
               }}
               options={{
                 types: ["geocode", "establishment"],
                 componentRestrictions: { country: "za" },
               }}
-              
+
             />
           </div>
           <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Physical location</label>
             <Input
               className="mt-2"
               value={physicalLocation}
-              onChange={(e:any) => setPhysicalLocation(e.target.value)}
+              onChange={(e: any) => setPhysicalLocation(e.target.value)}
               placeholder="e.g. Room 403"
             />
           </div>
           <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Purchase date</label>
             <br /> <input type="date"
               className="mt-2"
-              onChange={(e:any) => {
+              onChange={(e: any) => {
                 setDatePurchased(e.target.value);
               }}
               defaultValue={datePurchased ? format(datePurchased, "yyyy-MM-dd") : ""}
@@ -383,7 +378,7 @@ const _asset = asset as any;
             <br />   <input type="date"
               className="mt-2"
 
-              onChange={(e:any) => {
+              onChange={(e: any) => {
                 setDepreciationStart(e.target.value);
               }}
               defaultValue={depreciationStart ? format(depreciationStart, "yyyy-MM-dd") : ""}
@@ -394,15 +389,16 @@ const _asset = asset as any;
             <Input
               className="mt-2"
               value={serialNumber}
-              onChange={(e:any) => setSerialNumber(e.target.value)}
+              onChange={(e: any) => setSerialNumber(e.target.value)}
               placeholder=""
             />
           </div>
           <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Purchased from</label>
             <Input
               className="mt-2"
+              required
               value={boughtFrom}
-              onChange={(e:any) => setBoughtFrom(e.target.value)}
+              onChange={(e: any) => setBoughtFrom(e.target.value)}
               placeholder=""
             />
           </div>
@@ -411,7 +407,7 @@ const _asset = asset as any;
             <Input
               className="mt-2"
               value={purchasePrice}
-              onChange={(e:any) => setPurchasePrice(e.target.value)}
+              onChange={(e: any) => setPurchasePrice(e.target.value)}
               type="number"
               min={0}
               step="0.01"
@@ -421,7 +417,7 @@ const _asset = asset as any;
             <Input
               className="mt-2"
               value={replacementValue}
-              onChange={(e:any) => setReplacementValue(e.target.value)}
+              onChange={(e: any) => setReplacementValue(e.target.value)}
               type="number"
               min={0}
               step="0.01"
@@ -430,10 +426,10 @@ const _asset = asset as any;
           <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Recoverable amount</label>
 
             <Input
-            defaultValue={recoverableAmount}
+              defaultValue={recoverableAmount}
               className="mt-2"
               value={recoverableAmount}
-              onChange={(e:any) => setRecoverableAmount(e.target.value)}
+              onChange={(e: any) => setRecoverableAmount(e.target.value)}
               type="number"
               min={1}
               step="1"
@@ -461,8 +457,8 @@ const _asset = asset as any;
           <div className="items-top flex space-x-2 mt-5">
             <Checkbox
               id="terms1"
-              checked={isRental}
-              onCheckedChange={(e:any) => setIsRental(e.valueOf().toString() === "true")}
+              checked={_hasRental}
+              onCheckedChange={(e: any) => setIsRental(e.valueOf().toString() === "true")}
             />
 
             <div className="flex flex-col w-full">
@@ -478,31 +474,35 @@ const _asset = asset as any;
                 </p>
               </div>
 
-              {/* {isRental ? (
-                <div className="mt-4 flex gap-4">
-                  <Select
-                    onValueChange={(value) => setBillingType(value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Billing type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Billing type</SelectLabel>
-                        <SelectItem value="daily">Daily</SelectItem>
-                        <SelectItem value="onceoff">Once Off</SelectItem>
-                        <SelectItem value="onceoffusage">
-                          Once Off + Usage
-                        </SelectItem>
-                        <SelectItem value="usage">Usage</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
+              
+            </div>
+            {_hasRental ? (
+                <div className="mt-4 flex container row">
+                  <div  style={{width:"45%"}} >
+                    <Select
+                    
+                      value={
+                        options.filter(option =>
+                          option.value == billingType)
+                      }
+                      onChange={(e: any) => setBillingType(e.target.value)}
+                      className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      options={options}
+                    />
+                    </div>
+                    <div style={{width:"45%"}}  >
+                      <label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Serial number</label>
+                      <Input
+                        className="mt-2"
+                        value={serialNumber}
+                        onChange={(e: any) => setSerialNumber(e.target.value)}
+                        placeholder=""
+                      />
+                    </div>
+                  </div>
               ) : (
                 <></>
-              )} */}
-            </div>
+              )}
           </div>
         </div>
 

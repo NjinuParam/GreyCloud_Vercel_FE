@@ -1,6 +1,6 @@
 
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
 
   DropdownMenuContent,
@@ -99,13 +99,16 @@ export default function ViewDepreciationHistoryView() {
           getAllCompanyDepreciationGroups({}).then((depreciationGroups: any) => {
 
             let _transformedData = depreHistory?.map((depHistory: any) => {
-              const asset = _assets.data?.find((a: any) => a.code === depHistory.assetId);
+           
+              const asset = _assets.data?.find((a: any) => a.assetid === depHistory.assetId);
+             
               const depGroup = depreciationGroups.data?.find((dg: any) => dg.depGroupId === depHistory.depGroupId);
-
+        
+              debugger;
               return {
                 ...depHistory,
                 code: asset?.code,
-                assetName: asset ? asset.description : "Unknown Asset",
+                assetName: asset ? asset.description  : "Unknown Asset",
                 companyName: myCompany?.companyName,
                 purchasePrice: asset?.purchasePrice,
                 residual: asset?.residual ? asset.residual == 0 ? 1 : asset.residual : 1,
@@ -190,67 +193,6 @@ export default function ViewDepreciationHistoryView() {
     filterByDate(startDate, date);
   }
 
-  async function depreciationRun() {
-    toast.info("Processing...");
-    // setFetchingDepreciation(true);
-    const response = await fetch(`${apiUrl}Depreciation/DepreciationRun`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
-
-    if (response) {
-      toast.success(`Complete!`, {
-        description: "The depreciation run completed succesfully.",
-      });
-      const res = await response.json();
-      const newTransformedData = res?.map((depHistory: any) => ({
-        ...depHistory,
-        companyName: "company",
-      })) as AssetDepreciationHistoryTableTypes[];
-      // _setTransformedData(newTransformedData);
-
-
-    } else {
-      toast.error("Depreciation run failed", {
-        description: "Please try again.",
-      });
-    }
-
-    // setFetchingDepreciation(false);
-  }
-
-  async function postDepreciation() {
-    toast.info("Processing...");
-    // setFetchingDepreciation(true);
-    const response = await fetch(`${apiUrl}Depreciation/DepreciationRun`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
-
-    if (response) {
-      toast.success(`Complete!`, {
-        description: "The depreciation run completed succesfully.",
-      });
-      const res = await response.json();
-      const newTransformedData = res?.map((depHistory: any) => ({
-        ...depHistory,
-        companyName: "company",
-      })) as AssetDepreciationHistoryTableTypes[];
-      // _setTransformedData(newTransformedData);
-
-
-    } else {
-      toast.error("Depreciation run failed", {
-        description: "Please try again.",
-      });
-    }
-
-    // setFetchingDepreciation(false);
-  }
 
  async function POST_depreciationRun(payload:any) {
     toast.info("Processing...");
@@ -265,10 +207,17 @@ export default function ViewDepreciationHistoryView() {
     });
 
     if (response) {
+      debugger;
+      close();
       toast.success(`Complete!`, {
         description: "The depreciation run completed succesfully.",
       });
       const res = await response.json();
+
+      setTimeout(() => {
+        window?.location?.reload();
+      }, 2000);
+  
       const newTransformedData = res?.map((depHistory: any) => ({
         ...depHistory,
         companyName: "company",
@@ -312,6 +261,14 @@ export default function ViewDepreciationHistoryView() {
   }
 
 
+   const closeButtonRef = useRef<any>(null);
+  
+    const close = () => {
+      if (closeButtonRef.current) {
+        closeButtonRef.current?.click();
+      }
+    };
+
 
   async function postJournals(compId:any){
     toast.info("Processing...");
@@ -346,12 +303,12 @@ const endDate = new Date().toString()
   }
   if(option =="1"){
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7);
+    startDate.setDate(startDate.getDate() - 30);
     filterByDate(startDate.toString(), endDate);
   }
   if(option =="2"){
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
+    startDate.setDate(startDate.getDate() - 120);
     filterByDate(startDate.toString(), endDate);
   }
   if(option =="3"){
@@ -499,13 +456,9 @@ function clearFilters(){
 
 
             <Dialog>
-              <DialogTrigger asChild>
+              <DialogTrigger ref={closeButtonRef}  asChild>
 
-                <Badge style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
-
-
-
-
+                <Badge  style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
 
 
                   <PowerCircle size={16} style={{ paddingRight: "1%" }} /><small>  Trigger run</small>

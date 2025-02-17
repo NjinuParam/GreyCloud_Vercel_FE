@@ -121,12 +121,12 @@ export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) =
           <p>{company.contactEmail ?? "---"}</p>
         </span>
 
-        <span className="flex flex-col gap-1 text-muted-foreground">
+        {/* <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="apiKey" className="text-xs text-foreground uppercase tracking-wider">
             API Key
           </Label>
           <p>{company.apiKey ?? "---"}</p>
-        </span>
+        </span> */}
 
         <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="dateCreated" className="text-xs text-foreground uppercase tracking-wider">
@@ -278,16 +278,17 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
 
     } else {
       toast.success(`Company has been created!`, {
-        description: "The order was created successfully.",
+        description: "You can access the company on your next login.",
       });
-
+ setTimeout(() => {
+  window.location.reload();
+ }, 4000);
       // router.push("/company-picker");
     }
 
 
-  }
+  };
 
-;
   return (
     <div className="flex flex-row gap-2 items-center w-full">
 

@@ -44,7 +44,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
       password:password,
       SageCompanyId: companyId
     };
-    ;
+    
     const response = await fetch(`${apiUrl}SageOneCompany/Company/OnBoardNewCompany`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.     
       headers: {
@@ -218,12 +218,12 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
               <p><small>{company.email ?? "---"}</small></p>
             </span>
 
-            <span className="flex flex-col gap-1 text-muted-foreground">
+            {/* <span className="flex flex-col gap-1 text-muted-foreground">
               <Label htmlFor="apiKey" className="text-xs text-foreground uppercase tracking-wider">
                 API Key
               </Label>
               <p><small>{company.apiKey ?? "---"}</small></p>
-            </span>
+            </span> */}
 
             <span className="flex flex-col gap-1 text-muted-foreground">
               <Label htmlFor="apiKey" className="text-xs text-foreground uppercase tracking-wider">
