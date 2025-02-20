@@ -256,7 +256,10 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       password: password,
       SageCompanyId: companyId
     };
-    ;
+    toast.loading(`Adding company`, {
+      description: "Please wait...",
+    });
+
     const response = await fetch(`${apiUrl}SageOneCompany/Company/OnBoardNewCompany`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.     
       headers: {

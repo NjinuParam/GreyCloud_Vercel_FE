@@ -134,8 +134,7 @@ export default function UpdateSageOneAssetForm({
       fetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`)
         .then((res) =>
           res.json().then((data) => {
-            // setSageCompanyId(data.sageCompanyId.toString());
-            ;
+          debugger;
             setAssetName(data.description);
             setAssetCode(data.code);
             setAssetDescription(data.description);
@@ -454,56 +453,7 @@ export default function UpdateSageOneAssetForm({
           </div> */}
         </div>
         <div>
-          <div className="items-top flex space-x-2 mt-5">
-            <Checkbox
-              id="terms1"
-              checked={_hasRental}
-              onCheckedChange={(e: any) => setIsRental(e.valueOf().toString() === "true")}
-            />
-
-            <div className="flex flex-col w-full">
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="terms1"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Rental
-                </label>
-                <p className="text-sm text-muted-foreground">
-                  Mark this asset as a rental.
-                </p>
-              </div>
-
-              
-            </div>
-            {_hasRental ? (
-                <div className="mt-4 flex container row">
-                  <div  style={{width:"45%"}} >
-                    <Select
-                    
-                      value={
-                        options.filter(option =>
-                          option.value == billingType)
-                      }
-                      onChange={(e: any) => setBillingType(e.target.value)}
-                      className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      options={options}
-                    />
-                    </div>
-                    <div style={{width:"45%"}}  >
-                      <label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Serial number</label>
-                      <Input
-                        className="mt-2"
-                        value={serialNumber}
-                        onChange={(e: any) => setSerialNumber(e.target.value)}
-                        placeholder=""
-                      />
-                    </div>
-                  </div>
-              ) : (
-                <></>
-              )}
-          </div>
+          
         </div>
 
         <div className="w-full pt-4">
