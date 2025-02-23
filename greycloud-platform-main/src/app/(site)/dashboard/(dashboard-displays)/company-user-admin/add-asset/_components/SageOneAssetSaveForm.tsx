@@ -140,7 +140,7 @@ export default function SageOneAssetSaveForm({
 
 
   function getCategories() {
-    debugger;
+    
     close();
     getIronSessionData().then((comp: any) => {
       const compId = comp.companyProfile.loggedInCompanyId;

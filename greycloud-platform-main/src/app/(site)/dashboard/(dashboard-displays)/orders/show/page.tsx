@@ -113,7 +113,7 @@ export default function ShowOrder() {
 
   const completeOrder = async (orderId: string, assets: any[]) => {
     try {
-      debugger;
+      
       toast.info("Processing...");
       const response = await fetch(
         `${apiUrl}SageOneOrder/SalesOrderNew/Complete/${orderId}`,

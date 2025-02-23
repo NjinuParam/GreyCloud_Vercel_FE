@@ -57,7 +57,7 @@ export default function ViewDepreciationHistoryView() {
   const [transformedData, setTransformedData] = useState<any>();
   const [auditData, setAuditData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any>();
-  const [selectedDateFilter,setSelectedDateFilter] = useState<any>();
+  const [selectedDateFilter, setSelectedDateFilter] = useState<any>();
   const [summaryData, setSummaryData] = useState<any>();
   const [canDepr, setCanDepreciate] = useState<any[]>([]);
   const [updatedUsageAssets, setUpdatedUsageAssets] = useState<any[]>([]);
@@ -78,13 +78,13 @@ export default function ViewDepreciationHistoryView() {
       setMyCompany(_myCompany)
 
       fetchAudit(Number(_myCompany?.sageCompanyId));
- 
-      canDepreciate(_myCompany?.sageCompanyId??14999);
+
+      canDepreciate(_myCompany?.sageCompanyId ?? 14999);
       getAllAssetDepreciationHistory({ sageCompanyId: Number(_myCompany?.sageCompanyId) }).then((depreHistoryFull: any) => {
 
         const depreHistory = depreHistoryFull.data.data;
         const summary = depreHistoryFull.data.summary;
-        const audit = depreHistoryFull.data.audit.filter((x:any)=>x.posted==true);
+        const audit = depreHistoryFull.data.audit.filter((x: any) => x.posted == true);
 
         const full = { fullExport: depreHistory, summary: summary, audit: audit };
 
@@ -99,16 +99,16 @@ export default function ViewDepreciationHistoryView() {
           getAllCompanyDepreciationGroups({}).then((depreciationGroups: any) => {
 
             let _transformedData = depreHistory?.map((depHistory: any) => {
-           
+
               const asset = _assets.data?.find((a: any) => a.assetid === depHistory.assetId);
-             
+
               const depGroup = depreciationGroups.data?.find((dg: any) => dg.depGroupId === depHistory.depGroupId);
-        
-              debugger;
+
+
               return {
                 ...depHistory,
                 code: asset?.code,
-                assetName: asset ? asset.description  : "Unknown Asset",
+                assetName: asset ? asset.description : "Unknown Asset",
                 companyName: myCompany?.companyName,
                 purchasePrice: asset?.purchasePrice,
                 residual: asset?.residual ? asset.residual == 0 ? 1 : asset.residual : 1,
@@ -170,7 +170,7 @@ export default function ViewDepreciationHistoryView() {
   }
 
   function filterByDate(start: string, end: string) {
-;
+    debugger;
     if (start != "" && end != "") {
 
       var startDate = new Date(start);
@@ -189,14 +189,14 @@ export default function ViewDepreciationHistoryView() {
   }
 
   function changeEndDate(date: string) {
-    setStartDate(date)
+    setEndDate(date)
     filterByDate(startDate, date);
   }
 
 
- async function POST_depreciationRun(payload:any) {
+  async function POST_depreciationRun(payload: any) {
     toast.info("Processing...");
-    
+
     // setFetchingDepreciation(true);
     const response = await fetch(`${apiUrl}Depreciation/PostDepreciationRun/${myCompany?.sageCompanyId}`, {
       method: "POST",
@@ -207,7 +207,7 @@ export default function ViewDepreciationHistoryView() {
     });
 
     if (response) {
-      debugger;
+
       close();
       toast.success(`Complete!`, {
         description: "The depreciation run completed succesfully.",
@@ -217,7 +217,7 @@ export default function ViewDepreciationHistoryView() {
       setTimeout(() => {
         window?.location?.reload();
       }, 2000);
-  
+
       const newTransformedData = res?.map((depHistory: any) => ({
         ...depHistory,
         companyName: "company",
@@ -247,7 +247,7 @@ export default function ViewDepreciationHistoryView() {
     if (response) {
 
       const res = await response.json();
-      
+
       setAuditData(res);
 
     }
@@ -261,16 +261,16 @@ export default function ViewDepreciationHistoryView() {
   }
 
 
-   const closeButtonRef = useRef<any>(null);
-  
-    const close = () => {
-      if (closeButtonRef.current) {
-        closeButtonRef.current?.click();
-      }
-    };
+  const closeButtonRef = useRef<any>(null);
+
+  const close = () => {
+    if (closeButtonRef.current) {
+      closeButtonRef.current?.click();
+    }
+  };
 
 
-  async function postJournals(compId:any){
+  async function postJournals(compId: any) {
     toast.info("Processing...");
     // setFetchingDeprecipostation(true);
     const response = await fetch(`${apiUrl}/Depreciation/PostJournals/${compId}`, {
@@ -285,7 +285,7 @@ export default function ViewDepreciationHistoryView() {
         description: "Journals posted succesfuly.",
       });
       const res = await response.json();
-    
+
 
     } else {
       toast.error("Posting journals failed", {
@@ -294,41 +294,41 @@ export default function ViewDepreciationHistoryView() {
     }
   }
 
-function filter(option:any){
-  debugger;
-  setSelectedDateFilter(option);
-const endDate = new Date().toString()
-  if(option=="0"){
-    clearFilters();
+  function filter(option: any) {
+
+    setSelectedDateFilter(option);
+    const endDate = new Date().toString()
+    if (option == "0") {
+      clearFilters();
+    }
+    if (option == "1") {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+      filterByDate(startDate.toString(), endDate);
+    }
+    if (option == "2") {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 120);
+      filterByDate(startDate.toString(), endDate);
+    }
+    if (option == "3") {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 180);
+      filterByDate(startDate.toString(), endDate);
+    }
+    if (option == "4") {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 365);
+      filterByDate(startDate.toString(), endDate);
+    }
+
   }
-  if(option =="1"){
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
-    filterByDate(startDate.toString(), endDate);
-  }
-  if(option =="2"){
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 120);
-    filterByDate(startDate.toString(), endDate);
-  }
-  if(option =="3"){
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 180);
-    filterByDate(startDate.toString(), endDate);
-  }
-  if(option =="4"){
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 365);
-    filterByDate(startDate.toString(), endDate);
-  }
-  
-}
 
 
-function clearFilters(){
-  debugger;
-  transformedData && setFilteredData(transformedData);
-}
+  function clearFilters() {
+
+    transformedData && setFilteredData(transformedData);
+  }
 
   return (
     <div className="mx-auto min-w-full min-h-full">
@@ -350,33 +350,38 @@ function clearFilters(){
               </div>
             </div> */}
 
-            
+
           </div>
-          
+
 
         </div>
         <div className="grid grid-cols-2 gap-2 justify-center mb-4">
           <div>
-            <small>Date filters</small><br />
-            <label className="text-muted-foreground"> <Checkbox  onCheckedChange={(e:any)=>{debugger; if(e==true){ filter(1)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={selectedDateFilter==1} /> <label style={{ fontSize: "12px"}}>This month</label> </label><br/>
-            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e:any)=>{if(e==true){ filter(2)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={selectedDateFilter==2} /> <label style={{ fontSize: "12px"}}>Last 4 months</label> </label><br/>
-            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e:any)=>{if(e==true){ filter(3)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={selectedDateFilter==3} /> <label style={{ fontSize: "12px"}}>Last 6 months</label> </label><br/>
-            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e:any)=>{if(e==true){ filter(4)}else{filter(0)}}} id="pushtosage" style={{ fontSize: "10px"}} checked={selectedDateFilter==4} /> <label style={{ fontSize: "12px"}}>Year to date</label> </label>
-            </div>
+            <small>By date</small><br />
+            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(1) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 1} /> <label style={{ fontSize: "12px" }}>This month</label> </label><br />
+            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(2) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 2} /> <label style={{ fontSize: "12px" }}>Last 4 months</label> </label><br />
+            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(3) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 3} /> <label style={{ fontSize: "12px" }}>Last 6 months</label> </label><br />
+            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(4) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 4} /> <label style={{ fontSize: "12px" }}>Year to date</label> </label>
+          </div>
           <div>
             {/* <label>Search by date</label><br/> */}
             <div className="grid grid-cols-2 gap-1  mb-4">
-              <div><small>Start</small><br />
-                <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" className="w-2/3 p-1 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
+              <div>
+                <small>Start</small><br />
+                <input type="date" style={{ fontSize: "12px", color: "grey" }} placeholder="Search by date" className="w-2/3 p-1 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
+                <br />
+                <small>End</small><br />
+                <input type="date" style={{ fontSize: "12px", color: "grey" }} placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
+
               </div>
-              <div><small>End</small><br />
-                <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
+              <div>
+
               </div>
             </div>
 
-            
+
           </div>
-          
+
 
         </div>
         <div className="grid grid-cols-4 gap-1  mb-4">
@@ -402,7 +407,7 @@ function clearFilters(){
 
 
 
-       
+
           {/* <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
           <CheckCircle size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days   
           </Badge>  */}
@@ -415,8 +420,8 @@ function clearFilters(){
             {/* <Badge style={{ padding: "2%" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
               <Timer size={16} style={{ paddingRight: "1%" }} /> <small> Next run: {nextRun()} days</small>
             </Badge>  */}
-            
-            </a>
+
+          </a>
           <a style={{ cursor: canDepr.length == 0 ? "pointer" : "none" }}>
 
             <Dialog>
@@ -456,9 +461,9 @@ function clearFilters(){
 
 
             <Dialog>
-              <DialogTrigger ref={closeButtonRef}  asChild>
+              <DialogTrigger ref={closeButtonRef} asChild>
 
-                <Badge  style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
+                <Badge style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
 
 
                   <PowerCircle size={16} style={{ paddingRight: "1%" }} /><small>  Trigger run</small>
@@ -474,42 +479,42 @@ function clearFilters(){
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   {canDepr.map((x: any) => {
-                    
+
                     return <>
                       <div>
 
 
-                        <label style={{fontSize: "12px", float: "left", width: "60%" }}>Asset: {x.name}</label>
-                        <input 
-                        onChange={(e:any)=>{
-                          ;
-                            var up= {
-                              assetId:x.id,
-                              usage:e.target.value,
-                              sageCompanyId:myCompany?.sageCompanyId,
-                              categoryId:x.categoryId
+                        <label style={{ fontSize: "12px", float: "left", width: "60%" }}>Asset: {x.name}</label>
+                        <input
+                          onChange={(e: any) => {
+                            ;
+                            var up = {
+                              assetId: x.id,
+                              usage: e.target.value,
+                              sageCompanyId: myCompany?.sageCompanyId,
+                              categoryId: x.categoryId
                             };
 
-                            var newUp = updatedUsageAssets.filter((a:any)=>{return a.assetId!==x.id});
+                            var newUp = updatedUsageAssets.filter((a: any) => { return a.assetId !== x.id });
 
-                            setUpdatedUsageAssets([...newUp,up]);
+                            setUpdatedUsageAssets([...newUp, up]);
                             ;
-                        }}
-                        style={{ fontSize: "10px", float: "left", width: "40%" }}
-                         type="text" placeholder="0" 
-                         className="w-1/2 p-1 border border-gray-300 rounded-md" />
+                          }}
+                          style={{ fontSize: "10px", float: "left", width: "40%" }}
+                          type="text" placeholder="0"
+                          className="w-1/2 p-1 border border-gray-300 rounded-md" />
                       </div>
                     </>
                   })}
                 </div>
-                <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px"}} checked={false} /> <label style={{ fontSize: "12px"}}>Push journals to SAGE?</label> </label>
+                <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px" }} checked={false} /> <label style={{ fontSize: "12px" }}>Push journals to SAGE?</label> </label>
 
                 <DialogFooter>
                   <Button
                     type="submit"
                     onClick={
-                      () => { POST_depreciationRun(updatedUsageAssets)}
-                  }
+                      () => { POST_depreciationRun(updatedUsageAssets) }
+                    }
                   >
                     Run
                   </Button>
@@ -526,7 +531,7 @@ function clearFilters(){
                 </Badge>
 
               </DialogTrigger>
-              <DialogContent className="md:max-w-[600px]">
+              <DialogContent className="md:max-w-[1000px] mt-10">
                 <DialogHeader>
                   <DialogTitle>Post journals</DialogTitle>
                   <DialogDescription>
@@ -548,7 +553,7 @@ function clearFilters(){
 
                     </TableHeader>
                     <TableBody>
-                      {auditData.filter(x=>x.posted==false)?.map((x: any) => (
+                      {auditData.filter(x => x.posted == false)?.map((x: any) => (
                         <TableRow>
                           <TableCell>{moment(x.createdDate).format('DD/MM/YYYY')}</TableCell>
                           <TableCell>{x.categoryName}</TableCell>
@@ -566,7 +571,7 @@ function clearFilters(){
 
                 <DialogFooter>
                   <Button
-                  className="w-full"
+                    className="w-full"
                     type="submit"
                     onClick={() => { postJournals(myCompany.sageCompanyId) }}
                   >

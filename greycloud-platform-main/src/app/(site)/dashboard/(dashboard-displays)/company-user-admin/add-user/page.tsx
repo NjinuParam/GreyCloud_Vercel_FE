@@ -8,7 +8,7 @@ export default async function AddUser() {
   const session = await getIronSessionData();
 
   const mySelectedCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
-
+console.log("EEWE",mySelectedCompany)
   const { data: myCompany } = await getGreyCloudCompany({
     id: mySelectedCompany?.companyId as string,
   });

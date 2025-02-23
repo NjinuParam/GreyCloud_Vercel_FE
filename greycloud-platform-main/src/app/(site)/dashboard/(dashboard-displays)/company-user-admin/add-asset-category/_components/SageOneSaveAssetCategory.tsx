@@ -56,7 +56,7 @@ const form = useForm<SaveSageOneAssetCategoryType>({
       toast.success(`Asset category saved!`, {
                 description: "The asset category was stored successfully.",
               });
-              debugger;
+              
               // router.refresh();
               // callBack && callBack();
               setTimeout(() => {
@@ -91,7 +91,7 @@ const form = useForm<SaveSageOneAssetCategoryType>({
           
           const companyId = x.companyProfile?.companiesList?.filter((y:any)=>{return y.companyId ==compId})[0]?.sageCompanyId;
          //const p = com[0].sageCompanyId;
-        debugger;
+        
           setCompanyId(companyId ??14999);
         });
         

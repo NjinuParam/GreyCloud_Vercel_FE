@@ -15,29 +15,36 @@ import { CreateCompanyUserRequestModelSchema, CreateCompanyUserType } from "@/li
 import { RolesCompanyOptions } from "@/lib/schemas/common-schemas";
 import { createCompanyUser } from "@/app/actions/sage-one-user-company-actions/sage-one-user-company-actions";
 import { SageCompanyResponseType } from "@/lib/schemas/company";
+import { SAGE_ONE_USER_COMPANY } from "../../../../../../../lib/api-endpoints/sage-one-user-company";
+import { useRouter } from "next/navigation";
+import { toBase64 } from "../../../../../../../lib/utils";
 
 type CompanyUserAddUserFormProps = {
   myCompany: SageCompanyResponseType;
 };
 
-export default function CompanyUserAddUserForm({ myCompany }: CompanyUserAddUserFormProps) {
-  const { execute, status } = useAction(createCompanyUser, {
-    onSuccess() {
-      toast.success("User added to your organization.", {
-        description: "The user should now appear in your list of users.",
-      });
 
-      form.reset();
-    },
-    onError(error) {
-      toast.error("An error has occured:", {
-        description: JSON.stringify(error),
-      });
-    },
-    onExecute() {
-      toast.info("Creating Company User Profile...");
-    },
-  });
+export default function CompanyUserAddUserForm({ myCompany }: CompanyUserAddUserFormProps) {
+  // const { execute, status } = useAction(createCompanyUser, {
+  //   onSuccess() {
+  //     toast.success("User added to your organization.", {
+  //       description: "The user should now appear in your list of users.",
+  //     });
+
+  //     form.reset();
+  //   },
+  //   onError(error) {
+  //     toast.error("An error has occured:", {
+  //       description: JSON.stringify(error),
+  //     });
+  //   },
+  //   onExecute() {
+  //     toast.info("Creating Company User Profile...");
+  //   },
+  // });
+const router = useRouter();
+  
+const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   // Define the form:
   const form = useForm<CreateCompanyUserType>({
@@ -55,8 +62,41 @@ export default function CompanyUserAddUserForm({ myCompany }: CompanyUserAddUser
 
   // Define a submit handler:
   function onSubmit(values: CreateCompanyUserType) {
-    execute(buildFormData({ ...values, companyId: myCompany.id }));
+    // execute(buildFormData({ ...values, companyId: myCompany.id }));
+    createCompanyUser(values);
   }
+
+  async function createCompanyUser(values: CreateCompanyUserType) {
+  
+
+         var id =  toast.loading("Adding user", {
+            description: "Please wait while we add the user to your organization.",
+          });
+    
+  var payload ={...values, password:toBase64(values.password), isPasswordUpdated:true}
+
+    var res = await fetch(`${apiUrl}UserCompany/Create-User`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  
+    debugger;
+    if (res.ok) {
+      toast.dismiss(id)
+      toast.success("User added to your organization.", {
+        description: "The user should now appear in your list of users.",
+      });
+      router.push("/dashboard/company-user-admin/manage-users");
+  }else{
+    toast.dismiss(id)
+    toast.error("An error has occured:", {
+      description: JSON.stringify(res),
+    });
+  }
+}
 
   return (
     <>

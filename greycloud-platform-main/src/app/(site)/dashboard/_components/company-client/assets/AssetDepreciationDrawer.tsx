@@ -10,7 +10,7 @@ import {
 import { getFutureAssetDepreciationHistory, getSpecificAssetDepreciationHistory } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog } from "@radix-ui/react-dialog";
 import {
   DialogContent,
@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getIronSessionData } from "../../../../../../lib/auth/auth";
 export default function AssetDepreciationDialog({
   asset,
   depreciationGroups,
@@ -46,6 +47,15 @@ export default function AssetDepreciationDialog({
 >(0);
 
 
+useEffect(() => {
+  getIronSessionData().then((session)=>{
+    
+    const mySelectedCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+
+
+  })
+}
+, []);
 
 async function fatchFutureDepreciation(assetId:string){
   toast.info("Fetching depreciation history...");

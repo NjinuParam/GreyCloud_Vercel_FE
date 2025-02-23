@@ -36,11 +36,12 @@ import moment from "moment";
  
   async function updateLocation(){
     if(updateAddress!==undefined){
+      
       var res = await  updateAddress(asset?.id, _address);
     }
   
     
-    if(res !==""){ setNewAddress(res); }
+     setNewAddress(_address); 
   }
   
 
@@ -50,7 +51,7 @@ import moment from "moment";
 
 
   const [_address, _setAddress] = useState< string>("");
-  const [newAddress, setNewAddress] = useState< string>("");
+  const [newAddress, setNewAddress] = useState< string>(asset?.locName??"");
   const [_usage, _setUsage] = useState< number>(asset?.usage??0);
   const [prevUsage, setPrevUsage] = useState<any[]>([]);
 
@@ -86,6 +87,7 @@ import moment from "moment";
   
   }
 
+  debugger;
    
   return (
     <Card className="flex flex-col gap-2">
@@ -175,7 +177,7 @@ import moment from "moment";
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="text-base">
-            <Label style={{marginTop:"10px"}}>Last location: {newAddress!=""? newAddress :asset.locName}</Label>
+            <Label style={{marginTop:"10px"}}>Last location: {newAddress}</Label>
             <AutoComplete
               style={{zIndex:99999999}}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 

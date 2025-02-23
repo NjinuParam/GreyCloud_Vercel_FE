@@ -134,7 +134,7 @@ export default function UpdateSageOneAssetForm({
       fetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`)
         .then((res) =>
           res.json().then((data) => {
-          debugger;
+          
             setAssetName(data.description);
             setAssetCode(data.code);
             setAssetDescription(data.description);
@@ -171,7 +171,7 @@ export default function UpdateSageOneAssetForm({
   const [categoryId, setCategoryId] = useState(0);
 
   const [GPSLocation, setGPSLocation] = useState("");
-  debugger;
+  
   // 
 
   const options = [
@@ -230,7 +230,7 @@ export default function UpdateSageOneAssetForm({
       },
     };
 
-    debugger;
+    
 
 
     try {
@@ -281,7 +281,7 @@ export default function UpdateSageOneAssetForm({
   const mappedCategories = categories.map(x => { return { label: x.description, value: x.id } });
 
   const _hasRental = asset?.billingType?.amount !== 0;
-  debugger;
+  
 
   return (
     <>
@@ -343,7 +343,7 @@ export default function UpdateSageOneAssetForm({
               defaultValue={streetAddress}
               apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
               onPlaceSelected={(place) => {
-                debugger;
+                
                 setGPSLocation(`${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`);
                 setStreetAddress(place?.formatted_address);
               }}
