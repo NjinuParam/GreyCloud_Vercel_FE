@@ -69,6 +69,9 @@ export default function ShowOrder() {
   const [selectedFilter, setSelectedFilter] = React.useState(-1);
   const [addressToggles, setAddressToggles] = React.useState<any>({});
   const [updatedAssets, setUpdatedAssets] = React.useState<any>([]);
+  const [updatedLocation, setUpdatedLocation] = React.useState<any>([]);
+  const [compModal, setCompModal] = React.useState<any>(false);
+  const [startModal, setStartModal] = React.useState<any>(false);
 
   const [loading, setLoading] = React.useState(true);
 
@@ -113,7 +116,7 @@ export default function ShowOrder() {
 
   const completeOrder = async (orderId: string, assets: any[]) => {
     try {
-      
+
       toast.info("Processing...");
       const response = await fetch(
         `${apiUrl}SageOneOrder/SalesOrderNew/Complete/${orderId}`,
@@ -131,6 +134,7 @@ export default function ShowOrder() {
         description: "The order was updated successfully.",
       });
 
+      setCompModal(false);
       getOrders(compId);
     } catch (e) {
       toast.error(`Error occured!`, {
@@ -189,6 +193,7 @@ export default function ShowOrder() {
         description: "The order was updated successfully.",
       });
       getOrders(compId);
+      setStartModal(false);
     } catch (e) {
       toast.error(`Error occured!`, {
         description: "Please try again.",
@@ -220,8 +225,6 @@ export default function ShowOrder() {
     gps: string;
     usage: string
   }
-
-
 
 
   const columns: ColumnDef<any>[] = [
@@ -312,86 +315,168 @@ export default function ShowOrder() {
         const _assets = orders.find((x: any) => x.id === order.id) as any;
         const assets = _assets?.assets;
         let ass: any[] = [];
-        let updatedAssets :any[] = [];
+        let updatedAssets: any[] = [];
         assets.forEach((a: any) => {
           if (a?.assetDetail?.billingType) {
             ass.push({
               assetId: a.assetId,
               returned: true,
+              gps: a?.assetDetail?.gps,
+              address: a?.assetDetail.locName,
               assetLocation: a?.assetDetail?.locName,
               usage: a.assetDetail?.billingType?.usageType
                 ? a?.assetDetail?.billingType?.amount
                 : 0,
               startUsage: a.startUsage ?? 0
             });
-            
+
           }
         });
 
-        
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>
-                <a
-                  target="_blank"
-                  href={`${apiUrl}SageOneOrder/SalesOrderNew/GetInvoice/${order.id}`}
-                  download
-                >
-                  Download Invoice
-                </a>
-              </DropdownMenuLabel>
-
-              <Dialog>
-                <DialogTrigger asChild>
-                  {(order.status == 4 || order.status == 2) &&
-                    <DropdownMenuLabel className="cursor-pointer">
-                      Complete Order
-                    </DropdownMenuLabel>
-                  }
+          <>
 
 
+            <div id="modal" style={{ display: compModal == true ? "flex" : "" }} className="modal">
+              <div className="modal-content sm:max-w-[400px]">
+                <div className="grid gap-4 py-4">
+                  {ass.map((a, i) => (
+                    <>
+                      <div style={{ paddingBottom: "20px", paddingTop: "20px" }} className="w-full flex flex-row justify-between items-center">
+                        <div className="w-full" style={{ textAlign: "left" }}>
+                          <h2 style={{ fontWeight: "bold" }} >
+                            {
+                              assets.find((x: any) => x.assetId == a.assetId).assetDetail.description
+                            }
+                            <label style={{ marginLeft: "15%" }}> <Checkbox checked={true}></Checkbox><small style={{ marginLeft: "2%", fontWeight: "normal" }}>Mark as returned  </small></label>
+
+                          </h2>
+                          <p>
+                            {(a.billingType?.type == 2 || a.billingType == 3) && <small>
+                              Starting usage: {
+                                a.startUsage
+                              } {assets.find((x: any) => x.assetId == a.assetId)
+                                .assetDetail.billingType.usageType}
+                            </small>
+                            }
+                          </p>
+                          <br />
+                          {a.usage !== 0 ? (
+                            <div>
+                              <label><small>Set final usage</small></label>
+                              <Input
+                                className="mt-4"
+                                type="number"
+                                placeholder="Usage"
+                                value={a.usage}
+                              // onChange={(e) => {
+                              //   ass[i].usage = e.target.value;
+                              // }}
+                              />
+                            </div>
+                          ) : (
+                            <></>
+                          )}
+                          {/* <label><small>Set physical location</small></label>
+                            <Input
+                            key={`inp${i}`}
+                              className="mt-4"
+                              type="text"
+                              placeholder="Location"
+                              value={updatedLocation}
+                              onChange={(e) => {
+                                setUpdatedLocation(e.target.value);
+                                e.preventDefault();
+                              }}
+                            /> */}
+                        </div>
 
 
-                </DialogTrigger>
-                <DialogContent className="">
-                  <DialogHeader>
-                    <DialogTitle>Complete Order</DialogTitle>
-                    <DialogDescription>
-                      Please fill in the form below to complete the order
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    {ass.map((a, i) => (
-                      <>
-                        <div style={{ paddingBottom: "20px", paddingTop: "20px" }} className="w-full flex flex-row justify-between items-center">
-                          <div className="w-full">
-                            <h2 style={{ fontWeight: "bold" }} >
-                              {
-                                assets.find((x: any) => x.assetId == a.assetId).assetDetail.description
-                              }
-                              <label style={{ marginLeft: "15%" }}> <Checkbox checked={true}></Checkbox><small style={{ marginLeft: "2%", fontWeight: "normal" }}>Mark as returned  </small></label>
+                      </div>
+                      <div style={{ borderBottom: "1px solid silver", paddingBottom: "40px" }}>
 
-                            </h2>
-                            <p>
-                              {(a.billingType?.type == 2 || a.billingType == 3) && <small>
-                                Starting usage: {
-                                  a.startUsage
-                                } {assets.find((x: any) => x.assetId == a.assetId)
-                                  .assetDetail.billingType.usageType}
-                              </small>
-                              }
-                            </p>
-                            <br />
-                            {a.usage !== 0 ? (
-                              <div>
-                                <label><small>Set final usage</small></label>
+                        <small> Please enter drop off address or select from your <small onClick={(e) => { toggleThis(i) }} style={{ color: "blue", cursor: "pointer" }}> saved addresses</small> </small>
+                        {
+                          addressToggles[i] ? <>
+                            Test      </> : <>
+                            <AutoComplete
+                              style={{ zIndex: 99999999 }}
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
+                              defaultValue={ass[i].address ?? ""}
+                              apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                              onPlaceSelected={(place: any) => {
+                                debugger;
+                                setUpdatedAssets([...updatedAssets,
+                                {
+                                  assetId: a.assetId,
+                                  address: place?.formatted_address,
+                                  gps: `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`,
+                                  assetLocation: "",
+                                  usage: a.usage,
+
+                                }])
+
+                                ass[i].address = place?.formatted_address;
+                                ass[i].gps = `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`
+
+                              }}
+                              options={{
+                                types: ["geocode", "establishment"],//Must add street addresses not just cities
+                                componentRestrictions: { country: "za" },
+                              }}
+                            />
+                          </>
+                        }
+
+
+
+                      </div>
+                      <Button
+                        type="submit"
+                        onClick={() => {
+                          completeOrder(order.id, assets);
+                        }}
+                      >
+                        Complete Order
+                      </Button>
+                    </>
+                  ))}
+
+                </div>
+              </div>
+            </div>
+
+
+            <div id="modal start" style={{ display: startModal == true ? "flex" : "" }} className="modal">
+              <div className="modal-content sm:max-w-[400px]">
+                <div className="grid gap-2 py-4">
+                  {ass.map((a, i) => (
+                    <>
+                      <div style={{ paddingTop: "20px" }} className="w-full flex flex-row justify-between items-center">
+                        <div className="w-full">
+                          <h2 style={{ fontWeight: "bold" }}>
+                            {
+                              assets.find((x: any) => x.assetId == a.assetId).assetDetail.description
+                            }
+                            <label style={{ marginLeft: "15%" }}> <Checkbox checked={true}></Checkbox><small style={{ marginLeft: "2%", fontWeight: "normal" }}>Mark as delivered  </small></label>
+
+                          </h2>
+
+                          <br />
+                          {a.usage !== 0 ? (<p>
+                            <small>
+                              Last recorded usage: {
+                                a.startUsage
+                              } {assets.find((x: any) => x.assetId == a.assetId)
+                                .assetDetail.billingType.usageType}
+                            </small>
+                          </p>) : <></>
+                          }
+                          <br />
+                          {a.usage !== 0 ? (
+                            <div className="grid w-full items-center grid-cols-2 gap-4">
+                              <div className=" justify-between items-center">
+                                <label><small>Enter initial usage</small></label>
                                 <Input
                                   className="mt-4"
                                   type="number"
@@ -402,191 +487,107 @@ export default function ShowOrder() {
                                   }}
                                 />
                               </div>
-                            ) : (
-                              <></>
-                            )}
-                          </div>
-
-
-                        </div>
-                        <div style={{ borderBottom: "1px solid silver", paddingBottom: "40px" }}>
-
-                          <small> Please enter drop off address or select from your <small onClick={(e) => { toggleThis(i) }} style={{ color: "blue", cursor: "pointer" }}> saved addresses</small> </small>
-                          {
-                            addressToggles[i] ? <>
-                              Test      </> : <>
-                              <AutoComplete
-                                style={{ zIndex: 99999999 }}
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
-                                defaultValue={order?.address ?? ""}
-                                apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                                onPlaceSelected={(place: any) => {
-                                  
-                                  setUpdatedAssets([...updatedAssets, {assetId: a.assetId, address: place?.formatted_address, gps: `${place.geometry.location.lat()},${place.geometry.location.lng()}` }])
-                                  
-                                  ass[i].address = place?.formatted_address;
-                                  ass[i].gps = `${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()}`
-
-                                }}
-                                options={{
-                                  types: ["geocode", "establishment"],//Must add street addresses not just cities
-                                  componentRestrictions: { country: "za" },
-                                }}
-                              />
-                            </>
-                          }
-
-
-
+                            </div>
+                          ) : (
+                            <></>
+                          )}
                         </div>
 
-                      </>
-                    ))}
 
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      type="submit"
-                      onClick={() => {
-                        completeOrder(order.id, assets);
-                      }}
-                    >
-                      Complete Order
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-              <Dialog>
-                <DialogTrigger asChild>
-                  {order.status == 1 &&
-                    <DropdownMenuLabel onClick={() => initStartOrderModal(order, ass)} className="cursor-pointer">
-                      Start Order
-                    </DropdownMenuLabel>
-                  }
+                      </div>
+                      <div>
+
+                        <small> Please enter pickup address or select from your <a onClick={(e) => { }} style={{ color: "blue", cursor: "pointer" }}> saved addresses</a> </small>
+
+                        <AutoComplete
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
+                          //  defaultValue={a.postalAddress01??""}
+                          defaultValue={ass[i].assetLocation ?? ""}
+                          apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                          onPlaceSelected={(place: any) => {
 
 
+                            ass[i].address = place?.formatted_address;
+                            ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
+
+                          }}
+                          options={{
+                            types: ["geocode", "establishment"],//Must add street addresses not just cities
+                            componentRestrictions: { country: "za" },
+                          }}
+                        />
 
 
-                </DialogTrigger>
+                      </div>
+                      <div style={{ borderBottom: "1px solid silver", paddingBottom: "40px" }}>
 
-                <DialogContent className="">
-                  <DialogHeader>
-                    <DialogTitle>Start Order</DialogTitle>
-                    <DialogDescription>
-                      Please fill in the form below to begin the order
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-2 py-4">
-                    {ass.map((a, i) => (
-                      <>
-                        <div style={{ paddingTop: "20px" }} className="w-full flex flex-row justify-between items-center">
-                          <div className="w-full">
-                            <h2 style={{ fontWeight: "bold" }}>
-                              {
-                                assets.find((x: any) => x.assetId == a.assetId).assetDetail.description
-                              }
-                              <label style={{ marginLeft: "15%" }}> <Checkbox checked={true}></Checkbox><small style={{ marginLeft: "2%", fontWeight: "normal" }}>Mark as delivered  </small></label>
+                        <small> Destination address  </small>
 
-                            </h2>
+                        <AutoComplete
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
+                          defaultValue={order.address ?? ""}
+                          apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                          onPlaceSelected={(place: any) => {
 
-                            <br />
-                            {a.usage !== 0 ? (<p>
-                              <small>
-                                Last recorded usage: {
-                                  a.startUsage
-                                } {assets.find((x: any) => x.assetId == a.assetId)
-                                  .assetDetail.billingType.usageType}
-                              </small>
-                            </p>) : <></>
-                            }
-                            <br />
-                            {a.usage !== 0 ? (
-                              <div className="grid w-full items-center grid-cols-2 gap-4">
-                                <div className=" justify-between items-center">
-                                  <label><small>Enter initial usage</small></label>
-                                  <Input
-                                    className="mt-4"
-                                    type="number"
-                                    placeholder="Usage"
-                                    value={a.usage}
-                                    onChange={(e) => {
-                                      ass[i].usage = e.target.value;
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                          </div>
+                            ass[i].address = place?.formatted_address;
+                            ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
+
+                          }}
+                          options={{
+                            types: ["geocode", "establishment"],//Must add street addresses not just cities
+                            componentRestrictions: { country: "za" },
+                          }}
+                        />
 
 
-                        </div>
-                        <div>
+                      </div>
 
-                          <small> Please enter pickup address or select from your <a onClick={(e) => { }} style={{ color: "blue", cursor: "pointer" }}> saved addresses</a> </small>
+                    </>
+                  ))}
+                  <Button
+                    // type="submit"
+                    onClick={() => {
+                      updateStartOrderAssets(ass, order.id);
+                    }}
+                  >
+                    Start order
+                  </Button>
+                </div>
+              </div>
+            </div>
 
-                          <AutoComplete
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
-                            //  defaultValue={a.postalAddress01??""}
-                            defaultValue={ass[i].assetLocation ?? ""}
-                            apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                            onPlaceSelected={(place: any) => {
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  <a
+                    target="_blank"
+                    href={`${apiUrl}SageOneOrder/SalesOrderNew/GetInvoice/${order.id}`}
+                    download
+                  >
+                    Download Invoice
+                  </a>
+                </DropdownMenuLabel>
+                {(order.status == 2 || order.status == 4) && 
+                <DropdownMenuLabel>
+                  <a onClick={() => { setCompModal(!compModal) }}>Complete</a>
+                </DropdownMenuLabel>
+                }
+                {order.status == 1 &&
+                <DropdownMenuLabel>
+                  <a onClick={() => { setStartModal(!startModal) }}>Start</a>
+                </DropdownMenuLabel>
+                }
 
-
-                              ass[i].address = place?.formatted_address;
-                              ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
-
-                            }}
-                            options={{
-                              types: ["geocode", "establishment"],//Must add street addresses not just cities
-                              componentRestrictions: { country: "za" },
-                            }}
-                          />
-
-
-                        </div>
-                        <div style={{ borderBottom: "1px solid silver", paddingBottom: "40px" }}>
-
-                          <small> Destination address  </small>
-
-                          <AutoComplete
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4"
-                            defaultValue={order.address ?? ""}
-                            apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
-                            onPlaceSelected={(place: any) => {
-
-                              ass[i].address = place?.formatted_address;
-                              ass[i].gps = `${place.geometry.location.lat()},${place.geometry.location.lng()}`
-
-                            }}
-                            options={{
-                              types: ["geocode", "establishment"],//Must add street addresses not just cities
-                              componentRestrictions: { country: "za" },
-                            }}
-                          />
-
-
-                        </div>
-
-                      </>
-                    ))}
-
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      // type="submit"
-                      onClick={() => {
-                        updateStartOrderAssets(ass, order.id);
-                      }}
-                    >
-                      Start order
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </DropdownMenuContent>
-          </DropdownMenu>
+               
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
         );
       },
     },

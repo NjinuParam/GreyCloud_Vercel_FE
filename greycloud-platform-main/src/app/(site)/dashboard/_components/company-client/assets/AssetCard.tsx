@@ -29,6 +29,7 @@ import moment from "moment";
 
  export default function AssetCard({ asset, depreciationGroups, sageCompanyId,updateUsage, updateAddress}: UpdateSageOneAssetFormProps){
   let session ={}as any;
+  let _asset= asset as any;
   useEffect(() => {
     session = getIronSessionData();
 
@@ -104,7 +105,7 @@ import moment from "moment";
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
             Category Description
           </Label>
-          <p>{asset?.category?.description ?? "---"}</p>
+          <p>{_asset?.catDescription ?? "---"}</p>
         </span>
 
         <span className="flex flex-col gap-1 text-muted-foreground">

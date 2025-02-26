@@ -402,7 +402,7 @@ export default async function NavBar() {
                     <li><a href="/dashboard/orders/create">Create quote</a></li>
                     <li><a href="/dashboard/orders/create">Create order</a></li>
                     <li><a href="/dashboard/orders/show">List of orders</a></li>
-                    <li><a href="dashboard/orders/show">Invoices</a></li>
+                    <li><a href="/dashboard/orders/show">Invoices</a></li>
                 </ul>
             </li>
         </ul>
