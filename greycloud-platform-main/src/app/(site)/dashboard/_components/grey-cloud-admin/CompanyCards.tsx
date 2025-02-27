@@ -632,6 +632,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
                           style={{ float: 'left' }}
                           id="password"
                           placeholder="Password"
+                          type="password"
                           // value={depName}
                           onChange={(e: any) => setPassword(e.target.value)}
                         />

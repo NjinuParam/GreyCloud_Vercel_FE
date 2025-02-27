@@ -172,6 +172,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
                             <Input
                               style={{ float: 'left' }}
                               id="password"
+                              type="password"
                               placeholder="Password"
                             // value={depName}
                              onChange={(e:any) => setPassword(e.target.value)}
