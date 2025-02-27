@@ -31,7 +31,7 @@ export default function LogoutUserLink({ label = "log out." }: { label?: string 
     <Button
       onClick={() => {
         logoutCUser({});
-        router.push("/login");
+        router.replace("/login");
       }}
       variant={"link"}
       className="text-base max-w-fit p-0"
