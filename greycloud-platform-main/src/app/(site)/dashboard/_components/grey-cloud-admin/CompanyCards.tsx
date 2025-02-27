@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -277,12 +277,15 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
 
     if (res?.error) {
       toast.dismiss(id);
+      
       toast.error(`Error adding company`, {
         description: "Please check your sage credentials and try again",
       });
 
     } else {
+      debugger;
       toast.dismiss(id);
+      close();
       toast.success(`Company has been created!`, {
         description: "You can access the company on your next login.",
       });
@@ -295,6 +298,16 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
 
   };
 
+
+   const closeButtonRef = useRef<any>(null);
+    
+      const close = () => {
+        if (closeButtonRef.current) {
+          closeButtonRef.current?.click();
+        }
+      };
+
+      
   return (
     <div className="flex flex-row gap-2 items-center w-full">
 
@@ -577,7 +590,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
         </> : <>
           {!company?.companyId ?
             <Dialog>
-              <DialogTrigger asChild className="grow">
+              <DialogTrigger ref={closeButtonRef}  asChild className="grow">
 
                 <Button
                   onClick={() => { setCompanyId(company?.sageCompanyId ?? 0) }}
