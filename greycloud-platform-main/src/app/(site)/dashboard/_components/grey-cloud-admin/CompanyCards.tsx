@@ -24,8 +24,10 @@ import { SageCompanyResponseType } from "@/lib/schemas/company";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/table";
 import { Input } from "../../../../../components/ui/input";
 import { PencilIcon, Trash } from "lucide-react";
-import { getIronSessionData } from "../../../../../lib/auth/auth";
+import { getIronSessionData, logout } from "../../../../../lib/auth/auth";
 import { toBase64 } from "../../../../../lib/utils";
+import { useRouter } from "next/navigation";
+;
 
 export const CompaniesList = ({ companies }: { companies: SageCompanyResponseType[] }) => {
 
@@ -248,15 +250,15 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
   const [companyId, setCompanyId] = useState(14999);
   const [_password, set_Password] = useState("");
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-  
+  const router = useRouter();
+  const [compModal, setCompModal] = React.useState<any>(false);
   async function addCompany() {
     const payload = {
       Email: username,
       password: password,
       SageCompanyId: companyId
     };
-    toast.loading(`Adding company`, {
+    var id = toast.loading(`Adding company`, {
       description: "Please wait...",
     });
 
@@ -271,21 +273,22 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
       body: JSON.stringify(payload), // body data type must match "Content-Type" header
     });
     const res = await response.json();
-    ;
+   
 
     if (res?.error) {
+      toast.dismiss(id);
       toast.error(`Error adding company`, {
         description: "Please check your sage credentials and try again",
       });
 
-
     } else {
+      toast.dismiss(id);
       toast.success(`Company has been created!`, {
         description: "You can access the company on your next login.",
       });
- setTimeout(() => {
-  window.location.reload();
- }, 4000);
+
+
+      setCompModal(true);
       // router.push("/company-picker");
     }
 
@@ -294,6 +297,39 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
 
   return (
     <div className="flex flex-row gap-2 items-center w-full">
+
+      <div id="modal" style={{ display: compModal == true ? "flex" : "" }} className="modal">
+        <div className="modal-content sm:max-w-[400px]">
+          <div className="grid gap-4 py-4">
+            <div>
+              <h1>Login Company</h1>
+              <small> Would you like to logout now and login to access the new company?</small>
+
+            </div>
+            <Button
+              type="submit"
+              onClick={() => {
+                logout().then(x => {
+                  router.replace("/login");
+          
+                });
+              }}
+            >
+              Yes
+            </Button>
+            <Button
+              type="submit"
+              onClick={() => {
+                setCompModal(false)
+              }}
+            >
+              No
+            </Button>
+
+          </div>
+        </div>
+      </div>
+
 
       {company.apiKey != "Not Found" ?
         <>
@@ -589,7 +625,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
                       </>
                     </div>
                   </div>
-            
+
                   <Button
                     onClick={() => { addCompany() }}
                     size={"sm"}
