@@ -85,8 +85,8 @@ export default function SageOneAssetSaveForm({
     defaultValues: {
       SageCompanyId: Number(SageCompanyId),
       asset: {
-        name:"Product Name",
-        description: "Product Description",
+        name:"",
+        description: "",
         category: {
           description: "Electronics",
           id: 8184,
@@ -96,17 +96,17 @@ export default function SageOneAssetSaveForm({
         location: {
           id: 10220,
           description: "Location Description",
-          physicalLocation:"e.g. Room 403"
+          physicalLocation:""
         },
         locName: "",
         datePurchased: new Date(),
         depreciationStart: new Date(),
-        serialNumber: "ABC_123",
+        serialNumber: "",
         usage: 0,
-        boughtFrom: "Electronics Store",
-        purchasePrice: 500,
+        boughtFrom: "",
+        purchasePrice: 0,
         currentValue: 350,
-        replacementValue: 600,
+        replacementValue: 0,
         textField1: "Additional Info 1",
         textField2: "Additional Info 2",
         textField3: "Additional Info 3",

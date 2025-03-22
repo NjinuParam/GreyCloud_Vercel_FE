@@ -27,7 +27,7 @@ import AutoComplete from "react-google-autocomplete";
 import { Button } from "@/components/ui/button";
 import moment from "moment";
 
- export default function AssetCard({ asset, depreciationGroups, sageCompanyId,updateUsage, updateAddress}: UpdateSageOneAssetFormProps){
+ export default function AssetCard({ asset, depreciationGroups, sageCompanyId,updateUsage, updateAddress, closeFn}: UpdateSageOneAssetFormProps){
   let session ={}as any;
   let _asset= asset as any;
   useEffect(() => {
@@ -41,7 +41,7 @@ import moment from "moment";
       var res = await  updateAddress(asset?.id, _address);
     }
   
-    
+    closeFn!=undefined && closeFn();
      setNewAddress(_address); 
   }
   

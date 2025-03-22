@@ -140,6 +140,8 @@ export const getAllCompanyDepreciationGroups = action(EmptySchema, async () => {
   }
 });
 
+
+
 export const getSpecificCompanyDepreciationGroup = action(GetSpecificCompanyDepreciationGroupSchema, async ({ id }) => {
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_COMPANY_DEPRECIATION_GROUP_BY_ID}/${id}`;
 

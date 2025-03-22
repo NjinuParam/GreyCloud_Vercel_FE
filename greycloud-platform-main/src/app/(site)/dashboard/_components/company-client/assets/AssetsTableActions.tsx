@@ -2,16 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { BookOpen } from "lucide-react";
+import { BookOpen, X } from "lucide-react";
 import AssetCard  from "./AssetCard";
 import { EnrichedAssetType } from "./assets-columns";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { getIronSessionData } from "../../../../../../lib/auth/auth";
+import { DialogClose } from "../../../../../../components/ui/dialog";
 
 export default function AssetsTableActions({ asset }: { asset: EnrichedAssetType }) {
 
   const [compId, setCompanyId] = useState<number>(14999);
+    const [compModal, setCompModal] = useState<any>(false);
+
   async function updateAsset(assetId:string, usage:string) {
 
 toast.info("Updating asset...");
@@ -25,12 +28,13 @@ const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/A
 });
 
 if (response) {
-  
+  setCompModal(false);
   toast.success(`Asset usage updated!`, {
     description: "The asset was updated successfully.",
   });
   // router.push("/dashboard/company-user/manage-assets");
 } else {
+  
   toast.error("Failed to update asset.", {
     description: "Please try again.",
   });
@@ -72,8 +76,9 @@ if (response) {
       toast.success(`Asset location updated!`, {
         description: "The asset was updated successfully.",
       });
-
+      setCompModal(false);
       return address;
+     
       // router.push("/dashboard/company-user/manage-assets");
     } else {
       toast.error("Failed to update asset.", {
@@ -87,7 +92,7 @@ if (response) {
   return (
     <div>
       <div className="flex gap-2">
-        <Dialog>
+        {/* <Dialog>
           <DialogTrigger>
             <Button variant="outline" size="icon">
               <BookOpen size="16" />
@@ -103,7 +108,34 @@ if (response) {
               updateAddress = {(assetId:any, address:any)=>{ updateAddress(assetId, address )}}
             />
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
+
+
+
+         <Button variant="outline" size="icon" onClick={() => setCompModal(true)}>
+              <BookOpen size="16" />
+            </Button>
+
+        <div id="modal"  style={{ display: compModal == true ? "flex" : "" }} className="modal">
+                      <div className="modal-content">
+                      <X onClick={()=>setCompModal(false)} style={{float:"right"}} className="h-4 w-4" />
+                      <span className="sr-only">Close</span>
+                      
+                        <div className="grid gap-4 py-4">
+                        <AssetCard
+                        closeFn={()=>setCompModal(false)}
+              key={asset.id}
+              asset={asset ?? []}
+              depreciationGroups={asset.depreciationGroups?.filter((g) => g.companyId === asset.companyId) ?? []}
+              sageCompanyId={asset.sageCompanyId ?? 0}
+              updateUsage = {(assetId:any, usage:any)=>{ updateAsset(assetId, usage)}}
+              updateAddress = {(assetId:any, address:any)=>{ updateAddress(assetId, address )}}
+            />
+        
+                        </div>
+                      </div>
+                    </div>
+
       </div>
     </div>
   );
