@@ -273,7 +273,7 @@ export default function ViewDepreciationHistoryView() {
   async function postJournals(compId: any) {
     toast.info("Processing...");
     // setFetchingDeprecipostation(true);
-    const response = await fetch(`${apiUrl}/Depreciation/PostJournals/${compId}`, {
+    const response = await fetch(`${apiUrl}Depreciation/PostJournals/${compId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
