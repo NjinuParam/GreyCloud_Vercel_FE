@@ -20,7 +20,7 @@ export default function AssetsTableActions({ asset }: { asset: EnrichedAssetType
 toast.info("Updating asset...");
 
 
-const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/${compId}`, {
+const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/${compId}`, {
   method: "GET",
   headers: {
     "Content-Type": "application/json",
@@ -62,7 +62,7 @@ if (response) {
       location: address,
       gps: "0,0"
     }
-    const response = await fetch(`https://systa-api.azurewebsites.net/SageOneAsset/Asset/UpdateLocation/${assetId}/${compId}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneAsset/Asset/UpdateLocation/${assetId}/${compId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

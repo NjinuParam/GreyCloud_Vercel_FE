@@ -47,7 +47,7 @@ AssetDepreciationHistoryTableTypes[]
 async function fetchFutureDepreciation(categoryId:string){
   toast.info("Fetching depreciation history...");
   setFetchingDepreciation(true);
-  const response = await fetch(`https://systa-api.azurewebsites.net/Depreciation/FutureDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}Depreciation/FutureDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -72,7 +72,7 @@ async function fetchFutureDepreciation(categoryId:string){
 async function fetchHistoriceDepreciation(categoryId:string){
   toast.info("Fetching depreciation history...");
   setFetchingDepreciation(true);
-  const response = await fetch(`https://systa-api.azurewebsites.net/Depreciation/HistoricDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}Depreciation/HistoricDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
