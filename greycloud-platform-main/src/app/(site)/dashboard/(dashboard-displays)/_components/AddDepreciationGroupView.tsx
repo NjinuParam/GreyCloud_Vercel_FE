@@ -88,7 +88,7 @@ setCompanyId(com);
     async function fetchAccounts(){
       toast.info("Fetching depreciation history...");
       
-      const response = await fetch(`https://systa-api.azurewebsites.net/GreyCloud/Admin/Get-Accounts/14999`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}GreyCloud/Admin/Get-Accounts/14999`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
