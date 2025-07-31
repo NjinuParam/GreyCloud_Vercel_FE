@@ -17,6 +17,7 @@ import { RolesCompanyOptions } from "@/lib/schemas/common-schemas";
 import { createCompanyUser } from "@/app/actions/sage-one-user-company-actions/sage-one-user-company-actions";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "../../../../components/ui/checkbox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../../../../components/ui/dropdown-menu";
 
 
 export default function CompanyUserRegisterForm() {
@@ -196,14 +197,32 @@ export default function CompanyUserRegisterForm() {
           <div className="flex flex-row space-x-4 w-full">
          
             {/* <select className="w-full"> */}
-              {companies.map((company) => (
+              {/* {companies.map((company) => (
                 <label>  <Checkbox key={company.id} 
                 onCheckedChange={()=>selectCompany(company.id)}
                 value={company.id} checked={selectedCompanyId.includes(company.id)}>
                
                 </Checkbox> {company.name}</label>
-              ))}
+              ))} */}
             {/* </select> */}
+              <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              {/* <MoreHorizontal className="h-4 w-4" /> */}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+             {companies.map((company) => (
+            <DropdownMenuItem
+              onClick={() => selectCompany(company.id)}>
+              {company.name}
+            </DropdownMenuItem>
+              ))}
+          
+          </DropdownMenuContent>
+        </DropdownMenu>
           </div>
 
           </div>
