@@ -18,6 +18,7 @@ import { createCompanyUser } from "@/app/actions/sage-one-user-company-actions/s
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "../../../../components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../../../../components/ui/dropdown-menu";
+import { SelectGroup, SelectLabel } from "../../../../components/ui/select";
 
 
 export default function CompanyUserRegisterForm() {
@@ -205,24 +206,32 @@ export default function CompanyUserRegisterForm() {
                 </Checkbox> {company.name}</label>
               ))} */}
             {/* </select> */}
-              <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              {/* <MoreHorizontal className="h-4 w-4" /> */}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-             {companies.map((company) => (
-            <DropdownMenuItem
-              onClick={() => selectCompany(company.id)}>
-              {company.name}
-            </DropdownMenuItem>
+             
+
+                   <Select>
+                                     <SelectTrigger>
+                                       <SelectValue placeholder="Select company" />
+                                     </SelectTrigger>
+                                     <SelectContent>
+                                       <SelectGroup>
+                                         <SelectLabel>Select company</SelectLabel>
+                                         {/* <SelectItem value="daily">Daily</SelectItem>
+                                         <SelectItem value="onceoff">Once Off</SelectItem>
+                                         <SelectItem value="onceoffusage">
+                                           Once Off + Usage
+                                         </SelectItem>
+                                         <SelectItem value="usage">Usage</SelectItem> */}
+                                         {companies.map((company) => (
+                // <label>  <Checkbox key={company.id} 
+                // onCheckedChange={()=>selectCompany(company.id)}
+                // value={company.id} checked={selectedCompanyId.includes(company.id)}>
+               
+                // </Checkbox> {company.name}</label>
+                 <SelectItem key={company.id} value={company.id} >{company.name}</SelectItem>
               ))}
-          
-          </DropdownMenuContent>
-        </DropdownMenu>
+                                       </SelectGroup>
+                                     </SelectContent>
+                                   </Select>
           </div>
 
           </div>
