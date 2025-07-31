@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -20,7 +19,7 @@ import { Checkbox } from "../../../../components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../../../../components/ui/dropdown-menu";
 import { SelectGroup, SelectLabel } from "../../../../components/ui/select";
 
-
+import Select from "react-select";
 export default function CompanyUserRegisterForm() {
   const router = useRouter();
 
@@ -30,20 +29,21 @@ export default function CompanyUserRegisterForm() {
 
 
 
-  function selectCompany(companyId:any){
-    
-    var company = companies.filter(x=>x.id == companyId);
-    if(!companyNames.includes(company[0].name)){
-    setCompanyNames([...companyNames, company[0].name]);
-    setCompanyId([...selectedCompanyId, companyId]);
-    }else{
-      var _companyNames = companyNames.filter(x=>x != company[0].name);
-      var _selectedCompanyId = selectedCompanyId.filter(x=>x != companyId);
-      setCompanyNames(_companyNames);
-      setCompanyId(_selectedCompanyId);
-    }
+function selectCompany(companyIds: string[]) {
+  // Filter the selected companies from the full company list
+  const selectedCompanies = companies.filter((company) =>
+    companyIds.includes(company.id)
+  );
 
-  }
+  // Extract names and IDs
+  const names = selectedCompanies.map((company) => company.name);
+  const ids = selectedCompanies.map((company) => company.id);
+
+  // Update state
+  setCompanyNames(names);
+  setCompanyId(ids);
+}
+
   
   const { execute, status } = useAction(createCompanyUser, {
     onSuccess(data, input, reset) {
@@ -208,30 +208,29 @@ export default function CompanyUserRegisterForm() {
             {/* </select> */}
              
 
-                   <Select>
-                                     <SelectTrigger>
-                                       <SelectValue placeholder="Select company" />
-                                     </SelectTrigger>
-                                     <SelectContent>
-                                       <SelectGroup>
-                                         <SelectLabel>Select company</SelectLabel>
-                                         {/* <SelectItem value="daily">Daily</SelectItem>
-                                         <SelectItem value="onceoff">Once Off</SelectItem>
-                                         <SelectItem value="onceoffusage">
-                                           Once Off + Usage
-                                         </SelectItem>
-                                         <SelectItem value="usage">Usage</SelectItem> */}
-                                         {companies.map((company) => (
-                // <label>  <Checkbox key={company.id} 
-                // onCheckedChange={()=>selectCompany(company.id)}
-                // value={company.id} checked={selectedCompanyId.includes(company.id)}>
-               
-                // </Checkbox> {company.name}</label>
-                 <SelectItem key={company.id} value={company.id} >{company.name}</SelectItem>
-              ))}
-                                       </SelectGroup>
-                                     </SelectContent>
-                                   </Select>
+                
+
+                                   <Select
+                      isMulti
+                      name="companies"
+                      placeholder="Select company"
+                      options={companies.map((company) => ({
+                        value: company.id,
+                        label: company.name,
+                      }))}
+                      className="react-select-container"
+                      classNamePrefix="select"
+                      onChange={(selectedOptions) => {
+                        const ids = selectedOptions.map((opt) => opt.value);
+                        const names = selectedOptions.map((opt) => opt.label);
+                        selectCompany(ids);
+                      }}
+                      value={selectedCompanyId.map((id, index) => ({
+                        value: id,
+                        label: companyNames[index],
+                      }))}
+                    />
+
           </div>
 
           </div>
