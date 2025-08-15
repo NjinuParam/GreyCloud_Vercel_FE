@@ -192,13 +192,13 @@ export const loginCompanyUser = action(
         },
       });
 
-      console.log("EEEEE",response)
+     
       if (!response.ok) {
         throw new ActionError(`Error: ${response.status}`);
       }
 
       const data = await response.json();
-
+ console.log("EEEEE",data)
       const user: LoginCompanyUserResponseType = data;
 
       // Save session:
@@ -212,7 +212,7 @@ export const loginCompanyUser = action(
       session.dateModified = user.dateModified;
       session.companyProfile = {
         loggedInCompanyId: null,
-        companiesList: user.companyInfo,
+        companiesList: []
       };
       session.isLoggedIn = true;
       session.companyId = user.companyId;
