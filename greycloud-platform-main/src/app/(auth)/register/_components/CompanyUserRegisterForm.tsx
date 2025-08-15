@@ -18,8 +18,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from "../../../../components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../../../../components/ui/dropdown-menu";
 import { SelectGroup, SelectLabel } from "../../../../components/ui/select";
-
-import Select from "react-select";
+import Select, { components } from "react-select";
 export default function CompanyUserRegisterForm() {
   const router = useRouter();
 
@@ -178,6 +177,39 @@ function selectCompany(companyIds: string[]) {
   // }
 
   }
+const CheckboxOption = (props: any) => {
+  return (
+    <components.Option {...props}>
+      <input
+        type="checkbox"
+        checked={props.isSelected}
+        onChange={() => null} // react-select handles selection
+        style={{ marginRight: 8 }}
+      />
+      <label>{props.label}</label>
+    </components.Option>
+  );
+};
+
+const customStyles= {
+  container: (provided) => ({ ...provided, width: "100%" }),
+  menu: (provided) => ({ ...provided, zIndex: 9999 }), // keep dropdown on top
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? "#E5F3FF" : provided.backgroundColor,
+    color: "#000",
+    cursor: "pointer",
+  }),
+  multiValue: (provided) => ({
+    ...provided,
+    backgroundColor: "#E5F3FF",
+    color: "#000",
+  }),
+  multiValueLabel: (provided) => ({
+    ...provided,
+    color: "#000",
+  }),
+};
 
   return (
     <>
@@ -187,8 +219,7 @@ function selectCompany(companyIds: string[]) {
     <Card className="flex flex-col">
       <CardHeader className="flex flex-col gap-2 bg-gradient-to-b from-primary/5 dark:from-primary/10 to-transparent w-full px-8 pt-10 pb-4 mb-4 relative">
         <CardTitle className="text-xl">Select company</CardTitle>
-        <CardDescription className="text-base max-w-[60%]">Select all companies that you want to import.</CardDescription>
-
+        <CardDescription className="text-base max-w-[60%]">Select all companies that you want to import. You will be billed for each company that is loaded. You may add more companies later.</CardDescription>
         {/* <Image className="absolute size-36 right-8 top-4 flex items-center justify-center" src={AuthSVG} alt="Picture of auth." /> */}
       </CardHeader>
 
@@ -210,35 +241,35 @@ function selectCompany(companyIds: string[]) {
 
                 
 
-                                   <Select
-                      isMulti
-                      name="companies"
-                      placeholder="Select company"
-                      options={companies.map((company) => ({
-                        value: company.id,
-                        label: company.name,
-                      }))}
-                      className="react-select-container"
-                      classNamePrefix="select"
-                      onChange={(selectedOptions) => {
-                        const ids = selectedOptions.map((opt) => opt.value);
-                        const names = selectedOptions.map((opt) => opt.label);
-                        selectCompany(ids);
-                      }}
-                      value={selectedCompanyId.map((id, index) => ({
-                        value: id,
-                        label: companyNames[index],
-                      }))}
-                    />
-
+                             <Select
+  isMulti
+  name="companies"
+  placeholder="Select company"
+  options={companies.map((company) => ({
+    value: company.id,
+    label: company.name,
+  }))}
+  closeMenuOnSelect={false}
+  hideSelectedOptions={false}
+  components={{ Option: CheckboxOption }}
+  styles={customStyles}
+  classNamePrefix="select"
+  onChange={(selectedOptions) => {
+    const ids = selectedOptions.map((opt) => opt.value);
+    selectCompany(ids);
+  }}
+  value={selectedCompanyId.map((id, index) => ({
+    value: id,
+    label: companyNames[index],
+  }))}
+/>
           </div>
 
           </div>
       </CardContent>
 
       <CardFooter className="flex mx-auto px-8">
-        <p className="w-full  text-sm text-muted-foreground -mr-2 text-center">{`
-           You will be billed for each company that is loaded.`}</p><br/><br/>
+
          
           <Button
             className={"w-full font-bold"}
