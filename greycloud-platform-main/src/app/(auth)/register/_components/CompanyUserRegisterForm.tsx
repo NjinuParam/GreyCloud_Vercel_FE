@@ -192,20 +192,20 @@ const CheckboxOption = (props: any) => {
 };
 
 const customStyles= {
-  container: (provided) => ({ ...provided, width: "100%" }),
-  menu: (provided) => ({ ...provided, zIndex: 9999 }), // keep dropdown on top
-  option: (provided, state) => ({
+  container: (provided:any) => ({ ...provided, width: "100%" }),
+  menu: (provided:any) => ({ ...provided, zIndex: 9999 }), // keep dropdown on top
+  option: (provided:any, state:any) => ({
     ...provided,
     backgroundColor: state.isSelected ? "#E5F3FF" : provided.backgroundColor,
     color: "#000",
     cursor: "pointer",
   }),
-  multiValue: (provided) => ({
+  multiValue: (provided:any) => ({
     ...provided,
     backgroundColor: "#E5F3FF",
     color: "#000",
   }),
-  multiValueLabel: (provided) => ({
+  multiValueLabel: (provided:any) => ({
     ...provided,
     color: "#000",
   }),
