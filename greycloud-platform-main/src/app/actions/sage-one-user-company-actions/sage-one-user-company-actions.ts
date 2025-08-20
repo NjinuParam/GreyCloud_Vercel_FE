@@ -211,8 +211,8 @@ export const loginCompanyUser = action(
       session.dateCreated = user.dateCreated;
       session.dateModified = user.dateModified;
       session.companyProfile = {
-        loggedInCompanyId: null,
-        companiesList: []
+        loggedInCompanyId: user.companyId,
+        companiesList: user.companyInfo
       };
       session.isLoggedIn = true;
       session.companyId = user.companyId;
