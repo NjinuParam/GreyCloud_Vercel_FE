@@ -34,7 +34,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
   const handleCompanySelection = () => {
     ;
     execute({
-      companyId: company.companyId,
+      companyId: company.id,
     });
   };
 
@@ -101,7 +101,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
   const { execute, status } = useAction(assignCompanyProfileToCompanyUser, {
     onSuccess(data:any) {
       router.push("/dashboard");
-      toast.success(`You're now signed into company: ${data?.companyName ?? "Unknown"}.`, {
+      toast.success(`You're now signed into company: ${data?.nm ?? "Unknown"}.`, {
         description: "You can now access company's dashboard.",
       });
     },
@@ -117,7 +117,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
     },
   });
 
-  const cId = company?.companyId;
+  const cId = company?.id;
 
   return (
     <>
@@ -127,9 +127,9 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
 
       >
         <CardHeader className="flex flex-col gap-2 pb-0">
-          <CardTitle>{company.companyName}
+          <CardTitle>{company.nm}
 <br/><br/>
-            {!company?.companyId ?
+            {!company?.id ?
               <Dialog>
                 <DialogTrigger asChild className="grow">
 
@@ -204,7 +204,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
             }
 
           </CardTitle>
-          {cId && <CardDescription>ID: {company.companyId} </CardDescription>}
+          {cId && <CardDescription>ID: {company.id} </CardDescription>}
         </CardHeader>
 
         <Separator className="my-2" />

@@ -41,12 +41,21 @@ export const CompaniesList = ({ companies }: { companies: SageCompanyResponseTyp
   useEffect(() => {
     getIronSessionData().then((x: any) => {
 
+      const sorted = x?.companyProfile?.companiesList.sort((a, b) => {
+  // Check if each has an id
+  const aHasId = a.id && a.id.trim() !== "";
+  const bHasId = b.id && b.id.trim() !== "";
+
+  if (aHasId && !bHasId) return -1; // a goes before b
+  if (!aHasId && bHasId) return 1;  // b goes before a
+  return 0; // leave order unchanged if both same
+});
       if (x.role == "GreyCloud_Admin" || x.role == "Company_Admin") {
 
-        setCompanies(x?.companyProfile?.companiesList)
+
+        setCompanies(sorted)
 
       } else {
-        // const _comp = companies.filter((_com)=>{return x?.companyProfile?.companiesList?.find((company) => company.companyId === _com.id)});
         const _comp = companies.filter((_com) => { return x?.companyProfile?.companiesList?.find((company: any) => false) });
         setCompanies(_comp)
       }
@@ -95,14 +104,14 @@ export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) =
   return (
     <Card className="flex flex-col gap-2">
       <CardHeader className="pb-0">
-        <CardTitle>{company.companyName}</CardTitle>
+        <CardTitle>{company.nm}</CardTitle>
         {company.apiKey != "Not Found" ? <CardDescription>{company.email}</CardDescription> : "--"}
       </CardHeader>
 
       <Separator className="my-2" />
 
       <CardContent className="flex flex-col gap-4 py-2">
-        <span className="flex flex-col gap-1 text-muted-foreground">
+        {/* <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
             Contact Name
           </Label>
@@ -121,7 +130,7 @@ export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) =
             Contact Email
           </Label>
           <p>{company.contactEmail ?? "---"}</p>
-        </span>
+        </span> */}
 
         {/* <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="apiKey" className="text-xs text-foreground uppercase tracking-wider">
@@ -141,7 +150,7 @@ export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) =
           <Label htmlFor="sageCompanyId" className="text-xs text-foreground uppercase tracking-wider">
             Sage Company ID
           </Label>
-          <p>{company.sageCompanyId ?? "---"}</p>
+          <p>{company.si ?? "---"}</p>
         </span>
       </CardContent>
 
@@ -212,8 +221,12 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
   }
 
 
-  useEffect(() => {
-    fetchUsage(company.id);
+  useEffect(() => { 
+    
+    if(company.id.length>1){
+        fetchUsage(company.id);
+  }
+
   }, []);
 
 
@@ -374,7 +387,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>
-                  <span className="text-muted-foreground">Manage admin users to </span> {company.companyName}
+                  <span className="text-muted-foreground">Manage admin users to </span> {company.nm}
                 </DialogTitle>
                 <small style={{ float: "left", cursor: "pointer" }}><a onClick={() => { setResetPassword(""); setDeleteUser("") }} style={{ color: "blue" }}>Create new user</a></small>
               </DialogHeader>
@@ -561,7 +574,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
             <DialogContent className="sm:max-w-[400px]">
               <DialogHeader>
                 <DialogTitle>
-                  <span className="text-muted-foreground">Delete</span> {company.companyName}?
+                  <span className="text-muted-foreground">Delete</span> {company.nm}?
                 </DialogTitle>
               </DialogHeader>
               <DialogDescription className="text-base">This action cannot be undone. This will permanently delete the company account.</DialogDescription>

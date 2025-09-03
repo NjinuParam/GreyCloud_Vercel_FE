@@ -13,14 +13,14 @@ export default async function AddDepreciationHistoryView() {
     return null;
   }
 
-  const myCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+  const myCompany = session.companyProfile?.companiesList?.find((company) => company.id === session.companyProfile.loggedInCompanyId);
 
   // const { data: myCompany } = await getGreyCloudCompany({
   //   id: session.companyId as string,
   // });
 
   const { data: assets } = await getSageOneCompanyAssets({
-    SageCompanyId: Number(myCompany?.sageCompanyId),
+    SageCompanyId: Number(myCompany?.si),
   });
 
   const { data: depreciationGroups } = await getAllCompanyDepreciationGroups({});
@@ -35,9 +35,9 @@ export default async function AddDepreciationHistoryView() {
 
       <CardContent className="p-8">
         <AddDepreciationHistoryForm
-          sageCompanyId={Number(myCompany?.sageCompanyId)}
+          sageCompanyId={Number(myCompany?.si)}
           depreciationGroups={
-            (depreciationGroups?.filter((g) => g.companyId === myCompany?.companyId) as GetCompanyDepreciationGroupResponseType[]) ?? []
+            (depreciationGroups?.filter((g) => g.companyId === myCompany?.id) as GetCompanyDepreciationGroupResponseType[]) ?? []
           }
           assets={assets ?? []}
         />

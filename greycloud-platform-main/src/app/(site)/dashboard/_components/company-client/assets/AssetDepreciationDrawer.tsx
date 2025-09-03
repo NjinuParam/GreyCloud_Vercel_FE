@@ -47,15 +47,7 @@ export default function AssetDepreciationDialog({
 >(0);
 
 
-useEffect(() => {
-  getIronSessionData().then((session)=>{
-    
-    const mySelectedCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
 
-
-  })
-}
-, []);
 
 async function fatchFutureDepreciation(assetId:string){
   toast.info("Fetching depreciation history...");

@@ -145,7 +145,7 @@ export default function SageOneAssetSaveForm({
     getIronSessionData().then((comp: any) => {
       const compId = comp.companyProfile.loggedInCompanyId;
           
-      const companyId = comp.companyProfile?.companiesList?.filter((y:any)=>{return y.companyId ==compId})[0]?.sageCompanyId;
+      const companyId = comp.companyProfile?.companiesList?.filter((y:any)=>{return y.id ==compId})[0]?.si;
  
       fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${companyId}`)
         .then((res) => res.json().then((data) => { setCategories(data.results); }))
@@ -191,8 +191,8 @@ export default function SageOneAssetSaveForm({
       let currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
       let sageId = comp.companyProfile.companiesList.find(
-        (x: any) => x.companyId == currentCompanyId
-      )?.sageCompanyId;
+        (x: any) => x.id == currentCompanyId
+      )?.si;
 
 
     toast.info("Saving asset...");
@@ -228,7 +228,7 @@ export default function SageOneAssetSaveForm({
 
     const formattedValues = {
       ...values,
-      SageCompanyId: Number(values.SageCompanyId),
+      SageCompanyId: Number(values.si),
       asset: {
         ...values.asset,
         purchasePrice: Number(values.asset.purchasePrice),

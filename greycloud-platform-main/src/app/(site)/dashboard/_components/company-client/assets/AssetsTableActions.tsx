@@ -48,7 +48,7 @@ if (response) {
     
       const compId = x.companyProfile.loggedInCompanyId;
       
-      const companyId = x.companyProfile?.companiesList?.filter((y:any)=>{return y.companyId ==compId})[0]?.sageCompanyId;
+      const companyId = x.companyProfile?.companiesList?.filter((y:any)=>{return y.id ==compId})[0]?.sageCompanyId;
      //const p = com[0].sageCompanyId;
       setCompanyId(companyId ??14999);
     });
@@ -92,23 +92,7 @@ if (response) {
   return (
     <div>
       <div className="flex gap-2">
-        {/* <Dialog>
-          <DialogTrigger>
-            <Button variant="outline" size="icon">
-              <BookOpen size="16" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="min-w-fit p-8">
-            <AssetCard
-              key={asset.id}
-              asset={asset ?? []}
-              depreciationGroups={asset.depreciationGroups?.filter((g) => g.companyId === asset.companyId) ?? []}
-              sageCompanyId={asset.sageCompanyId ?? 0}
-              updateUsage = {(assetId:any, usage:any)=>{ updateAsset(assetId, usage)}}
-              updateAddress = {(assetId:any, address:any)=>{ updateAddress(assetId, address )}}
-            />
-          </DialogContent>
-        </Dialog> */}
+ 
 
 
 

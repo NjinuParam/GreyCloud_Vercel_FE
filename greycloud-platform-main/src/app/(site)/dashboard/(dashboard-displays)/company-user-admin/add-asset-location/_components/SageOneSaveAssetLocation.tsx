@@ -66,7 +66,7 @@ export default function SageOneAssetLocationSaveForm() {
     
       const compId = x.companyProfile.loggedInCompanyId;
 
-     const com = x?.companyProfile?.companiesList?.find((x:any)=>{x.companyId ==compId}).sageCompanyId
+     const com = x?.companyProfile?.companiesList?.find((x:any)=>{x.id ==compId}).si
       
       setCompanyId(com ??14999);
     });

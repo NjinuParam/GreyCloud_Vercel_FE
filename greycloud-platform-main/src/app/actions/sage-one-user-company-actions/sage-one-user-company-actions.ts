@@ -238,7 +238,7 @@ export const assignCompanyProfileToCompanyUser = action(
 
     await session.save();
     const selectedCompany = session.companyProfile?.companiesList?.find(
-      (company) => company.companyId === companyId
+      (company) => company.id === companyId
     );
 
     return selectedCompany;

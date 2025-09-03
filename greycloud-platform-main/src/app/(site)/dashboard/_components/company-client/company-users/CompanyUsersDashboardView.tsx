@@ -11,10 +11,10 @@ export const CompanyUserDashboardView = async () => {
     return null;
   }
 
-  const mySelectedCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+  const mySelectedCompany = session.companyProfile?.companiesList?.find((company) => company.id === session.companyProfile.loggedInCompanyId);
 
   const { data: users } = await getAllCompanyUsers({
-    companyId: mySelectedCompany?.companyId ?? "",
+    companyId: mySelectedCompany?.id ?? "",
   });
 
   return (

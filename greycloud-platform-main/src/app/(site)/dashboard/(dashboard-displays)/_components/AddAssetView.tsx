@@ -18,7 +18,7 @@ export default async function AddAssetView() {
   //   id: session.companyId as string,
   // });
 
-  const myCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+  const myCompany = session.companyProfile?.companiesList?.find((company) => company.id === session.companyProfile.loggedInCompanyId);
 
   return (
     <Card className="flex flex-col w-[600px] mx-auto justify-between mt-8">
@@ -29,7 +29,7 @@ export default async function AddAssetView() {
       </CardHeader>
 
       <CardContent className="p-8">
-        <SageOneAssetSaveForm depreciationGroups={depreciationGroups ?? []} SageCompanyId={Number(myCompany?.sageCompanyId ?? 0)}>
+        <SageOneAssetSaveForm depreciationGroups={depreciationGroups ?? []} SageCompanyId={Number(myCompany?.si ?? 0)}>
           <AddAssetDepreciationGroupToNewAsset />
         </SageOneAssetSaveForm>
       </CardContent>

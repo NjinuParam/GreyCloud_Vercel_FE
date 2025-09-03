@@ -12,12 +12,12 @@ export const AssetsList = async () => {
     return null;
   }
 
-  const myCompany = session.companyProfile?.companiesList?.find((company) => company.companyId === session.companyProfile.loggedInCompanyId);
+  const myCompany = session.companyProfile?.companiesList?.find((company) => company.id === session.companyProfile.loggedInCompanyId);
 
 
   const [assets, depreciationGroups] = await Promise.all([
     await getSageOneCompanyAssets({
-      SageCompanyId: Number(myCompany?.sageCompanyId),
+      SageCompanyId: Number(myCompany?.si),
     }),
     await getAllCompanyDepreciationGroups({}),
   ]);
@@ -31,18 +31,11 @@ export const AssetsList = async () => {
         <AssetTableContainer
           assets={assets.data ?? []}
           depreciationGroups={depreciationGroups.data?.filter((g) => g.companyId === session.companyId) ?? []}
-          sageCompanyId={myCompany?.sageCompanyId ?? 0}
+          sageCompanyId={myCompany?.si ?? 0}
           companyId={session.companyId ?? ""}
         />
 
-        {/* {assets.data?.map((asset) => (
-          <AssetCard
-            key={asset.id}
-            asset={asset ?? []}
-            depreciationGroups={depreciationGroups.data?.filter((g) => g.companyId === session.companyId) ?? []}
-            sageCompanyId={myCompany?.sageCompanyId ?? 0}
-          />
-        ))} */}
+      
       </div>
     </>
   );

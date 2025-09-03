@@ -72,15 +72,15 @@ export default function ViewDepreciationHistoryView() {
       if (!comp.isLoggedIn) {
         return null;
       }
-      const _myCompany = comp.companyProfile.companiesList?.find((company: any) => company.companyId === comp.companyProfile.loggedInCompanyId);
+      const _myCompany = comp.companyProfile.companiesList?.find((company: any) => company.id === comp.companyProfile.loggedInCompanyId);
 
       ;
       setMyCompany(_myCompany)
 
-      fetchAudit(Number(_myCompany?.sageCompanyId));
+      fetchAudit(Number(_myCompany?.si));
 
-      canDepreciate(_myCompany?.sageCompanyId ?? 14999);
-      getAllAssetDepreciationHistory({ sageCompanyId: Number(_myCompany?.sageCompanyId) }).then((depreHistoryFull: any) => {
+      canDepreciate(_myCompany?.si ?? 14999);
+      getAllAssetDepreciationHistory({ sageCompanyId: Number(_myCompany?.si) }).then((depreHistoryFull: any) => {
 
         const depreHistory = depreHistoryFull.data.data;
         const summary = depreHistoryFull.data.summary;
@@ -92,7 +92,7 @@ export default function ViewDepreciationHistoryView() {
         setSummaryData(full);
 
         setDepreciationHistoryAll(depreHistory)
-        getSageOneCompanyAssets({ SageCompanyId: Number(_myCompany?.sageCompanyId) }).then((_assets: any) => {
+        getSageOneCompanyAssets({ SageCompanyId: Number(_myCompany?.si) }).then((_assets: any) => {
 
           setAssets(_assets)
 
@@ -198,7 +198,7 @@ export default function ViewDepreciationHistoryView() {
     toast.info("Processing...");
 
     // setFetchingDepreciation(true);
-    const response = await fetch(`${apiUrl}Depreciation/PostDepreciationRun/${myCompany?.sageCompanyId}`, {
+    const response = await fetch(`${apiUrl}Depreciation/PostDepreciationRun/${myCompany?.si}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -491,7 +491,7 @@ export default function ViewDepreciationHistoryView() {
                             var up = {
                               assetId: x.id,
                               usage: e.target.value,
-                              sageCompanyId: myCompany?.sageCompanyId,
+                              sageCompanyId: myCompany?.si,
                               categoryId: x.categoryId
                             };
 
@@ -573,7 +573,7 @@ export default function ViewDepreciationHistoryView() {
                   <Button
                     className="w-full"
                     type="submit"
-                    onClick={() => { postJournals(myCompany.sageCompanyId) }}
+                    onClick={() => { postJournals(myCompany.si) }}
                   >
                     Upload journals
                   </Button>

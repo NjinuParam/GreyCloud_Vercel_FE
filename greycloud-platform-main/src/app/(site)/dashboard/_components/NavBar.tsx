@@ -40,12 +40,6 @@ export default async function NavBar() {
     return null;
   }
 
-  const companyName = session?.companyProfile?.companiesList?.find(
-    (company) => company.companyId === session?.companyProfile?.loggedInCompanyId
-  )?.companyName;
-  const adminNavBarText = formatRoleDisplayName(session?.role ?? "") + " Dashboard";
-
-
   const menuItems = {
     GreyCloud_Admin: [
       {

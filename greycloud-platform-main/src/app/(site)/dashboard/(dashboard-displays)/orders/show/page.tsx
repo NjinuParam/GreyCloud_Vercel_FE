@@ -81,9 +81,7 @@ export default function ShowOrder() {
   React.useEffect(() => {
     getIronSessionData().then((comp: any) => {
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
-
-      // const com = comp.companyProfile.companiesList.find((x:any)=>{x.companyId ==currentCompanyId}).sageCompanyId
-      const com = comp.companyProfile.companiesList.find((x: any) => { return x.companyId == comp.companyId })?.sageCompanyId
+     const com = comp.companyProfile.companiesList.find((x: any) => { return x.id == comp.companyId })?.si
 
       getOrders(com);
 
