@@ -104,7 +104,7 @@ export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) =
   return (
     <Card className="flex flex-col gap-2">
       <CardHeader className="pb-0">
-        <CardTitle>{company.companyName}</CardTitle>
+        <CardTitle>{company.nm}</CardTitle>
         {company.apiKey != "Not Found" ? <CardDescription>{company.email}</CardDescription> : "--"}
       </CardHeader>
 
@@ -150,7 +150,7 @@ export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) =
           <Label htmlFor="sageCompanyId" className="text-xs text-foreground uppercase tracking-wider">
             Sage Company ID
           </Label>
-          <p>{company.sageCompanyId ?? "---"}</p>
+          <p>{company.si ?? "---"}</p>
         </span>
       </CardContent>
 
@@ -223,8 +223,8 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
 
   useEffect(() => { 
     
-    if(company.id.length>1){
-        fetchUsage(company.id);
+    if(company?.id && company?.id.length>1){
+        fetchUsage(company?.id??"");
   }
 
   }, []);
@@ -387,7 +387,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>
-                  <span className="text-muted-foreground">Manage admin users to </span> {company.companyName}
+                  <span className="text-muted-foreground">Manage admin users to </span> {company.nm}
                 </DialogTitle>
                 <small style={{ float: "left", cursor: "pointer" }}><a onClick={() => { setResetPassword(""); setDeleteUser("") }} style={{ color: "blue" }}>Create new user</a></small>
               </DialogHeader>
@@ -574,7 +574,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
             <DialogContent className="sm:max-w-[400px]">
               <DialogHeader>
                 <DialogTitle>
-                  <span className="text-muted-foreground">Delete</span> {company.companyName}?
+                  <span className="text-muted-foreground">Delete</span> {company.nm}?
                 </DialogTitle>
               </DialogHeader>
               <DialogDescription className="text-base">This action cannot be undone. This will permanently delete the company account.</DialogDescription>
@@ -601,12 +601,12 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
 
 
         </> : <>
-          {!company?.companyId ?
+          {!company?.id ?
             <Dialog>
               <DialogTrigger ref={closeButtonRef}  asChild className="grow">
 
                 <Button
-                  onClick={() => { setCompanyId(company?.sageCompanyId ?? 0) }}
+                  onClick={() => { setCompanyId(company?.si ?? 0) }}
                   size={"sm"}
                   type="submit"
                   className={cn(" mt-6 ml-6 mr-4", status === "executing" ? "animate-pulse" : null)}

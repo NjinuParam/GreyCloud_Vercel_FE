@@ -19,11 +19,11 @@ export default function UpdateSageCompanyForm({ company }: { company: SageCompan
   const form = useForm<UpdateCompanyRequestModelType>({
     resolver: zodResolver(UpdateSageCompanyRequestModelSchema),
     defaultValues: {
-      id: company.id,
-      companyName: company.companyName,
+      id: company.id??"",
+      companyName: company.nm,
       email: company.email,
       apiKey: company.apiKey,
-      sageCompanyId: company.sageCompanyId,
+      sageCompanyId: company.si,
       contactName: company.contactName,
       contactEmail: company.contactEmail,
       contactNumber: company.contactNumber,

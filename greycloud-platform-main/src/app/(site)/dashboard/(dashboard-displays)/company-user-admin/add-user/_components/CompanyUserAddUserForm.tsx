@@ -179,7 +179,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
                 <FormLabel>Company</FormLabel>
                 <FormControl>
                   {/* <Input className="w-full" placeholder={form.control._defaultValues.companyId} {...field} disabled /> */}
-                  <Input className="w-full" {...field} placeholder={myCompany.companyName} value={myCompany.companyName} disabled />
+                  <Input className="w-full" {...field} placeholder={myCompany.nm} value={myCompany.nm} disabled />
                 </FormControl>
                 <FormDescription>You can only add users to your own company.</FormDescription>
 

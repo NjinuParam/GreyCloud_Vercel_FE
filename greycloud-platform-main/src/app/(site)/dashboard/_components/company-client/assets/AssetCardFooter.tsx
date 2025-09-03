@@ -56,9 +56,9 @@ export const AssetCardFooter = ({
     execute: executeFetchCompanyForUser,
     status: statusFetchCompanyForUser,
   } = useAction(getGreyCloudCompany, {
-    onSuccess(data) {
+    onSuccess(data:any) {
       executeDeleteAsset({
-        SageCompanyId: Number(data.sageCompanyId),
+        SageCompanyId: Number(data.id),
         id: Number(asset.id),
       });
     },
