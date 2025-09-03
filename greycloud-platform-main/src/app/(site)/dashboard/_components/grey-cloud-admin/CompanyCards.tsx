@@ -41,7 +41,7 @@ export const CompaniesList = ({ companies }: { companies: SageCompanyResponseTyp
   useEffect(() => {
     getIronSessionData().then((x: any) => {
 
-      const sorted = x?.companyProfile?.companiesList.sort((a, b) => {
+      const sorted = x?.companyProfile?.companiesList.sort((a:any, b:any) => {
   // Check if each has an id
   const aHasId = a.id && a.id.trim() !== "";
   const bHasId = b.id && b.id.trim() !== "";
@@ -104,7 +104,7 @@ export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) =
   return (
     <Card className="flex flex-col gap-2">
       <CardHeader className="pb-0">
-        <CardTitle>{company.nm}</CardTitle>
+        <CardTitle>{company.companyName}</CardTitle>
         {company.apiKey != "Not Found" ? <CardDescription>{company.email}</CardDescription> : "--"}
       </CardHeader>
 
@@ -150,7 +150,7 @@ export const CompanyCard = ({ company }: { company: SageCompanyResponseType }) =
           <Label htmlFor="sageCompanyId" className="text-xs text-foreground uppercase tracking-wider">
             Sage Company ID
           </Label>
-          <p>{company.si ?? "---"}</p>
+          <p>{company.sageCompanyId ?? "---"}</p>
         </span>
       </CardContent>
 
@@ -387,7 +387,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>
-                  <span className="text-muted-foreground">Manage admin users to </span> {company.nm}
+                  <span className="text-muted-foreground">Manage admin users to </span> {company.companyName}
                 </DialogTitle>
                 <small style={{ float: "left", cursor: "pointer" }}><a onClick={() => { setResetPassword(""); setDeleteUser("") }} style={{ color: "blue" }}>Create new user</a></small>
               </DialogHeader>
@@ -574,7 +574,7 @@ const CompanyCardFooter = (company: SageCompanyResponseType) => {
             <DialogContent className="sm:max-w-[400px]">
               <DialogHeader>
                 <DialogTitle>
-                  <span className="text-muted-foreground">Delete</span> {company.nm}?
+                  <span className="text-muted-foreground">Delete</span> {company.companyName}?
                 </DialogTitle>
               </DialogHeader>
               <DialogDescription className="text-base">This action cannot be undone. This will permanently delete the company account.</DialogDescription>

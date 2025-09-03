@@ -22,7 +22,7 @@ const companyId = payload.companyProfile?.companiesList?.filter((x:any)=>{return
 
   const { data: depreciationGroup } = await getAllCompanyDepreciationGroups({});
 
-  const filtered = depreciationGroup?.filter((x:any)=>{return x.companyId == companyId?.sageCompanyId});
+  const filtered = depreciationGroup?.filter((x:any)=>{return x.companyId == companyId?.si});
 
   
 

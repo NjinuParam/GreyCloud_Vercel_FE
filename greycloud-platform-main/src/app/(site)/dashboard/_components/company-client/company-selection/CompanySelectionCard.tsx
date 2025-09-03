@@ -134,7 +134,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
                 <DialogTrigger asChild className="grow">
 
                   <Button
-                    onClick={()=>{setCompanyId(company?.sageCompanyId??0)}}
+                    onClick={()=>{setCompanyId(company?.si??0)}}
                     size={"sm"}
                     type="submit"
                     className={cn("w-full", status === "executing" ? "animate-pulse" : null)}
@@ -230,7 +230,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
               <Label htmlFor="apiKey" className="text-xs text-foreground uppercase tracking-wider">
                 Sage Company ID
               </Label>
-              <p><small>{company.sageCompanyId ?? "---"}</small></p>
+              <p><small>{company.si ?? "---"}</small></p>
             </span>
 
             <span className="flex flex-col gap-1 text-muted-foreground">
@@ -244,8 +244,8 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
               <Label htmlFor="dateCreated" className="text-xs text-foreground uppercase tracking-wider">
                 Status
               </Label>
-              <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`, company.companyId && `bg-green-100 text-green-700`)}>
-                {company.companyId ? "Active" : "Inactive"}
+              <Badge variant="outline" className={cn(`max-w-fit mt-1 bg-red-100 text-red-700`, company.id && `bg-green-100 text-green-700`)}>
+                {company.id ? "Active" : "Inactive"}
               </Badge>
             </span>
           </CardContent>

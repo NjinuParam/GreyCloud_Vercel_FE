@@ -18,7 +18,7 @@ export default async function AddAssetView() {
   //   id: session.companyId as string,
   // });
 
-  const myCompany = session.companyProfile?.companiesList?.find((company) => company.id === session.companyProfile.loggedInCompanyId);
+  const myCompany = session.companyProfile?.companiesList?.find((company:any) => company.id === session.companyProfile.loggedInCompanyId);
 
   return (
     <Card className="flex flex-col w-[600px] mx-auto justify-between mt-8">

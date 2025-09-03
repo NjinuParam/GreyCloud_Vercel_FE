@@ -26,13 +26,13 @@ export const RolesCompanyOptions = RolesCompanySchema.options.map((option) => ({
 }));
 
 export const CompanyResponseSchemaForUser = z.object({
-  companyName: z.string(),
-  companyId: z.string(),
+  nm: z.string(),
+  id: z.string(),
   email: z.string(),
   apiKey: z.string(),
   password: z.string(),
   status: z.string(),
-  sageCompanyId: z.coerce.number(),
+  si: z.coerce.number(),
   success: z.coerce.boolean(),
 });
 
