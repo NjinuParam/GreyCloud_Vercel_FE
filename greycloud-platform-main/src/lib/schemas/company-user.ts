@@ -137,6 +137,7 @@ export const LoginCompanyUserResponseSchema = z.object({
   email: z.string().email(),
   name: z.string(),
   surname: z.string(),
+  token: z.string(),
   isPasswordUpdated: z.coerce.boolean(),
   role: RolesCompanySchema,
 });

@@ -86,7 +86,7 @@ debugger;
   const [sageRevaluationJournalCode, setSageRevaluationJournalCode] =
     useState("");
 
-    async function fetchAccounts(id){
+    async function fetchAccounts(id:any){
       toast.info("Fetching depreciation history...");
 
       const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}GreyCloud/Admin/Get-Accounts/${id}`, 

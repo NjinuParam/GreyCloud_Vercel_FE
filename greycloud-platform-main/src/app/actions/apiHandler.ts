@@ -1,7 +1,6 @@
 import { getIronSessionData } from "../../lib/auth/auth";
 
 export async function apiFetch(url: string) {
-  console.log("API Request:", { url, token });
 var session = await getIronSessionData();
 var token=session.token;
 

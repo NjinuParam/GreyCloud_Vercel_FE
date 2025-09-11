@@ -133,7 +133,7 @@ export const getSageOneAssetCategory = action(SageCompanyIdSchema, async ({ Sage
 
     // const assetCategory = data.results;
 
-        const data = await apiFetch(endpoint);
+        const data = await apiFetch(endpoint)as any;
 debugger;
     const assetCategory = data.results;
     revalidateTag("sage-one-asset-categories");
