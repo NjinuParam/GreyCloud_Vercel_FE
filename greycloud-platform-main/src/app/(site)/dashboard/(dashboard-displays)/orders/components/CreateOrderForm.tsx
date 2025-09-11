@@ -78,6 +78,7 @@ import { useRouter } from "next/navigation";
 import { getIronSessionData } from "@/lib/auth/auth";
 import { it } from "node:test";
 import { Checkbox } from "../../../../../../components/ui/checkbox";
+import { apiFetch } from "../../../../../actions/apiHandler";
 
 const FormSchema = z.object({
   startDate: z.date({
@@ -185,16 +186,18 @@ setCompanyId(sageCompanyId);
 
     try {
       
-      const response = await fetch(endpoint, {
-        method: "GET", // *GET, POST, PUT, DELETE, etc.     
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: "follow", // manual, *follow, error
-        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      const response = await apiFetch(endpoint
+      //   , {
+      //   method: "GET", // *GET, POST, PUT, DELETE, etc.     
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     // 'Content-Type': 'application/x-www-form-urlencoded',
+      //   },
+      //   redirect: "follow", // manual, *follow, error
+      //   referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
        
-      });
+      // }
+    );
 
 
       const res = await response.json();
@@ -214,16 +217,18 @@ setCompanyId(sageCompanyId);
     try {
       
 
-      const response = await fetch(endpoint, {
-        method: "GET", // *GET, POST, PUT, DELETE, etc.     
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: "follow", // manual, *follow, error
-        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      const response = await apiFetch(endpoint
+      //   , {
+      //   method: "GET", // *GET, POST, PUT, DELETE, etc.     
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     // 'Content-Type': 'application/x-www-form-urlencoded',
+      //   },
+      //   redirect: "follow", // manual, *follow, error
+      //   referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
        
-      });
+      // }
+    );
 
       const res = await response.json();
       setExcludedAssets(res);
@@ -581,7 +586,7 @@ setCompanyId(sageCompanyId);
                   <AutoComplete
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
               //  defaultValue={a.postalAddress01??""}
-                  apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                  apiKey={"AIzaSyDvgazKlMlD-yi7OHEmee_dRMySNxvRmlI"}
                   onPlaceSelected={(place:any) => {
                   
                     setAddress1(place?.formatted_address);

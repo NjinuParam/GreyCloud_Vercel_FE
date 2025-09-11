@@ -198,7 +198,7 @@ export const loginCompanyUser = action(
       }
 
       const data = await response.json();
- console.log("EEEEE",data)
+
       const user: LoginCompanyUserResponseType = data;
 
       // Save session:
@@ -208,12 +208,13 @@ export const loginCompanyUser = action(
       session.email = user.email;
       session.role = user.role;
       session.id = user.id;
-      session.dateCreated = user.dateCreated;
-      session.dateModified = user.dateModified;
+      // session.dateCreated = user.dateCreated;
+      // session.dateModified = user.dateModified;
       session.companyProfile = {
         loggedInCompanyId: user.companyId,
         companiesList: user.companyInfo
       };
+      session.token=user.token;
       session.isLoggedIn = true;
       session.companyId = user.companyId;
       await session.save();

@@ -44,6 +44,7 @@ export const PlatformUserSchema = z.object({
   dateModified: z.date().nullable().default(null),
   email: z.string().email().nullable().default(null),
   name: z.string().nullable().default(null),
+    token: z.string().nullable().default(null),
   surname: z.string().nullable().default(null),
   role: RolesAllSchema.default("Company_User"),
   companyId: z.string().nullable().default(null),

@@ -27,6 +27,7 @@ import { PencilIcon, Trash } from "lucide-react";
 import { getIronSessionData, logout } from "../../../../../lib/auth/auth";
 import { toBase64 } from "../../../../../lib/utils";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "../../../../actions/apiHandler";
 ;
 
 export const CompaniesList = ({ companies }: { companies: SageCompanyResponseType[] }) => {
@@ -66,12 +67,14 @@ export const CompaniesList = ({ companies }: { companies: SageCompanyResponseTyp
   async function onboard(companyId: string) {
     toast.info("Fetching depreciation history...");
 
-    const response = await fetch(`${apiUrl}GreyCloud/Admin/Get-Accounts/${companyId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
+    const response = await apiFetch(`${apiUrl}GreyCloud/Admin/Get-Accounts/${companyId}`
+    //   , {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   }
+    // }
+  );
 
     if (response) {
       const res = await response.json();

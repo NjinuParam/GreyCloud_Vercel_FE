@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "../../../../../../components/ui/input";
 import { useState } from "react";
+import { apiFetch } from "../../../../../actions/apiHandler";
 
 export const CompanySelectionCard = ({ company }: { company: CompanyResponseTypeForUser }) => {
   const router = useRouter();
@@ -79,12 +80,14 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
   async function onboard(companyId:string){
     toast.info("Fetching depreciation history...");
     
-    const response = await fetch(`${apiUrl}GreyCloud/Admin/Get-Accounts/${companyId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
+    const response = await apiFetch(`${apiUrl}GreyCloud/Admin/Get-Accounts/${companyId}`,
+    //    {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   }
+    // }
+  );
   
     if (response) {
       const res = await response.json();

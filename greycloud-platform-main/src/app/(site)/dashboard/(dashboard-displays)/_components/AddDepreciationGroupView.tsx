@@ -35,6 +35,7 @@ import { toast } from "sonner";
 import { SelectGroup } from "@radix-ui/react-select";
 import SageOneAssetCategorySaveForm from "../company-user-admin/add-asset-category/_components/SageOneSaveAssetCategory";
 import Select from 'react-select';
+import { apiFetch } from "../../../../actions/apiHandler";
 
 function AddDepreciationGroup() {
   useEffect(() => {
@@ -52,11 +53,11 @@ setCompanyId(com);
       let sageId = comp.companyProfile.companiesList.find(
         (x:any) => x.id == currentCompanyId
       )?.si;
-
+debugger;
       setUserId(comp.email);
-
-      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
-        .then((res) => res.json().then((data) => setCategories(data.results)))
+      fetchAccounts(sageId);
+      apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
+        .then((res) => res.json().then((data) =>{ setCategories(data.results)}))
         .catch((e) => console.log(e));
 
       setCompanyName(name);
@@ -85,15 +86,17 @@ setCompanyId(com);
   const [sageRevaluationJournalCode, setSageRevaluationJournalCode] =
     useState("");
 
-    async function fetchAccounts(){
+    async function fetchAccounts(id){
       toast.info("Fetching depreciation history...");
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}GreyCloud/Admin/Get-Accounts/14999`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        }
-      });
+
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}GreyCloud/Admin/Get-Accounts/${id}`, 
+      //   {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   }
+      // }
+    );
     
       if (response) {
         const res = await response.json();
@@ -141,10 +144,7 @@ setCompanyId(com);
     }
   }
 
-  useEffect(() => { 
-    fetchAccounts();
-   
-   }, []);
+
 
   
    const customStyle = {

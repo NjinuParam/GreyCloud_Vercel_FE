@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getIronSessionData } from "../../../../../../lib/auth/auth";
+import { apiFetch } from "../../../../../actions/apiHandler";
 export default function AssetDepreciationDialog({
   asset,
   depreciationGroups,
@@ -52,12 +53,14 @@ export default function AssetDepreciationDialog({
 async function fatchFutureDepreciation(assetId:string){
   toast.info("Fetching depreciation history...");
   
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}Depreciation/CalculateFutureepreciation/${assetId}/${selectedPeriod}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    }
-  });
+  const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}Depreciation/CalculateFutureepreciation/${assetId}/${selectedPeriod}`
+  //   , {
+  //   method: "GET",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   }
+  // }
+);
 
   if (response) {
     

@@ -16,6 +16,7 @@ import {
 } from "@/lib/schemas/company";
 import { revalidateTag } from "next/cache";
 import { SageCompanyIdSchema } from "@/lib/schemas/common-schemas";
+import { apiFetch } from "../apiHandler";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -117,19 +118,24 @@ export const deleteSpecificSageOneCompanyAsset = action(CompanyIdAndIdSchema, as
   }
 });
 
+
+
 export const getSageOneAssetCategory = action(SageCompanyIdSchema, async ({ SageCompanyId }) => {
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.GET.ASSET_CATEGORY_GET}?SageCompanyId=${SageCompanyId}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["sage-one-asset-categories"] } });
-    if (!response.ok) {
-      throw new ActionError(`Error: ${response.status}`);
-    }
+    // const response = await fetch(endpoint, { next: { tags: ["sage-one-asset-categories"] } });
+    // if (!response.ok) {
+    //   throw new ActionError(`Error: ${response.status}`);
+    // }
 
-    const data = await response.json();
+    // const data = await response.json();
 
+    // const assetCategory = data.results;
+
+        const data = await apiFetch(endpoint);
+debugger;
     const assetCategory = data.results;
-
     revalidateTag("sage-one-asset-categories");
 
     return assetCategory;

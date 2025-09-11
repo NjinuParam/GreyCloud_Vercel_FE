@@ -31,6 +31,7 @@ import { AssetDepreciationHistoryTableTypes, assetDepreciationHistoryColumns } f
 import { DataTable } from "../../../../../../components/ui/data-table";
 import { DownloadTableExcel } from "react-export-table-to-excel";
 import { PowerCircle } from "lucide-react";
+import { apiFetch } from "../../../../../actions/apiHandler";
 
 
 
@@ -47,12 +48,14 @@ AssetDepreciationHistoryTableTypes[]
 async function fetchFutureDepreciation(categoryId:string){
   toast.info("Fetching depreciation history...");
   setFetchingDepreciation(true);
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}Depreciation/FutureDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    }
-  });
+  const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}Depreciation/FutureDepreciationPerCategory/${categoryId}/${selectedPeriod}`
+  //   , {
+  //   method: "GET",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   }
+  // }
+);
 
   if (response) {
     const res = await response.json();
@@ -72,12 +75,14 @@ async function fetchFutureDepreciation(categoryId:string){
 async function fetchHistoriceDepreciation(categoryId:string){
   toast.info("Fetching depreciation history...");
   setFetchingDepreciation(true);
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}Depreciation/HistoricDepreciationPerCategory/${categoryId}/${selectedPeriod}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    }
-  });
+  const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}Depreciation/HistoricDepreciationPerCategory/${categoryId}/${selectedPeriod}`
+  //   , {
+  //   method: "GET",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   }
+  // }
+);
 
   if (response) {
     const res = await response.json();

@@ -26,6 +26,7 @@ import AutoComplete from "react-google-autocomplete";
 
 import { Button } from "@/components/ui/button";
 import moment from "moment";
+import { apiFetch } from "../../../../../actions/apiHandler";
 
  export default function AssetCard({ asset, depreciationGroups, sageCompanyId,updateUsage, updateAddress, closeFn}: UpdateSageOneAssetFormProps){
   let session ={}as any;
@@ -57,12 +58,14 @@ import moment from "moment";
   const [prevUsage, setPrevUsage] = useState<any[]>([]);
 
   async function fetchUsage(assetId:string){
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneAsset/Asset/GetUsage/${assetId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
+    const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneAsset/Asset/GetUsage/${assetId}`
+    //   , {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   }
+    // }
+  );
   
     if (response) {
    
@@ -183,7 +186,7 @@ import moment from "moment";
               style={{zIndex:99999999}}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-4" 
               //  defaultValue={a.postalAddress01??""}
-                  apiKey={"AIzaSyDsGw9PT-FBFk7DvGK46BpvEURMxcfJX5k"}
+                  apiKey={"AIzaSyDvgazKlMlD-yi7OHEmee_dRMySNxvRmlI"}
                   onPlaceSelected={(place:any) => {
                     _setAddress(`${place?.formatted_address}(${place?.geometry?.location?.lat()},${place?.geometry?.location?.lng()})`);
                   }}

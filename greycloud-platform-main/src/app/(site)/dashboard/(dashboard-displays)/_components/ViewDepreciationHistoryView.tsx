@@ -42,6 +42,7 @@ import { Button } from "../../../../../components/ui/button";
 import { Checkbox } from "../../../../../components/ui/checkbox";
 import { FormLabel } from "../../../../../components/ui/form";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import { apiFetch } from "../../../../actions/apiHandler";
 
 
 export default function ViewDepreciationHistoryView() {
@@ -142,12 +143,14 @@ export default function ViewDepreciationHistoryView() {
   async function canDepreciate(companyId: number) {
     toast.info("Fetching depreciation history...");
 
-    const response = await fetch(`${apiUrl}Depreciation/CanDepreciate/${companyId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
+    const response = await apiFetch(`${apiUrl}Depreciation/CanDepreciate/${companyId}`
+    //   , {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   }
+    // }
+  );
 
     if (response) {
 
@@ -238,12 +241,14 @@ export default function ViewDepreciationHistoryView() {
   async function fetchAudit(companyId: any) {
     // setFetchingDepreciation(true);
 
-    const response = await fetch(`${apiUrl}Depreciation/GetSageAudit/${companyId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
+    const response = await apiFetch(`${apiUrl}Depreciation/GetSageAudit/${companyId}`
+    //   , {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   }
+    // }
+  );
     if (response) {
 
       const res = await response.json();
@@ -273,12 +278,14 @@ export default function ViewDepreciationHistoryView() {
   async function postJournals(compId: any) {
     toast.info("Processing...");
     // setFetchingDeprecipostation(true);
-    const response = await fetch(`${apiUrl}Depreciation/PostJournals/${compId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
+    const response = await apiFetch(`${apiUrl}Depreciation/PostJournals/${compId}`
+    //   , {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   }
+    // }
+  );
 
     if (response) {
       toast.success(`Complete!`, {

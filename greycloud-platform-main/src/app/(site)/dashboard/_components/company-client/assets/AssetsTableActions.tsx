@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { getIronSessionData } from "../../../../../../lib/auth/auth";
 import { DialogClose } from "../../../../../../components/ui/dialog";
+import { apiFetch } from "../../../../../actions/apiHandler";
 
 export default function AssetsTableActions({ asset }: { asset: EnrichedAssetType }) {
 
@@ -20,12 +21,14 @@ export default function AssetsTableActions({ asset }: { asset: EnrichedAssetType
 toast.info("Updating asset...");
 
 
-const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/${compId}`, {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-  }
-});
+const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneAsset/Asset/UpdateUsage/${assetId}/${usage}/${compId}`
+//   , {
+//   method: "GET",
+//   headers: {
+//     "Content-Type": "application/json",
+//   }
+// }
+);
 
 if (response) {
   setCompModal(false);
