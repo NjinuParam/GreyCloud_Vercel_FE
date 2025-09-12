@@ -91,7 +91,6 @@ import { apiFetch } from "../../../../../actions/apiHandler";
   
   }
 
-  debugger;
    
   return (
     <Card className="flex flex-col gap-2">

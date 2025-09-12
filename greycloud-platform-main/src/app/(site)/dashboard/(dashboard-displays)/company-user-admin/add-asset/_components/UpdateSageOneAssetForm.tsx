@@ -38,7 +38,9 @@ import { getIronSessionData } from "@/lib/auth/auth";
 import AutoComplete from "react-google-autocomplete";
 import ButtonSubmitForm from "../../../../../../(auth)/admin/_components/ButtonSubmitForm";
 import { SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from "../../../../../../../components/ui/select";
+import { Select as UiSelect} from "../../../../../../../components/ui/select" ;
 import { SelectValue } from "@radix-ui/react-select";
+import { apiFetch, apiPost } from "../../../../../../actions/apiHandler";
 export type UpdateSageOneAssetFormProps = {
   asset: SageOneAssetTypeType;
   depreciationGroups: GetCompanyDepreciationGroupResponseType[];
@@ -78,7 +80,9 @@ export default function UpdateSageOneAssetForm({
   const [isCollection, setIsCollection] = useState(false);
   const [qty, setQty] = useState(0);
   const [createAnother, setCreateAnother] = useState(false);
-
+  const [usageOrDailyAmount, setUsageOrDailyAmount] = useState(0);
+  const [onceOffAmount, setOnceOffAmount] = useState(0);
+  const [usageType, setUsageType] = useState("");
 
   const { execute, status } = useAction(saveSageOneAsset, {
 
@@ -117,9 +121,9 @@ export default function UpdateSageOneAssetForm({
 
       
       const com = comp.companyProfile.companiesList.filter((x: any) => { return x.id == currentCompanyId })[0]?.si
-
+debugger;
       setCompanyId(com);
-      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`)
+      apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`)
         .then((res) =>
           res.json().then((data) => {
             setCategories(data.results);
@@ -130,7 +134,7 @@ export default function UpdateSageOneAssetForm({
         )
         .catch((e: any) => console.log(e));
       const p = asset as any;
-      fetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`)
+      apiFetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`)
         .then((res) =>
           res.json().then((data) => {
           
@@ -150,11 +154,16 @@ export default function UpdateSageOneAssetForm({
             setCategory(data.catDescription || '');
             setIsRental(data.rentalAsset);
             setCategoryId(data.catIid);
-            setBillingType(data.billingType.type.toString());
+            setBillingType(data.billingType.type.toString()==0?"daily":data.billingType.type.toString()==1?"onceoff":data.billingType.type.toString()==2?"onceoffusage":data.billingType.type.toString()==3?"usage":"");
             setIsCollection(false); // Assuming this is not part of the response
             setQty(0); // Assuming this is not part of the response
             setCreateAnother(false); // Assuming this is not part of the response
             setId(data.id)
+            // setBillingType(data.billingType.type.toString());
+            setUsageType(data.billingType.usageType);
+            setOnceOffAmount(data.billingType.amount);
+            setUsageOrDailyAmount(data.billingType.usageRate);
+            debugger;
           })
         )
         .catch((e: any) => console.log(e));
@@ -222,10 +231,10 @@ export default function UpdateSageOneAssetForm({
       },
 
       billingType: {
-        type: 0,
-        amount: 0,
-        usageType: "",
-        usageRate: 0
+        type: billingType=="daily"?0:billingType=="onceoff"?1:billingType=="onceoffusage"?2:billingType=="usage"?3:0,
+        amount: onceOffAmount,
+        usageType: usageType,
+        usageRate: usageOrDailyAmount
       },
     };
 
@@ -236,13 +245,8 @@ export default function UpdateSageOneAssetForm({
 
       const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-      await fetch(`${apiUrl}SageOneAsset/Asset/Update?CompanyId=${companyId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      await apiPost(`${apiUrl}SageOneAsset/Asset/Update?CompanyId=${companyId}`
+        , payload);
       toast.success(`Asset updated!`, {
         description: "The asset updated was stored successfully.",
       });
@@ -434,6 +438,119 @@ export default function UpdateSageOneAssetForm({
 
             />
           </div>
+          <div>
+                    <label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Rental</label><br/>
+                    <div className="mt-4 flex gap-4">
+
+                      <UiSelect onValueChange={(e) => setBillingType(e)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Billing type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Billing type</SelectLabel>
+                            <SelectItem value="daily">Daily</SelectItem>
+                            <SelectItem value="onceoff">Once Off</SelectItem>
+                            <SelectItem value="onceoffusage">
+                              Once Off + Usage
+                            </SelectItem>
+                            <SelectItem value="usage">Usage</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </UiSelect>
+
+                      {billingType === "daily" ? (
+                        <div className="w-full">
+                          <Input
+                            onChange={(e: any) => setUsageOrDailyAmount(e.target.value)}
+                            className="w-full"
+                            type="number"
+                            initialValue={usageOrDailyAmount}
+                            placeholder="Price (per day)"
+                          />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+
+                      {billingType === "onceoff" ? (
+                        <div className="w-full">
+                          <Input
+                            onChange={(e: any) => setOnceOffAmount(e.target.value)}
+                            className="w-full"
+                            type="number"
+                            placeholder="Price (once off)"
+                          />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+
+                      {billingType === "onceoffusage" ? (
+                        <div>
+                          <div className="flex flex-row gap-4 w-full">
+                            <Input
+                              onChange={(e: any) => setOnceOffAmount(e.target.value)}
+                              className="w-full"
+                              type="number"
+                              placeholder="Price (once off)"
+                            />
+                          </div>
+                          <div className="flex flex-row gap-4 w-full mt-2">
+                            <UiSelect onValueChange={(e) => setUsageType(e)}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Usage type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>Usage type</SelectLabel>
+                                  <SelectItem value="km">KM</SelectItem>
+                                  <SelectItem value="hours">Hours</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </UiSelect>
+                          </div>
+                          <div className="flex flex-row gap-4 w-full mt-2">
+                            <Input
+                              onChange={(e: any) => setUsageOrDailyAmount(e.target.value)}
+                              className="w-full"
+                              type="number"
+                              placeholder="Price (per unit)"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+
+                      {billingType === "usage" ? (
+                        <div className="flex flex-row gap-4 w-full">
+                          <UiSelect onValueChange={(e) => setUsageType(e)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Usage type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Usage type</SelectLabel>
+                                <SelectItem value="km">KM</SelectItem>
+                                <SelectItem value="hours">Hours</SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </UiSelect>
+                          <Input
+                            onChange={(e: any) => setUsageOrDailyAmount(e.target.value)}
+                            className="w-full"
+                            type="number"
+                            placeholder="Price (usage)"
+                          />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                      
+                    </div>
+                 
+          </div>
 
           {/* <div className="items-top flex space-x-2 mt-5">
             <div className="flex flex-col w-full">
@@ -452,12 +569,14 @@ export default function UpdateSageOneAssetForm({
           </div> */}
         </div>
         <div>
+        
           
         </div>
 
-        <div className="w-full pt-4">
+        <div className="w-full">
           <Button type="submit" >Update Asset</Button>
-        </div>
+        </div><br/><br/><br/>
+        
 
         {/* <div style={{ float: "right", marginTop: "15px" }}>
           <p style={{ float: "left", marginRight: "5px" }} className="text-sm text-muted-foreground">
