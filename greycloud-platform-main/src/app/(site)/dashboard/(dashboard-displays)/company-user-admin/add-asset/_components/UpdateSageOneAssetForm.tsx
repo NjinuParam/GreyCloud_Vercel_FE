@@ -465,7 +465,7 @@ debugger;
                             onChange={(e: any) => setUsageOrDailyAmount(e.target.value)}
                             className="w-full"
                             type="number"
-                            initialValue={usageOrDailyAmount}
+                            value={usageOrDailyAmount}
                             placeholder="Price (per day)"
                           />
                         </div>
