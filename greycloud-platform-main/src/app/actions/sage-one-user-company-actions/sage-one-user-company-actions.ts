@@ -25,6 +25,7 @@ import {
 
 import { toBase64 } from "@/lib/utils";
 import { revalidateTag } from "next/cache";
+import { API_LOGGING } from "../../../lib/config";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -34,9 +35,9 @@ export const getAllCompanyUsers = action(
     const endpoint = `${apiUrl}${SAGE_ONE_USER_COMPANY.GET.GET_ALL_COMPANY_USERS}?companyId=${companyId}`;
 
     try {
-      const response = await fetch(endpoint, {
-        next: { tags: ["all-company-users"] },
-      });
+      if (API_LOGGING) console.log(`[action][GET] ${endpoint}`);
+      const response = await fetch(endpoint, { next: { tags: ["all-company-users"] } as any });
+      if (API_LOGGING) console.log(`[action][GET] ${endpoint} -> ${response.status} ${response.statusText}`);
       if (!response.ok) {
         throw new ActionError(`Error: ${response.status}`);
       }
@@ -59,9 +60,9 @@ export const getSpecificCompanyUser = action(IdSchemaString, async ({ id }) => {
   const endpoint = `${apiUrl}${SAGE_ONE_USER_COMPANY.GET.GET_COMPANY_USER}/${id}`;
 
   try {
-    const response = await fetch(endpoint, {
-      next: { tags: ["company-user"] },
-    });
+    if (API_LOGGING) console.log(`[action][GET] ${endpoint}`);
+    const response = await fetch(endpoint, { next: { tags: ["company-user"] } as any });
+    if (API_LOGGING) console.log(`[action][GET] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -88,14 +89,15 @@ export const createCompanyUser = action(
     userCredentials.password = toBase64(userCredentials.password);
 
     try {
+      if (API_LOGGING) console.log(`[action][POST] ${endpoint}`);
       const response = await fetch(endpoint, {
         method: "POST",
         body: JSON.stringify(userCredentials),
         headers: {
           "Content-Type": "application/json",
         },
-      });
-
+      } as any);
+      if (API_LOGGING) console.log(`[action][POST] ${endpoint} -> ${response.status} ${response.statusText}`);
       if (!response.ok) {
         throw new ActionError(`Error: ${response.status}`);
       }
@@ -121,14 +123,15 @@ export const updateCompanyUser = action(
     const endpoint = `${apiUrl}${SAGE_ONE_USER_COMPANY.PUT.UPDATE_COMPANY_USER}`;
 
     try {
+      if (API_LOGGING) console.log(`[action][PUT] ${endpoint}`);
       const response = await fetch(endpoint, {
         method: "PUT",
         body: JSON.stringify(user),
         headers: {
           "Content-Type": "application/json",
         },
-      });
-
+      } as any);
+      if (API_LOGGING) console.log(`[action][PUT] ${endpoint} -> ${response.status} ${response.statusText}`);
       if (!response.ok) {
         throw new ActionError(`Error: ${response.status}`);
       }
@@ -151,13 +154,14 @@ export const deleteCompanyUser = action(IdSchemaString, async ({ id }) => {
   const endpoint = `${apiUrl}${SAGE_ONE_USER_COMPANY.DELETE.DELETE_COMPANY_USER}/${id}`;
 
   try {
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-    });
-
+    } as any);
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -184,15 +188,15 @@ export const loginCompanyUser = action(
     loginCredentials.password = toBase64(loginCredentials.password);
 
     try {
+      if (API_LOGGING) console.log(`[action][POST] ${endpoint}`);
       const response = await fetch(endpoint, {
         method: "POST",
         body: JSON.stringify(loginCredentials),
         headers: {
           "Content-Type": "application/json",
         },
-      });
-
-     
+      } as any);
+      if (API_LOGGING) console.log(`[action][POST] ${endpoint} -> ${response.status} ${response.statusText}`);
       if (!response.ok) {
         throw new ActionError(`Error: ${response.status}`);
       }
@@ -266,13 +270,14 @@ export const updateCompanyUserPassword = action(
     }?email=${encodeURIComponent(email)}&newPassword=${rest.newPassword}`;
 
     try {
+      if (API_LOGGING) console.log(`[action][PUT] ${endpoint}`);
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-      });
-
+      } as any);
+      if (API_LOGGING) console.log(`[action][PUT] ${endpoint} -> ${response.status} ${response.statusText}`);
       if (!response.ok) {
         throw new ActionError(`Error: ${response.status}`);
       }
@@ -298,13 +303,14 @@ export const resetCompanyUserAccountPassword = action(
     }?email=${encodeURIComponent(email)}`;
 
     try {
+      if (API_LOGGING) console.log(`[action][POST] ${endpoint}`);
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-      });
-
+      } as any);
+      if (API_LOGGING) console.log(`[action][POST] ${endpoint} -> ${response.status} ${response.statusText}`);
       if (!response.ok) {
         throw new ActionError(`Error: ${response.status}`);
       }
@@ -328,10 +334,11 @@ export const verifyCompanyUserOTP = action(
     }?email=${encodeURIComponent(email)}&code=${code}`;
 
     try {
+      if (API_LOGGING) console.log(`[action][PUT] ${endpoint}`);
       const response = await fetch(endpoint, {
         method: "PUT",
-      });
-
+      } as any);
+      if (API_LOGGING) console.log(`[action][PUT] ${endpoint} -> ${response.status} ${response.statusText}`);
       if (!response.ok) {
         throw new ActionError(`Error: ${response.status}`);
       }

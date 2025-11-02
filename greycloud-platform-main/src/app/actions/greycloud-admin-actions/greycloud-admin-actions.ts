@@ -21,6 +21,7 @@ import {
 import { toBase64 } from "@/lib/utils";
 import { revalidateTag } from "next/cache";
 import { getIronSessionData, logout } from "@/lib/auth/auth";
+import { serverFetch } from "../apiHandler";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -28,7 +29,7 @@ export const getAllGreyCloudAdmins = action(EmptySchema, async () => {
   const endpoint = `${apiUrl}${GREYCLOUD.GET.GET_ALL_USERS}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["greycloud-admins"], revalidate: 1 } });
+  const response = await serverFetch(endpoint, { next: { tags: ["greycloud-admins"], revalidate: 1 } as any });
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -48,7 +49,7 @@ export const getGreyCloudAdmin = action(IdSchemaString, async ({ id }) => {
   const endpoint = `${apiUrl}${GREYCLOUD.GET.GET_USER}/${id}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["greycloud-admins"] } });
+  const response = await serverFetch(endpoint, { next: { tags: ["greycloud-admins"] } as any });
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -73,13 +74,13 @@ export const createGreyCloudAdmin = action(RegisterGreyCloudAdminRequestModelSch
   myAdmin.password = toBase64(myAdmin.password);
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "POST",
       body: JSON.stringify(myAdmin),
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -103,13 +104,13 @@ export const updateGreyCloudAdmin = action(UpdateGreyCloudAdminRequestModelSchem
   const endpoint = `${apiUrl}${GREYCLOUD.PUT.UPDATE_USER}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "PUT",
       body: JSON.stringify(myAdmin),
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -131,9 +132,9 @@ export const deleteGreyCloudAdmin = action(IdSchemaString, async ({ id }) => {
   const endpoint = `${apiUrl}${GREYCLOUD.DELETE.DELETE_USER}/${id}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "DELETE",
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -159,12 +160,12 @@ export const updateGreyCloudAdminPassword = action(UpdateGreyCloudAdminPasswordS
   const endpoint = `${apiUrl}${GREYCLOUD.PUT.UPDATE_USER_PASSWORD}?email=${email}&newPassword=${rest.newPassword}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -190,13 +191,13 @@ export const loginGreyCloudAdmin = action(LoginGreyCloudAdminSchema, async ({ re
   loginCredentials.password = toBase64(loginCredentials.password);
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "POST",
       body: JSON.stringify(loginCredentials),
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -239,13 +240,13 @@ export const createGreyCloudCompany = action(CreateSageCompanyRequestModelSchema
   const endpoint = `${apiUrl}${GREYCLOUD.POST.CREATE_SAGE_COMPANY}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "POST",
       body: JSON.stringify(company),
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -268,13 +269,13 @@ export const updateGreyCloudCompany = action(UpdateSageCompanyRequestModelSchema
   const endpoint = `${apiUrl}${GREYCLOUD.PUT.UPDATE_SAGE_COMPANY}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "PUT",
       body: JSON.stringify(company),
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -297,7 +298,7 @@ export const getGreyCloudCompany = action(IdSchemaString, async ({ id }) => {
   const endpoint = `${apiUrl}${GREYCLOUD.GET.GET_COMPANY}/${id}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["all-sage-companies"] } });
+  const response = await serverFetch(endpoint, { next: { tags: ["all-sage-companies"] } as any });
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -317,7 +318,7 @@ export const getAllGreyCloudCompanies = action(EmptySchema, async () => {
   const endpoint = `${apiUrl}${GREYCLOUD.GET.GET_ALL_COMPANY}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["all-sage-companies"] } });
+  const response = await serverFetch(endpoint, { next: { tags: ["all-sage-companies"] } as any });
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -337,9 +338,9 @@ export const deleteGreyCloudCompany = action(IdSchemaString, async ({ id }) => {
   const endpoint = `${apiUrl}${GREYCLOUD.DELETE.DELETE_COMPANY}/${id}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "DELETE",
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -362,12 +363,12 @@ export const resetGreyCloudAdminAccountPassword = action(EmailOnlySchema, async 
   const endpoint = `${apiUrl}${GREYCLOUD.POST.USER_RESET_ACCOUNT_PASSWORD}?email=${encodeURIComponent(email)}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -388,9 +389,9 @@ export const verifyGreyCloudAdminOTP = action(OTPGreyCloudSchema, async ({ email
   const endpoint = `${apiUrl}${GREYCLOUD.PUT.VERIFY_USER_OTP}?email=${encodeURIComponent(email)}&code=${code}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "PUT",
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);

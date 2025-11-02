@@ -17,6 +17,7 @@ import {
 import { revalidateTag } from "next/cache";
 import { SageCompanyIdSchema } from "@/lib/schemas/common-schemas";
 import { apiFetch } from "../apiHandler";
+import { API_LOGGING } from "../../../lib/config";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -25,13 +26,15 @@ export const saveSageOneAsset = action(SaveSageOneAssetSchema, async ({ SageComp
   const endpoint = `http://localhost:5022/SageOneAsset/Asset/Save?Companyid=${SageCompanyId}&quantity=1`;
 
   try {
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(assets.asset),
-    });
+    } as any);
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -53,7 +56,9 @@ export const getSageOneCompanyAssets = action(SageCompanyIdSchema, async ({ Sage
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.GET.ASSET_GET}?Companyid=${SageCompanyId}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["sage-one-assets"] } });
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint}`);
+  const response = await fetch(endpoint, { next: { tags: ["sage-one-assets"] } as any });
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -75,7 +80,9 @@ export const getSpecificSageOneCompanyAsset = action(CompanyIdAndIdSchema, async
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.GET.ASSET_GET}?SageCompanyId=${SageCompanyId}&id=${id}`;
 
   try {
-    const response = await fetch(endpoint);
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint}`);
+  const response = await fetch(endpoint);
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -98,9 +105,11 @@ export const deleteSpecificSageOneCompanyAsset = action(CompanyIdAndIdSchema, as
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.DELETE.ASSET_DELETE}/${id}?SageCompanyId=${SageCompanyId}`;
 
   try {
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "DELETE",
-    });
+    } as any);
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -149,13 +158,15 @@ export const saveSageOneAssetCategory = action(SaveSageOneAssetCategorySchema, a
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.POST.ASSET_CATEGORY_SAVE}?SageCompanyId=${SageCompanyId}`;
 
   try {
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(assetsCategory.assetCategory),
-    });
+    } as any);
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -177,12 +188,14 @@ export const getSageOneSpecificAssetCategory = action(CompanyIdAndIdSchema, asyn
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.POST.ASSET_CATEGORY_GET}/${id}?SageCompanyId=${SageCompanyId}`;
 
   try {
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    } as any);
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -204,9 +217,11 @@ export const deleteSageOneSpecificAssetCategory = action(CompanyIdAndIdSchema, a
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.DELETE.ASSET_CATEGORY_DELETE}/${id}?SageCompanyId=${SageCompanyId}`;
 
   try {
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "DELETE",
-    });
+    } as any);
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -228,13 +243,15 @@ export const saveSageOneAssetLocation = action(SageOneAssetLocationSchema, async
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.POST.ASSET_LOCATION_SAVE}?SageCompanyId=${SageCompanyId}`;
 
   try {
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(assetsLocation),
-    });
+    } as any);
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -256,7 +273,9 @@ export const getSageOneAssetLocation = action(SageCompanyIdSchema, async ({ Sage
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.GET.ASSET_LOCATION_GET}?SageCompanyId=${SageCompanyId}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["sage-one-asset-locations"] } });
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint}`);
+  const response = await fetch(endpoint, { next: { tags: ["sage-one-asset-locations"] } as any });
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -276,7 +295,9 @@ export const getSpecificSageOneAssetLocation = action(CompanyIdAndIdSchema, asyn
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.GET.ASSET_LOCATION_GET}/${id}?SageCompanyId=${SageCompanyId}`;
 
   try {
-    const response = await fetch(endpoint);
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint}`);
+  const response = await fetch(endpoint);
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -296,9 +317,11 @@ export const deleteSpecificSageOneAssetLocation = action(CompanyIdAndIdSchema, a
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.DELETE.ASSET_LOCATION_DELETE}/${id}?SageCompanyId=${SageCompanyId}`;
 
   try {
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "DELETE",
-    });
+    } as any);
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -320,13 +343,15 @@ export const saveSageOneAssetNote = action(SaveSageOneAssetNoteSchema, async ({ 
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.POST.ASSET_NOTE_SAVE}?SageCompanyId=${SageCompanyId}`;
 
   try {
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(assetsNote.assetNote),
-    });
+    } as any);
+    if (API_LOGGING) console.log(`[action][POST] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -348,7 +373,9 @@ export const getSageOneAssetNotes = action(SageCompanyIdSchema, async ({ SageCom
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.GET.ASSET_NOTE_GET}?SageCompanyId=${SageCompanyId}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["sage-one-asset-notes"] } });
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint}`);
+  const response = await fetch(endpoint, { next: { tags: ["sage-one-asset-notes"] } as any });
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -368,7 +395,9 @@ export const getSpecificSageOneAssetNote = action(CompanyIdAndIdSchema, async ({
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.GET.ASSET_NOTE_GET}/${id}?SageCompanyId=${SageCompanyId}`;
 
   try {
-    const response = await fetch(endpoint);
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint}`);
+  const response = await fetch(endpoint);
+  if (API_LOGGING) console.log(`[action][GET] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -387,9 +416,11 @@ export const deleteSpecificSageOneAssetNote = action(CompanyIdAndIdSchema, async
   const endpoint = `${apiUrl}${SAGE_ONE_ASSET.DELETE.ASSET_NOTE_DELETE}/${id}?SageCompanyId=${SageCompanyId}`;
 
   try {
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint}`);
     const response = await fetch(endpoint, {
       method: "DELETE",
-    });
+    } as any);
+    if (API_LOGGING) console.log(`[action][DELETE] ${endpoint} -> ${response.status} ${response.statusText}`);
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }

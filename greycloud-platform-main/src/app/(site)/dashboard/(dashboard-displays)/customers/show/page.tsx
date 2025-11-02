@@ -126,8 +126,7 @@ export default function ShowCustomer() {
     getIronSessionData().then((comp: any) => {
     
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
- const com =comp.companyProfile.companiesList.filter((x:any)=>{return x.id ==currentCompanyId})[0]?.si
-      ;
+ const com=comp.companyProfile.companiesList.filter(a=>{return a.id==currentCompanyId})[0]?.si;
       debugger;
       getCustomers(com);
     });

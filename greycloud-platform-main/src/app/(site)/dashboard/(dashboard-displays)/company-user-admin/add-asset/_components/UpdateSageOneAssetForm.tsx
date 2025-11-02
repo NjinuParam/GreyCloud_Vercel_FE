@@ -497,7 +497,7 @@ debugger;
                             />
                           </div>
                           <div className="flex flex-row gap-4 w-full mt-2">
-                            <UiSelect onValueChange={(e) => setUsageType(e)}>
+                            <UiSelect defaultValue={usageType} onValueChange={(e) => setUsageType(e)}>
                               <SelectTrigger>
                                 <SelectValue placeholder="Usage type" />
                               </SelectTrigger>
@@ -542,6 +542,7 @@ debugger;
                             className="w-full"
                             type="number"
                             placeholder="Price (usage)"
+                            defaultValue={usageOrDailyAmount}
                           />
                         </div>
                       ) : (

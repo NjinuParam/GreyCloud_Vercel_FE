@@ -93,7 +93,7 @@ import { apiFetch } from "../../../../../actions/apiHandler";
 
    
   return (
-    <Card className="flex flex-col gap-2">
+    <Card style={{width:"97%"}} className="flex flex-col gap-2">
       <CardHeader className="pb-0 flex flex-col gap-2">
         <CardTitle>{asset.description}</CardTitle>
         <CardDescription>Asset ID: {asset.code}</CardDescription>

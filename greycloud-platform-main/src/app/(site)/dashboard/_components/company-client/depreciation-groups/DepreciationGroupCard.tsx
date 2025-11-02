@@ -247,6 +247,8 @@ const _depreciationGroup= depreciationGroup as any;
           <DataTable
             columns={assetDepreciationHistoryColumns}
             data={_transformedData}
+            enablePagination={true}
+            pageSize={10}
           />
         )}
         {/* {transformedData.length > 0 ? (

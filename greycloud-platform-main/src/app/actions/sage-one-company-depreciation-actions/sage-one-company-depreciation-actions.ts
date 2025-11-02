@@ -7,6 +7,7 @@ import { ActionError, action } from "@/lib/safe-action";
 import { EmptySchema } from "@/lib/schemas/common-schemas";
 
 import { revalidateTag } from "next/cache";
+import { serverFetch } from "../apiHandler";
 import {
   AddAssetDepreciationHistorySchema,
   AddAssetGroupSchema,
@@ -28,7 +29,7 @@ export const getAllAssetGroups = action(EmptySchema, async () => {
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.ASSET_GROUP_ALL_GET}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["asset-group"] } });
+  const response = await serverFetch(endpoint, { next: { tags: ["asset-group"] } as any });
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -48,7 +49,7 @@ export const getAssetGroupById = action(GetSpecificAssetGroupSchema, async ({ Id
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.ASSET_GROUP_GET_BY_ID}/${Id}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["asset-group"] } });
+  const response = await serverFetch(endpoint, { next: { tags: ["asset-group"] } as any });
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
     }
@@ -68,13 +69,13 @@ export const updateAssetGroup = action(UpdateAssetGroupSchema, async (body) => {
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.PATCH.ASSET_GROUP_UPDATE}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -95,13 +96,13 @@ export const addAssetGroup = action(AddAssetGroupSchema, async (body) => {
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.POST.ASSET_GROUP_ADD}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -193,13 +194,13 @@ export const deleteCompanyDepreciationGroup = action(DeleteCompanyDepreciationGr
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.DELETE.DELETE_COMPANY_DEPRECIATION_GROUP}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -222,13 +223,13 @@ export const addAssetDepreciationHistory = action(AddAssetDepreciationHistorySch
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.POST.ADD_ASSET_DEPRECIATION_HISTORY}`;
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await serverFetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    });
+    } as any);
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -249,7 +250,7 @@ export const getSpecificAssetDepreciationHistory = action(GetSpecificAssetDeprec
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_ASSET_DEPRECIATION_FUTURE_BY_ID}/${assetid}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["asset-depreciation-history"] } });
+  const response = await serverFetch(endpoint, { next: { tags: ["asset-depreciation-history"] } as any });
 
     if (!response.ok) {
 
@@ -271,7 +272,7 @@ export const getFutureAssetDepreciationHistory = action(GetSpecificAssetDeprecia
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_ASSET_DEPRECIATION_FUTURE_BY_ID}/${assetid}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["asset-depreciation-future"] } });
+  const response = await serverFetch(endpoint, { next: { tags: ["asset-depreciation-future"] } as any });
   
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
@@ -293,7 +294,7 @@ export const getAllAssetDepreciationHistory = action(GetAllAssetDepreciationHist
   const endpoint = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_ASSET_DEPRECIATION_HISTORY_ALL}/${sageCompanyId}`;
 
   try {
-    const response = await fetch(endpoint, { next: { tags: ["asset-depreciation-history"] } });
+  const response = await serverFetch(endpoint, { next: { tags: ["asset-depreciation-history"] } as any });
 
     if (!response.ok) {
       throw new ActionError(`Error: ${response.status}`);
