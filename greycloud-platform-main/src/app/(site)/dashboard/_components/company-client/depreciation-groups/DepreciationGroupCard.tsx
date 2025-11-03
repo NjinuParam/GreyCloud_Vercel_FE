@@ -251,20 +251,7 @@ const _depreciationGroup= depreciationGroup as any;
             pageSize={10}
           />
         )}
-        {/* {transformedData.length > 0 ? (
-          <DataTable
-            columns={assetDepreciationHistoryColumns}
-            data={transformedData}
-          />
-        )
-        
-        : (
-          <DialogDescription>
-            <p className="mx-auto text-center">
-              Click button below to fetch asset depreciation.
-            </p>
-          </DialogDescription>
-        )} */}
+      
 
   <div className="grid w-full items-center grid-cols-2 gap-4">
     <div>

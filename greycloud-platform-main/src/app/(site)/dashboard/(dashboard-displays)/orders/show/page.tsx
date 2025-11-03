@@ -336,7 +336,7 @@ export default function ShowOrder() {
 
 
             <div id="modal" style={{ display: compModal == true ? "flex" : "" }} className="modal">
-              <div className="modal-content sm:max-w-[400px]">
+              <div className="modal-content">
                 <div className="grid gap-4 py-4">
                   {ass.map((a, i) => (
                     <>
@@ -446,7 +446,7 @@ export default function ShowOrder() {
 
 
             <div id="modal start" style={{ display: startModal == true ? "flex" : "" }} className="modal">
-              <div className="modal-content sm:max-w-[400px]">
+              <div className="modal-content">
                 <div className="grid gap-2 py-4">
                   {ass.map((a, i) => (
                     <>
@@ -454,7 +454,10 @@ export default function ShowOrder() {
                         <div className="w-full">
                           <h2 style={{ fontWeight: "bold" }}>
                             {
-                              assets.find((x: any) => x.assetId == a.assetId).assetDetail.description
+                              (() => {
+                                const description = assets.find((x: any) => x.assetId == a.assetId).assetDetail.description;
+                                return description.length > 25 ? description.substring(0, 25) + "..." : description;
+                              })()
                             }
                             <label style={{ marginLeft: "15%" }}> <Checkbox checked={true}></Checkbox><small style={{ marginLeft: "2%", fontWeight: "normal" }}>Mark as delivered  </small></label>
 
@@ -472,9 +475,12 @@ export default function ShowOrder() {
                           }
                           <br />
                           {a.usage !== 0 ? (
+                            <>
+                              <label><small>Enter initial usage</small></label>
                             <div className="grid w-full items-center grid-cols-2 gap-4">
+                               
                               <div className=" justify-between items-center">
-                                <label><small>Enter initial usage</small></label>
+                              
                                 <Input
                                   className="mt-4"
                                   type="number"
@@ -486,6 +492,7 @@ export default function ShowOrder() {
                                 />
                               </div>
                             </div>
+                            </>
                           ) : (
                             <></>
                           )}

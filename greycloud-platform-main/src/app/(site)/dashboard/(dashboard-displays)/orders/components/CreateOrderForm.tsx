@@ -114,6 +114,7 @@ function CreateOrderForm({
       value: number;
       total: number;
       billingType: any;
+      assetId: string;
     }[]
   >([]);
   const [selectedItem, setSelectedItem] = useState(0);
@@ -156,6 +157,23 @@ function CreateOrderForm({
 
     let tot = price - discPr;
     setTotal(tot);
+  };
+
+  const recalculateAllTotals = () => {
+    if (items.length > 0) {
+      const updatedItems = items.map(item => {
+        const asset = assets.find((a: any) => a.id === item.assetId);
+        if (asset) {
+          return {
+            ...item,
+            total: getTotal(asset)
+          };
+        }
+        return item;
+      });
+      setItems(updatedItems);
+      getFinalData(updatedItems);
+    }
   };
 
   const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.GET.CUSTOMER_GET_FOR_COMPANY}`;
@@ -285,6 +303,7 @@ setCompanyId(sageCompanyId);
 
   function getTotal(_asset:any){
 
+    debugger;
     const sDate = new Date(form.getValues("startDate"));
     const eDate = new Date(form.getValues("endDate"));
     const days = Math.abs(eDate.getTime() - sDate.getTime()) / (1000 * 60 * 60 * 24);
@@ -301,8 +320,10 @@ setCompanyId(sageCompanyId);
       return  _asset.billingType.amount;
       
     }
+
     if(_asset.billingType.type == 3){
-      return 0;
+      const hours = Math.abs(eDate.getTime() - sDate.getTime()) / (1000 * 60 * 60);
+      return _asset.billingType.amount * hours;
       
     }
 
@@ -403,7 +424,11 @@ setCompanyId(sageCompanyId);
                         <Calendar
                           mode="single"
                           selected={field.value}
-                          onSelect={field.onChange}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            // Recalculate totals after a short delay to ensure form values are updated
+                            setTimeout(() => recalculateAllTotals(), 100);
+                          }}
                           // onChange={  getFinalData(items)}
                    
                           disabled={(date) =>
@@ -453,7 +478,11 @@ setCompanyId(sageCompanyId);
                           disabled={(date) =>
                             date < new Date() || date < new Date("1900-01-01")
                           }
-                          onSelect={field.onChange}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            // Recalculate totals after a short delay to ensure form values are updated
+                            setTimeout(() => recalculateAllTotals(), 100);
+                          }}
                         //  onChange={form.getValues("startDate") && excludedAssets.length==0 &&  form.getValues("endDate") && GetUnnavailableAssets(companyId, form.getValues("startDate").toDateString(), form.getValues("endDate").toDateString())}
                       
                           initialFocus
