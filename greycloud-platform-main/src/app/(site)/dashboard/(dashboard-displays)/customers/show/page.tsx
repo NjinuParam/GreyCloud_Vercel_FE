@@ -42,6 +42,7 @@ import {
 } from "../../../../../../lib/api-endpoints/sage-one-customer";
 import { getIronSessionData } from "../../../../../../lib/auth/auth";
 import { useExcelDownloder } from "react-xls";
+import TableSkeletonList from "../../../_components/company-client/loaders/TableSkeletonList";
 
 const columns: ColumnDef<any>[] = [
   {
@@ -133,10 +134,9 @@ export default function ShowCustomer() {
   const endpoint = `${apiUrl}${SAGE_ONE_CUSTOMER.GET.CUSTOMER_GET_FOR_COMPANY}`;
   React.useEffect(() => {
     getIronSessionData().then((comp: any) => {
-    
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
- const com=comp.companyProfile.companiesList.filter((a:any)=>{return a.id==currentCompanyId})[0]?.si;
-      debugger;
+      const com = comp.companyProfile.companiesList.filter((a: any) => a.id == currentCompanyId)[0]?.si;
+      setLoading(true);
       getCustomers(com);
     });
   }, []);
@@ -148,8 +148,13 @@ export default function ShowCustomer() {
       const response = await fetch(endpoint + `/${compId}`);
       const res = await response.json();
       setCustomers(res.results);
-    } catch (e) {}
+    } catch (e) {
+      setCustomers([]);
+    } finally {
+      setLoading(false);
+    }
   };
+  const [loading, setLoading] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -239,6 +244,11 @@ export default function ShowCustomer() {
       }
       <br/><br/>
       <div className="rounded-md border">
+        {loading ? (
+          <div className="p-4">
+            <TableSkeletonList />
+          </div>
+        ) : (
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -288,6 +298,7 @@ export default function ShowCustomer() {
             )}
           </TableBody>
         </Table>
+        )}
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">

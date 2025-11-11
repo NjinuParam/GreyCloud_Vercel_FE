@@ -6,25 +6,25 @@ import { DataTable } from "../../../../../../components/ui/data-table";
 import { depreciationGroupColumns } from "../assets/assets-columns";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/table";
 import { Button } from "../../../../../../components/ui/button";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../../../../../components/ui/dialog";
 import { getIronSessionData } from "../../../../../../lib/auth/auth";
 
 export const DepreciationGroupList = async () => {
 
   const payload = await getIronSessionData();
-const user = payload.companyProfile?.loggedInCompanyId;
-const companyId = payload.companyProfile?.companiesList?.filter((x:any)=>{return x.id ==user})[0];
-//  const [compId, setCompanyId] = useState<any[]>([]);
-;
+  const user = payload.companyProfile?.loggedInCompanyId;
+  const companyId = payload.companyProfile?.companiesList?.filter((x: any) => { return x.id == user })[0];
+  //  const [compId, setCompanyId] = useState<any[]>([]);
+  ;
 
 
 
   const { data: depreciationGroup } = await getAllCompanyDepreciationGroups({});
 
-  const filtered = depreciationGroup?.filter((x:any)=>{return x.companyId == companyId?.si});
+  const filtered = depreciationGroup?.filter((x: any) => { return x.companyId == companyId?.si });
 
-  
+
 
   return (
     <>
@@ -78,7 +78,7 @@ const companyId = payload.companyProfile?.companiesList?.filter((x:any)=>{return
 
         </TableHeader>
         <TableBody>
-          {filtered?.map((depreciation:any) => (
+          {filtered?.map((depreciation: any) => (
 
 
             <TableRow key={""}>
@@ -154,26 +154,30 @@ const companyId = payload.companyProfile?.companiesList?.filter((x:any)=>{return
 
                     <div className="grid w-full items-center grid-cols-2 gap-4">
                       <div>
-                        {/* <Button
-          variant={"outline"}
-           disabled={fetchingDepreciation}
-          className="text-primary w-full"
-          onClick={() => fetchHistoriceDepreciation(_depreciationGroup?.categoryId)}
-        >
-           Depreciation History
-        </Button> */}
+                        {/* Edit modal: open a dialog that shows DepreciationGroupCard prefilled */}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant={"outline"} className="text-primary w-full">
+                              View/Archive Group
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="min-w-[800px] w-full">
+                            <DepreciationGroupCard depreciationGroup={depreciation} />
+                          </DialogContent>
+                        </Dialog>
                       </div>
                       <div>
-
                         {/* <Button
-          variant={"outline"}
-          // disabled={transformedData.length > 0 || status === "executing"}
-          className="text-primary  w-full " 
-           onClick={() => fetchFutureDepreciation(_depreciationGroup?.categoryId)}
-          // onClick={() => execute({ assetid: asset.id })}
-        >
-           Projected Depreciation
-        </Button>  */}
+                          variant={"outline"}
+                          className="text-primary w-full"
+                        >
+                          View Depreciation
+                        </Button> */}
+                        <Button variant={"outline"} className="text-destructive w-48">
+
+                          <Trash className="size-5" />
+                          Archive
+                        </Button>
                       </div>
                     </div>
                   </DialogContent>

@@ -262,7 +262,7 @@ setCompanyId(sageCompanyId);
     try {
       const pre = searchParams?.get("customerId") ?? "";
       if (pre && custs && custs.length > 0) {
-        const theCustomer = custs.find((c: any) => String(c?.id) === String(pre));
+        const theCustomer = custs.find((c: any) => String(c?.id) === String(pre)) as any;
         if (theCustomer) {
           form.setValue("customerId", String(theCustomer?.id ?? ""));
           setCustomerId(String(theCustomer?.id ?? ""));
@@ -582,7 +582,7 @@ setCompanyId(sageCompanyId);
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue>
-                            {custs.find((c:any) => String(c?.id) === String(field.value))?.name ?? "Customer"}
+                            {(custs.find((c:any) => String(c?.id) === String(field.value)) as any)?.name ?? "Customer"}
                           </SelectValue>
                         </SelectTrigger>
                       </FormControl>

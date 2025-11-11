@@ -116,7 +116,7 @@ export default function UpdateSageOneAssetForm({
   // Define a submit handler:
 
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
+ var _asset = asset as any;
   useEffect(() => {
     let mounted = true;
     setLoading(true);
@@ -175,6 +175,7 @@ export default function UpdateSageOneAssetForm({
         setId(data.id);
   setUsageType(data.billingType?.usageType ?? "");
   setOnceOffAmount(data.billingType?.amount ?? 0);
+ 
   setUsageOrDailyAmount(data.billingType?.usageRate ?? 0);
 
       } catch (e: any) {
@@ -187,7 +188,7 @@ export default function UpdateSageOneAssetForm({
     return () => {
       mounted = false;
     };
-  }, [asset?.assetid]);
+  }, [_asset?.assetid]);
 
 
   const [isRental, setIsRental] = useState<boolean>(asset?.billingType?.amount !== 0);
