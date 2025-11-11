@@ -93,7 +93,7 @@ function selectCompany(companyIds: string[]) {
       body: JSON.stringify(_payload),
     });
   
-    if (response) {
+    if (response.ok) {
       const res = await response.json();
       
       if(res ==null){
@@ -102,13 +102,13 @@ function selectCompany(companyIds: string[]) {
         });
       }else{
         var data = res.results;
-        toast.success("Company created succesfully, please login", {})
+        toast.success("Company/s created successfully, please login", {})
         router.push("/login");
       }
 
   }else{
     toast.error("An error occurred", {
-      description: "Something went wrong",
+      description: `Something went wrong, some companies were not added: ${await response.text()}`,
     });
   }
 }

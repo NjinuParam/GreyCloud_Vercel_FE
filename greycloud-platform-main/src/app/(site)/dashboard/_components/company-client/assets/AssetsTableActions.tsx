@@ -15,6 +15,7 @@ export default function AssetsTableActions({ asset }: { asset: EnrichedAssetType
 
   const [compId, setCompanyId] = useState<number>(14999);
     const [compModal, setCompModal] = useState<any>(false);
+  const [modalAsset, setModalAsset] = useState<any>(null);
 
   async function updateAsset(assetId:string, usage:string) {
 
@@ -31,7 +32,11 @@ const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneA
 );
 
 if (response) {
-  setCompModal(false);
+  // Update the modal-local asset so the AssetCard reflects the new usage immediately
+  setModalAsset((prev:any) => {
+    if (!prev) return prev;
+    return { ...prev, usage: Number(usage) };
+  });
   toast.success(`Asset usage updated!`, {
     description: "The asset was updated successfully.",
   });
@@ -75,11 +80,15 @@ if (response) {
     
 
     if (response) {
+      // Update the modal-local asset so the AssetCard reflects the new address immediately
+      setModalAsset((prev:any) => {
+        if (!prev) return prev;
+        return { ...prev, locName: address };
+      });
 
       toast.success(`Asset location updated!`, {
         description: "The asset was updated successfully.",
       });
-      setCompModal(false);
       return address;
      
       // router.push("/dashboard/company-user/manage-assets");
@@ -99,22 +108,22 @@ if (response) {
 
 
 
-         <Button variant="outline" size="icon" onClick={() => setCompModal(true)}>
+         <Button variant="outline" size="icon" onClick={() => { setModalAsset(asset); setCompModal(true); }}>
               <BookOpen size="16" />
             </Button>
 
-        <div id="modal"  style={{ display: compModal == true ? "flex" : "" }} className="modal">
+         <div id="modal"  style={{ display: compModal == true ? "flex" : "" }} className="modal">
                       <div className="modal-content">
-                      <X onClick={()=>setCompModal(false)} style={{float:"right"}} className="h-4 w-4" />
+                      <X onClick={()=>{ setCompModal(false); setModalAsset(null); }} style={{float:"right"}} className="h-4 w-4" />
                       <span className="sr-only">Close</span>
                       
                         <div className="grid gap-4 py-4">
                         <AssetCard
                         closeFn={()=>setCompModal(false)}
               key={asset.id}
-              asset={asset ?? []}
-              depreciationGroups={asset.depreciationGroups?.filter((g) => g.companyId === asset.companyId) ?? []}
-              sageCompanyId={asset.sageCompanyId ?? 0}
+              asset={modalAsset ?? asset}
+              depreciationGroups={(modalAsset ?? asset)?.depreciationGroups?.filter((g:any) => g.companyId === (modalAsset ?? asset).companyId) ?? []}
+              sageCompanyId={(modalAsset ?? asset)?.sageCompanyId ?? 0}
               updateUsage = {(assetId:any, usage:any)=>{ updateAsset(assetId, usage)}}
               updateAddress = {(assetId:any, address:any)=>{ updateAddress(assetId, address )}}
             />

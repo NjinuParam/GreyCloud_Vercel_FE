@@ -79,38 +79,24 @@ import { apiFetch } from "../../../../../actions/apiHandler";
   })();
 
   async function fetchUsage(assetId:string){
-    const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneAsset/Asset/GetUsage/${assetId}`
-    //   , {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   }
-    // }
-  );
-  
-    if (response) {
-   
-      const res = await response.json();
-      
-      setPrevUsage(res);
-      
-      // _setTransformedData(newTransformedData);
-      
-     
-    } else {
-      
+    try {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneAsset/Asset/GetUsage/${assetId}`);
+      if (response) {
+        const res = await response.json();
+        setPrevUsage(res);
+      }
+    } catch (e) {
+      console.error("Failed to fetch usage", e);
     }
-
-
-    useEffect(() => {
-
-      fetchUsage(asset.id);
-    });
-
-
-
-  
   }
+
+  // Sync local state when asset prop changes so modal reflects updates from parent
+  useEffect(() => {
+    setNewAddress(asset?.locName ?? "");
+    _setUsage(asset?.usage ?? 0);
+    // Fetch latest usage history
+    if (asset?.id) fetchUsage(asset.id);
+  }, [asset]);
 
    
   return (
