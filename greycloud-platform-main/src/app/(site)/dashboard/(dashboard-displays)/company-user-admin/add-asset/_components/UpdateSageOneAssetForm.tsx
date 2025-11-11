@@ -41,6 +41,7 @@ import { SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } fr
 import { Select as UiSelect} from "../../../../../../../components/ui/select" ;
 import { SelectValue } from "@radix-ui/react-select";
 import { apiFetch, apiPost } from "../../../../../../actions/apiHandler";
+import { Skeleton } from "@/components/ui/skeleton";
 export type UpdateSageOneAssetFormProps = {
   asset: SageOneAssetTypeType;
   depreciationGroups: GetCompanyDepreciationGroupResponseType[];
@@ -83,6 +84,7 @@ export default function UpdateSageOneAssetForm({
   const [usageOrDailyAmount, setUsageOrDailyAmount] = useState(0);
   const [onceOffAmount, setOnceOffAmount] = useState(0);
   const [usageType, setUsageType] = useState("");
+  const [loading, setLoading] = useState<boolean>(true);
 
   const { execute, status } = useAction(saveSageOneAsset, {
 
@@ -116,58 +118,71 @@ export default function UpdateSageOneAssetForm({
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
-    getIronSessionData().then((comp: any) => {
-      const currentCompanyId = comp.companyProfile.loggedInCompanyId;
+    let mounted = true;
+    setLoading(true);
 
-      
-      const com = comp.companyProfile.companiesList.filter((x: any) => { return x.id == currentCompanyId })[0]?.si
-debugger;
-      setCompanyId(com);
-      apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`)
-        .then((res) =>
-          res.json().then((data) => {
-            setCategories(data.results);
-            setTimeout(() => {
-              setCategory(asset?.category?.id?.toString());
-            }, 1000);
-          })
-        )
-        .catch((e: any) => console.log(e));
-      const p = asset as any;
-      apiFetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`)
-        .then((res) =>
-          res.json().then((data) => {
-          
-            setAssetName(data.description);
-            setAssetCode(data.code);
-            setAssetDescription(data.description);
-            setStreetAddress(data.locName);
-            setPhysicalLocation(data.physicalLocation);
-            setDatePurchased(new Date(data.datePurchased));
-            setDepreciationStart(data.depreciationStartDate ? new Date(data.depreciationStartDate) : undefined);
-            setSerialNumber(data.serialNumber);
-            setBoughtFrom(data.boughtFrom);
-            setPurchasePrice(data.purchasePrice.toString());
-            setReplacementValue(data.replacementValue.toString());
-            setRecoverableAmount(data.residual.toString());
-            setUsage(data.usage.toString());
-            setCategory(data.catDescription || '');
-            setIsRental(data.rentalAsset);
-            setCategoryId(data.catIid);
-            setBillingType(data.billingType.type.toString()==0?"daily":data.billingType.type.toString()==1?"onceoff":data.billingType.type.toString()==2?"onceoffusage":data.billingType.type.toString()==3?"usage":"");
-            setIsCollection(false); // Assuming this is not part of the response
-            setQty(0); // Assuming this is not part of the response
-            setCreateAnother(false); // Assuming this is not part of the response
-            setId(data.id)
-            // setBillingType(data.billingType.type.toString());
-            setUsageType(data.billingType.usageType);
-            setOnceOffAmount(data.billingType.amount);
-            setUsageOrDailyAmount(data.billingType.usageRate);
-            debugger;
-          })
-        )
-        .catch((e: any) => console.log(e));
-    });
+    (async () => {
+      try {
+        const comp: any = await getIronSessionData();
+        const currentCompanyId = comp.companyProfile.loggedInCompanyId;
+        const com = comp.companyProfile.companiesList.filter((x: any) => x.id == currentCompanyId)[0]?.si;
+        if (!mounted) return;
+        setCompanyId(com);
+
+        const p = asset as any;
+
+        // Fetch categories and asset details in parallel and wait for both to finish
+        const [catRes, assetRes] = await Promise.all([
+          apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`).then((r) => r.json()),
+          apiFetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`).then((r) => r.json()),
+        ]);
+
+        if (!mounted) return;
+
+        // categories
+        setCategories(catRes.results);
+        // keep previous behavior to set category after a short delay (preserve UX)
+        setTimeout(() => {
+          setCategory(asset?.category?.id?.toString());
+        }, 1000);
+
+        // asset details
+        const data = assetRes;
+        setAssetName(data.description);
+        setAssetCode(data.code);
+        setAssetDescription(data.description);
+        setStreetAddress(data.locName);
+        setPhysicalLocation(data.physicalLocation);
+        setDatePurchased(data.datePurchased ? new Date(data.datePurchased) : undefined);
+        setDepreciationStart(data.depreciationStartDate ? new Date(data.depreciationStartDate) : undefined);
+        setSerialNumber(data.serialNumber);
+        setBoughtFrom(data.boughtFrom);
+        setPurchasePrice(data.purchasePrice?.toString() ?? "");
+        setReplacementValue(data.replacementValue?.toString() ?? "");
+        setRecoverableAmount(data.residual?.toString() ?? "1");
+        setUsage(data.usage?.toString() ?? "");
+        setCategory(data.catDescription || '');
+        setIsRental(!!data.rentalAsset);
+        setCategoryId(data.catIid);
+        setBillingType(data.billingType?.type?.toString()==0?"daily":data.billingType?.type?.toString()==1?"onceoff":data.billingType?.type?.toString()==2?"onceoffusage":data.billingType?.type?.toString()==3?"usage":"");
+        setIsCollection(false);
+        setQty(0);
+        setCreateAnother(false);
+        setId(data.id);
+        setUsageType(data.billingType?.usageType ?? "");
+        setOnceOffAmount(data.billingType?.amount ?? 0);
+        setUsageOrDailyAmount(data.billingType?.usageRate ?? 0);
+
+      } catch (e: any) {
+        console.log(e);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
 
@@ -288,11 +303,20 @@ debugger;
 
   return (
     <>
-
-
-      {/* <Form> */}
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-6 justify-center mb-4">
+        {loading ? (
+          <div className="grid grid-cols-2 gap-6 justify-center mb-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i}>
+                <div className="h-3 mb-2 w-32">
+                  <Skeleton className="h-3 w-32 rounded" />
+                </div>
+                <Skeleton className="h-10 w-full rounded-md" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-6 justify-center mb-4">
 
           <div><label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Asset name</label>
             <Input
@@ -442,7 +466,7 @@ debugger;
                     <label className="text-sm mb-2 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Rental</label><br/>
                     <div className="mt-4 flex gap-4">
 
-                      <UiSelect onValueChange={(e) => setBillingType(e)}>
+                      <UiSelect value={billingType} onValueChange={(e) => setBillingType(e)}>
                         <SelectTrigger>
                           <SelectValue placeholder="Billing type" />
                         </SelectTrigger>
@@ -479,6 +503,7 @@ debugger;
                             onChange={(e: any) => setOnceOffAmount(e.target.value)}
                             className="w-full"
                             type="number"
+                            value={onceOffAmount}
                             placeholder="Price (once off)"
                           />
                         </div>
@@ -493,11 +518,12 @@ debugger;
                               onChange={(e: any) => setOnceOffAmount(e.target.value)}
                               className="w-full"
                               type="number"
+                              value={onceOffAmount}
                               placeholder="Price (once off)"
                             />
                           </div>
                           <div className="flex flex-row gap-4 w-full mt-2">
-                            <UiSelect defaultValue={usageType} onValueChange={(e) => setUsageType(e)}>
+                            <UiSelect value={usageType} onValueChange={(e) => setUsageType(e)}>
                               <SelectTrigger>
                                 <SelectValue placeholder="Usage type" />
                               </SelectTrigger>
@@ -515,6 +541,7 @@ debugger;
                               onChange={(e: any) => setUsageOrDailyAmount(e.target.value)}
                               className="w-full"
                               type="number"
+                              value={usageOrDailyAmount}
                               placeholder="Price (per unit)"
                             />
                           </div>
@@ -525,7 +552,7 @@ debugger;
 
                       {billingType === "usage" ? (
                         <div className="flex flex-row gap-4 w-full">
-                          <UiSelect onValueChange={(e) => setUsageType(e)}>
+                          <UiSelect value={usageType} onValueChange={(e) => setUsageType(e)}>
                             <SelectTrigger>
                               <SelectValue placeholder="Usage type" />
                             </SelectTrigger>
@@ -542,7 +569,7 @@ debugger;
                             className="w-full"
                             type="number"
                             placeholder="Price (usage)"
-                            defaultValue={usageOrDailyAmount}
+                            value={usageOrDailyAmount}
                           />
                         </div>
                       ) : (
@@ -568,7 +595,8 @@ debugger;
               </div>
             </div>
           </div> */}
-        </div>
+          </div>
+        )}
         <div>
         
           
