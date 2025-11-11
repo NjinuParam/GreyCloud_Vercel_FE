@@ -559,12 +559,11 @@ export default function ViewDepreciationHistoryView() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead >Date</TableHead>
+                          <TableHead >Depreciation Date</TableHead>
                           <TableHead>Category Name</TableHead>
                           <TableHead>Depreciation amount</TableHead>
-                          {/* <TableHead>Serial Number</TableHead>
-                          <TableHead>Billing type</TableHead>
-                          <TableHead>Price</TableHead> */}
+                          <TableHead>Debit Account</TableHead>
+                          <TableHead>Credit Account</TableHead>
                         </TableRow>
 
                       </TableHeader>
@@ -575,6 +574,8 @@ export default function ViewDepreciationHistoryView() {
                             <TableCell>{x.categoryName}</TableCell>
                             <TableCell>
                               R{x.totalCategoryDepreciation}.00</TableCell>
+                              <TableCell>{x.debitJournalCode}</TableCell>
+                              <TableCell>{x.creditJournalCode}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

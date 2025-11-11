@@ -6,7 +6,8 @@ import { DataTable } from "../../../../../../components/ui/data-table";
 import { depreciationGroupColumns } from "../assets/assets-columns";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/table";
 import { Button } from "../../../../../../components/ui/button";
-import { BookOpen, Trash } from "lucide-react";
+import { BookOpen } from "lucide-react";
+import ArchiveDepreciationButton from "./ArchiveDepreciationButton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../../../../../components/ui/dialog";
 import { getIronSessionData } from "../../../../../../lib/auth/auth";
 
@@ -67,6 +68,9 @@ export const DepreciationGroupList = async () => {
             <TableHead key={""}>
               <small>      Revaluation Journal </small>
             </TableHead>
+            <TableHead key={"active-head"}>
+              <small> Active </small>
+            </TableHead>
             {/* <TableHead key={""}>
             <small>    Creating User </small>
             </TableHead> */}
@@ -78,10 +82,11 @@ export const DepreciationGroupList = async () => {
 
         </TableHeader>
         <TableBody>
+
           {filtered?.map((depreciation: any) => (
 
 
-            <TableRow key={""}>
+            <TableRow key={depreciation?.depGroupId || depreciation?.id || Math.random()}>
 
 
               <TableCell key={""}>
@@ -118,12 +123,15 @@ export const DepreciationGroupList = async () => {
               <TableCell key={""}>
                 <small>  {depreciation.sageRevaluationJournalCode} </small>
               </TableCell>
+              <TableCell key={"active-" + (depreciation?.depGroupId || depreciation?.id)}>
+                <small>{depreciation?.active ? "Yes" : "No"}</small>
+              </TableCell>
               {/*               
               <TableCell key={""}>
               <small>   {depreciation.creatingUser.sub} </small>
               </TableCell> */}
 
-              <TableCell key={""}>
+              <TableCell key={"actions-" + (depreciation?.depGroupId || depreciation?.id)}>
                 <Dialog>
                   <DialogTrigger asChild className="grow">
                     <Button variant={"outline"} className="text-primary w-full">
@@ -173,11 +181,7 @@ export const DepreciationGroupList = async () => {
                         >
                           View Depreciation
                         </Button> */}
-                        <Button variant={"outline"} className="text-destructive w-48">
-
-                          <Trash className="size-5" />
-                          Archive
-                        </Button>
+                        <ArchiveDepreciationButton depGroupId={depreciation?.depGroupId ?? depreciation?.id} active={depreciation?.active} />
                       </div>
                     </div>
                   </DialogContent>
