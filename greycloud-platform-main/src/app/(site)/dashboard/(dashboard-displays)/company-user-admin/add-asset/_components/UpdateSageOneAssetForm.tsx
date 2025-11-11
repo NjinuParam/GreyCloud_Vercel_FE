@@ -212,7 +212,24 @@ export default function UpdateSageOneAssetForm({
     // execute(formattedValues);
 
     const _asset = asset as any;
-    const payload = {
+    const formatForBackend = (d: any) => {
+      if (!d) return null;
+      // If it's already a string, try to parse it and return ISO if possible
+      if (typeof d === "string") {
+        const parsed = new Date(d);
+        return isNaN(parsed.getTime()) ? d : parsed.toISOString();
+      }
+      // If it's a Date object, return ISO string
+      if (d instanceof Date) return d.toISOString();
+      try {
+        const parsed = new Date(d as any);
+        return isNaN(parsed.getTime()) ? String(d) : parsed.toISOString();
+      } catch (e) {
+        return String(d);
+      }
+    };
+
+    const payload: any = {
       assetid: _asset.assetid,
       description: assetName,
       code: assetCode,
@@ -221,8 +238,6 @@ export default function UpdateSageOneAssetForm({
       locName: streetAddress,
       streetAddress: streetAddress,
       physicalLocation: physicalLocation,
-      datePurchased: datePurchased,
-      depreciationStartDate: depreciationStart,
       serialNumber: serialNumber,
       boughtFrom: boughtFrom,
       purchasePrice: purchasePrice,
@@ -256,6 +271,23 @@ export default function UpdateSageOneAssetForm({
         usageRate: usageOrDailyAmount
       },
     };
+
+    // Conditionally include date fields only when we have a valid value to avoid sending nulls
+    const existingDatePurchased = _asset?.datePurchased;
+    if (datePurchased) {
+      payload.DatePurchased = formatForBackend(datePurchased);
+    } else if (existingDatePurchased) {
+      const pd = new Date(existingDatePurchased);
+      payload.DatePurchased = isNaN(pd.getTime()) ? existingDatePurchased : pd.toISOString();
+    }
+
+    const existingDepreciation = _asset?.depreciationStartDate;
+    if (depreciationStart) {
+      payload.DepreciationStart = formatForBackend(depreciationStart);
+    } else if (existingDepreciation) {
+      const ds = new Date(existingDepreciation);
+      payload.DepreciationStart = isNaN(ds.getTime()) ? existingDepreciation : ds.toISOString();
+    }
 
     
 

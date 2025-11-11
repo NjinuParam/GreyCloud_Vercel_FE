@@ -1,6 +1,6 @@
 
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import {
 
   DropdownMenuContent,
@@ -43,6 +43,7 @@ import { Checkbox } from "../../../../../components/ui/checkbox";
 import { FormLabel } from "../../../../../components/ui/form";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { apiFetch } from "../../../../actions/apiHandler";
+import { Skeleton } from "../../../../../components/ui/skeleton";
 
 
 export default function ViewDepreciationHistoryView() {
@@ -56,8 +57,13 @@ export default function ViewDepreciationHistoryView() {
   const [endDate, setEndDate] = useState<string>("");
 
   const [transformedData, setTransformedData] = useState<any>();
+  const [loading, setLoading] = useState<boolean>(true);
   const [auditData, setAuditData] = useState<any[]>([]);
+  const [categoriesList, setCategoriesList] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [filteredData, setFilteredData] = useState<any>();
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(25);
   const [selectedDateFilter, setSelectedDateFilter] = useState<any>();
   const [summaryData, setSummaryData] = useState<any>();
   const [canDepr, setCanDepreciate] = useState<any[]>([]);
@@ -68,6 +74,7 @@ export default function ViewDepreciationHistoryView() {
 
 
   useEffect(() => {
+    setLoading(true);
 
     const session = getIronSessionData().then((comp: any) => {
       if (!comp.isLoggedIn) {
@@ -110,6 +117,7 @@ export default function ViewDepreciationHistoryView() {
                 ...depHistory,
                 code: asset?.code,
                 assetName: asset ? asset.description : "Unknown Asset",
+                category: asset?.catDescription ?? asset?.category?.description ?? "Uncategorized",
                 companyName: myCompany?.companyName,
                 purchasePrice: asset?.purchasePrice,
                 residual: asset?.residual ? asset.residual == 0 ? 1 : asset.residual : 1,
@@ -124,6 +132,14 @@ export default function ViewDepreciationHistoryView() {
 
             setTransformedData(_transformedData);
             filteredData?.data == undefined && setFilteredData(_transformedData)
+            // build category list for filter
+            try {
+              const cats = Array.from(new Set((_transformedData || []).map((x: any) => x.category).filter(Boolean)));
+              setCategoriesList(cats);
+            } catch (e) {
+              setCategoriesList([]);
+            }
+            setLoading(false);
 
           });
         });
@@ -144,13 +160,13 @@ export default function ViewDepreciationHistoryView() {
     toast.info("Fetching depreciation history...");
 
     const response = await apiFetch(`${apiUrl}Depreciation/CanDepreciate/${companyId}`
-    //   , {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   }
-    // }
-  );
+      //   , {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   }
+      // }
+    );
 
     if (response) {
 
@@ -166,8 +182,10 @@ export default function ViewDepreciationHistoryView() {
   function filterByName(name: string) {
     if (name != "") {
       setFilteredData(transformedData?.filter((data: any) => data.assetName.toLowerCase().includes(name.toLowerCase())));
+      setPage(1);
     } else {
       setFilteredData(transformedData);
+      setPage(1);
     }
 
   }
@@ -180,6 +198,7 @@ export default function ViewDepreciationHistoryView() {
       var endDate = new Date(end);
 
       setFilteredData(transformedData?.filter((data: any) => new Date(data.createdDate) >= startDate && new Date(data.createdDate) <= endDate));
+      setPage(1);
     }
 
   }
@@ -242,13 +261,13 @@ export default function ViewDepreciationHistoryView() {
     // setFetchingDepreciation(true);
 
     const response = await apiFetch(`${apiUrl}Depreciation/GetSageAudit/${companyId}`
-    //   , {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   }
-    // }
-  );
+      //   , {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   }
+      // }
+    );
     if (response) {
 
       const res = await response.json();
@@ -279,13 +298,13 @@ export default function ViewDepreciationHistoryView() {
     toast.info("Processing...");
     // setFetchingDeprecipostation(true);
     const response = await apiFetch(`${apiUrl}Depreciation/PostJournals/${compId}`
-    //   , {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   }
-    // }
-  );
+      //   , {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   }
+      // }
+    );
 
     if (response) {
       toast.success(`Complete!`, {
@@ -335,34 +354,48 @@ export default function ViewDepreciationHistoryView() {
   function clearFilters() {
 
     transformedData && setFilteredData(transformedData);
+    setPage(1);
   }
+
+  const dataSource = filteredData ?? transformedData ?? [];
+  const totalItems = (dataSource && dataSource.length) || 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+  // ensure current page is valid
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [page, totalPages]);
+
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return dataSource.slice(start, start + pageSize);
+  }, [dataSource, page, pageSize]);
 
   return (
     <div className="mx-auto min-w-full min-h-full">
       <div className="flex flex-col gap-4 p-4 w-full h-full">
         <h4 className="text-xl font-semibold text-muted-foreground">{`Depreciation History for ${myCompany?.companyName ?? "Company."}`}</h4>
-        <div className="grid grid-cols-2 gap-2 justify-center mb-4">
+        <div className="grid grid-cols-3 justify-center mb-4">
           <div>
             <small>Search by asset name</small><br />
             <input style={{ fontSize: "14px" }} onChange={(e) => filterByName(e.target.value)} type="text" placeholder="Search asset name" className="w-1/2 p-1 border border-gray-300 rounded-md" />
           </div>
           <div>
-            {/* <label>Search by date</label><br/> */}
-            {/* <div className="grid grid-cols-2 gap-1  mb-4">
-              <div><small>Start</small><br />
-                <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" className="w-2/3 p-1 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
-              </div>
-              <div><small>End</small><br />
-                <input type="date" style={{ fontSize: "14px" }} placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
-              </div>
-            </div> */}
-
-
+            <small>Filter by category</small><br />
+            <select style={{ fontSize: "15px", color: "darkgray" }} className="w-1/2 p-1 border rounded-md w-1/2 p-1 border border-gray-300 rounded-md" value={selectedCategory} onChange={(e) => {
+              const v = e.target.value;
+              setSelectedCategory(v);
+              if (v) {
+                setFilteredData((transformedData || []).filter((d: any) => d.category === v));
+              } else {
+                setFilteredData(transformedData);
+              }
+              setPage(1);
+            }}>
+              <option value="">All categories</option>
+              {categoriesList.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
           </div>
-
-
-        </div>
-        <div className="grid grid-cols-2 gap-2 justify-center mb-4">
           <div>
             <small>By date</small><br />
             <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(1) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 1} /> <label style={{ fontSize: "12px" }}>This month</label> </label><br />
@@ -370,18 +403,22 @@ export default function ViewDepreciationHistoryView() {
             <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(3) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 3} /> <label style={{ fontSize: "12px" }}>Last 6 months</label> </label><br />
             <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(4) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 4} /> <label style={{ fontSize: "12px" }}>Year to date</label> </label>
           </div>
+
+        </div>
+        <div className="grid grid-cols-3 gap-2 justify-center mb-4">
+
           <div>
-            {/* <label>Search by date</label><br/> */}
-            <div className="grid grid-cols-2 gap-1  mb-4">
+
+            <div className="grid grid-cols-2 mb-4">
               <div>
                 <small>Start</small><br />
                 <input type="date" style={{ fontSize: "12px", color: "grey" }} placeholder="Search by date" className="w-2/3 p-1 border border-gray-300 rounded-md" onChange={(e) => { changeStartDate(e.target.value) }} />
-                <br />
-                <small>End</small><br />
-                <input type="date" style={{ fontSize: "12px", color: "grey" }} placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
+
 
               </div>
               <div>
+                <small>End</small><br />
+                <input type="date" style={{ fontSize: "12px", color: "grey" }} placeholder="Search by date" onChange={(e) => { changeEndDate(e.target.value) }} className="w-2/3 p-1 border border-gray-300 rounded-md" />
 
               </div>
             </div>
@@ -390,10 +427,187 @@ export default function ViewDepreciationHistoryView() {
           </div>
 
 
-        </div>
-        <div className="grid grid-cols-4 gap-1  mb-4">
 
-          <div>
+          <div className="" style={{ marginTop: "3%" }}>
+
+            <a >
+              <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
+                <CheckCircle size={16} style={{ paddingRight: "1%" }} /> <small> Last run: --</small>
+              </Badge>
+
+
+
+            </a>
+            <a style={{ cursor: canDepr.length == 0 ? "pointer" : "none" }}>
+
+              <Dialog>
+                <DialogTrigger asChild className="grow">
+
+                  <Badge style={{ padding: "2%" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
+                    <MailWarning style={{ paddingRight: "1%" }} size={16} />
+
+
+
+                    {canDepr.length}
+                    {/* assets need to be updated           */}
+                  </Badge>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[400px]">
+                  <DialogHeader>
+                    <DialogTitle>
+                      Assets pending usage update
+                    </DialogTitle>
+                  </DialogHeader>
+                  <DialogDescription className="text-base">
+
+                    {canDepr.map((x: any) => {
+                      return <> <Label>Asset: {x.name}</Label> <br /></>
+                    })}
+
+
+                  </DialogDescription>
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+
+              <Dialog>
+                <DialogTrigger ref={closeButtonRef} asChild>
+
+                  <Badge style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
+
+
+                    <PowerCircle size={16} style={{ paddingRight: "1%" }} /><small>  Trigger run</small>
+                  </Badge>
+
+                </DialogTrigger>
+                <DialogContent className="">
+                  <DialogHeader>
+                    <DialogTitle>Run Depreciation</DialogTitle>
+                    <DialogDescription>
+                      Please update the usage on the following assets to proceed
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    {canDepr.map((x: any) => {
+
+                      return <>
+                        <div>
+
+
+                          <label style={{ fontSize: "12px", float: "left", width: "60%" }}>Asset: {x.name}</label>
+                          <input
+                            onChange={(e: any) => {
+                              ;
+                              var up = {
+                                assetId: x.id,
+                                usage: e.target.value,
+                                sageCompanyId: myCompany?.si,
+                                categoryId: x.categoryId
+                              };
+
+                              var newUp = updatedUsageAssets.filter((a: any) => { return a.assetId !== x.id });
+
+                              setUpdatedUsageAssets([...newUp, up]);
+                              ;
+                            }}
+                            style={{ fontSize: "10px", float: "left", width: "40%" }}
+                            type="text" placeholder="0"
+                            className="w-1/2 p-1 border border-gray-300 rounded-md" />
+                        </div>
+                      </>
+                    })}
+                  </div>
+                  <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px" }} checked={false} /> <label style={{ fontSize: "12px" }}>Push journals to SAGE?</label> </label>
+
+                  <DialogFooter>
+                    <Button
+                      type="submit"
+                      onClick={
+                        () => { POST_depreciationRun(updatedUsageAssets) }
+                      }
+                    >
+                      Run
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+
+              <Dialog>
+                <DialogTrigger asChild>
+
+                  <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
+                    <UploadCloud size={16} style={{ paddingRight: "1%" }} /><small>  Post journals</small>
+                  </Badge>
+
+                </DialogTrigger>
+                <DialogContent className="md:max-w-[1000px] mt-10">
+                  <DialogHeader>
+                    <DialogTitle>Post journals</DialogTitle>
+                    <DialogDescription>
+                      Proceeding will post the following entries to SAGE
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead >Date</TableHead>
+                          <TableHead>Category Name</TableHead>
+                          <TableHead>Depreciation amount</TableHead>
+                          {/* <TableHead>Serial Number</TableHead>
+                          <TableHead>Billing type</TableHead>
+                          <TableHead>Price</TableHead> */}
+                        </TableRow>
+
+                      </TableHeader>
+                      <TableBody>
+                        {auditData.filter(x => x.posted == false)?.map((x: any) => (
+                          <TableRow>
+                            <TableCell>{moment(x.createdDate).format('DD/MM/YYYY')}</TableCell>
+                            <TableCell>{x.categoryName}</TableCell>
+                            <TableCell>
+                              R{x.totalCategoryDepreciation}.00</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+
+
+
+                  </div>
+                  {/* <label className="text-muted-foreground"> <Checkbox id="pushtosage" checked={false} /> Push journals to SAGE? </label> */}
+
+                  <DialogFooter>
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      onClick={() => { postJournals(myCompany.si) }}
+                    >
+                      Upload journals
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+
+
+
+
+
+
+
+            </a>
+
+          </div>
+          <div style={{ marginTop: "3%" }}>
 
 
             {filteredData?.length > 0 &&
@@ -411,194 +625,42 @@ export default function ViewDepreciationHistoryView() {
 
 
           </div>
-
-
-
-
-          {/* <Badge  style={{padding:"2%"}}  variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
-          <CheckCircle size={16} style={{paddingRight:"1%"}} />  Next run: in 21 days   
-          </Badge>  */}
-          <div></div>
-          <a >
-            <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
-              <CheckCircle size={16} style={{ paddingRight: "1%" }} /> <small> Last run: --</small>
-            </Badge>
-
-            {/* <Badge style={{ padding: "2%" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
-              <Timer size={16} style={{ paddingRight: "1%" }} /> <small> Next run: {nextRun()} days</small>
-            </Badge>  */}
-
-          </a>
-          <a style={{ cursor: canDepr.length == 0 ? "pointer" : "none" }}>
-
-            <Dialog>
-              <DialogTrigger asChild className="grow">
-
-                <Badge style={{ padding: "2%" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
-                  <MailWarning style={{ paddingRight: "1%" }} size={16} />
-
-
-
-                  {canDepr.length}
-                  {/* assets need to be updated           */}
-                </Badge>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[400px]">
-                <DialogHeader>
-                  <DialogTitle>
-                    Assets pending usage update
-                  </DialogTitle>
-                </DialogHeader>
-                <DialogDescription className="text-base">
-
-                  {canDepr.map((x: any) => {
-                    return <> <Label>Asset: {x.name}</Label> <br /></>
-                  })}
-
-
-                </DialogDescription>
-
-                <DialogFooter>
-                  <DialogClose asChild>
-
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
-
-            <Dialog>
-              <DialogTrigger ref={closeButtonRef} asChild>
-
-                <Badge style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
-
-
-                  <PowerCircle size={16} style={{ paddingRight: "1%" }} /><small>  Trigger run</small>
-                </Badge>
-
-              </DialogTrigger>
-              <DialogContent className="">
-                <DialogHeader>
-                  <DialogTitle>Run Depreciation</DialogTitle>
-                  <DialogDescription>
-                    Please update the usage on the following assets to proceed
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  {canDepr.map((x: any) => {
-
-                    return <>
-                      <div>
-
-
-                        <label style={{ fontSize: "12px", float: "left", width: "60%" }}>Asset: {x.name}</label>
-                        <input
-                          onChange={(e: any) => {
-                            ;
-                            var up = {
-                              assetId: x.id,
-                              usage: e.target.value,
-                              sageCompanyId: myCompany?.si,
-                              categoryId: x.categoryId
-                            };
-
-                            var newUp = updatedUsageAssets.filter((a: any) => { return a.assetId !== x.id });
-
-                            setUpdatedUsageAssets([...newUp, up]);
-                            ;
-                          }}
-                          style={{ fontSize: "10px", float: "left", width: "40%" }}
-                          type="text" placeholder="0"
-                          className="w-1/2 p-1 border border-gray-300 rounded-md" />
-                      </div>
-                    </>
-                  })}
-                </div>
-                <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px" }} checked={false} /> <label style={{ fontSize: "12px" }}>Push journals to SAGE?</label> </label>
-
-                <DialogFooter>
-                  <Button
-                    type="submit"
-                    onClick={
-                      () => { POST_depreciationRun(updatedUsageAssets) }
-                    }
-                  >
-                    Run
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
-
-            <Dialog>
-              <DialogTrigger asChild>
-
-                <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
-                  <UploadCloud size={16} style={{ paddingRight: "1%" }} /><small>  Post journals</small>
-                </Badge>
-
-              </DialogTrigger>
-              <DialogContent className="md:max-w-[1000px] mt-10">
-                <DialogHeader>
-                  <DialogTitle>Post journals</DialogTitle>
-                  <DialogDescription>
-                    Proceeding will post the following entries to SAGE
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead >Date</TableHead>
-                        <TableHead>Category Name</TableHead>
-                        <TableHead>Depreciation amount</TableHead>
-                        {/* <TableHead>Serial Number</TableHead>
-                          <TableHead>Billing type</TableHead>
-                          <TableHead>Price</TableHead> */}
-                      </TableRow>
-
-                    </TableHeader>
-                    <TableBody>
-                      {auditData.filter(x => x.posted == false)?.map((x: any) => (
-                        <TableRow>
-                          <TableCell>{moment(x.createdDate).format('DD/MM/YYYY')}</TableCell>
-                          <TableCell>{x.categoryName}</TableCell>
-                          <TableCell>
-                            R{x.totalCategoryDepreciation}.00</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-
-
-
-                </div>
-                {/* <label className="text-muted-foreground"> <Checkbox id="pushtosage" checked={false} /> Push journals to SAGE? </label> */}
-
-                <DialogFooter>
-                  <Button
-                    className="w-full"
-                    type="submit"
-                    onClick={() => { postJournals(myCompany.si) }}
-                  >
-                    Upload journals
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
-
-
-
-
-
-
-
-          </a>
-
         </div>
-        <DataTable columns={assetDepreciationHistoryColumns} data={filteredData ?? transformedData ?? []} />
+
+
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <small>Showing</small>
+            <select value={pageSize} onChange={(e) => { setPageSize(parseInt(e.target.value)); setPage(1); }} className="p-1 border rounded">
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <small>of {totalItems} records</small>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="px-2 py-1 border rounded disabled:opacity-50">Prev</button>
+            <span>Page {page} / {totalPages}</span>
+            <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} className="px-2 py-1 border rounded disabled:opacity-50">Next</button>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="p-2">
+                <div className="h-4 mb-2 w-32">
+                  <Skeleton className="h-4 w-32 rounded" />
+                </div>
+                <Skeleton className="h-8 w-full rounded-md" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <DataTable columns={assetDepreciationHistoryColumns} data={paginatedData} />
+        )}
       </div>
     </div>
   );

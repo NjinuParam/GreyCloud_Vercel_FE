@@ -47,14 +47,20 @@ const columns: ColumnDef<any>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
+      (() => {
+        const checkedState: any = table.getIsAllPageRowsSelected()
+          ? true
+          : table.getIsSomePageRowsSelected()
+          ? "indeterminate"
+          : false;
+        return (
+          <Checkbox
+            checked={checkedState}
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+          />
+        );
+      })()
     ),
     cell: ({ row }) => (
       <Checkbox
@@ -132,6 +138,8 @@ export default function ShowCustomer() {
     });
   }, []);
 
+  const [globalSearch, setGlobalSearch] = React.useState("");
+
   const getCustomers = async (compId: string) => {
     try {
       const response = await fetch(endpoint + `/${compId}`);
@@ -173,14 +181,19 @@ export default function ShowCustomer() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Search by email"
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
+          placeholder="Search by name or email"
+          value={globalSearch}
+          onChange={(event) => {
+            const v = event.target.value;
+            setGlobalSearch(v);
+            // apply same filter to name and email columns for simple global search
+            table.getColumn("name")?.setFilterValue(v);
+            table.getColumn("email")?.setFilterValue(v);
+            // reset to first page
+            table.setPageIndex(0);
+          }}
           className="max-w-sm"
         />
-        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -287,6 +300,17 @@ export default function ShowCustomer() {
           >
             Previous
           </Button>
+          <select
+            className="p-1 border rounded"
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+
           <Button
             variant="outline"
             size="sm"
@@ -295,6 +319,7 @@ export default function ShowCustomer() {
           >
             Next
           </Button>
+          <span className="ml-2 text-sm text-muted-foreground">Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}</span>
         </div>
       </div>
     </div>

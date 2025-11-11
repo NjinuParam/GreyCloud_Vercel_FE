@@ -57,6 +57,27 @@ import { apiFetch } from "../../../../../actions/apiHandler";
   const [_usage, _setUsage] = useState< number>(asset?.usage??0);
   const [prevUsage, setPrevUsage] = useState<any[]>([]);
 
+  const billingText = (() => {
+    const bt = asset?.billingType as any;
+    if (!bt) return "--";
+    const type = Number(bt.type ?? -1);
+    const amount = Number(bt.amount ?? 0);
+    const usageRate = Number(bt.usageRate ?? 0);
+
+    if (type === 0) return `Daily (${formatToRand(amount)})`;
+    if (type === 1) return `Once off (${formatToRand(amount)})`;
+    if (type === 2) return `Once off + Usage`;
+    if (type === 3) {
+      // For usage, prefer amount if present, otherwise fall back to usageRate
+      const display = amount && amount > 0 ? amount : (usageRate && usageRate > 0 ? usageRate : null);
+      return display ? `Usage (${formatToRand(display)}) per unit` : `Usage`;
+    }
+
+    // If amount is zero and no type matched, show None
+    if (amount === 0) return "None";
+    return amount ? formatToRand(amount) : "--";
+  })();
+
   async function fetchUsage(assetId:string){
     const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}SageOneAsset/Asset/GetUsage/${assetId}`
     //   , {
@@ -163,7 +184,7 @@ import { apiFetch } from "../../../../../actions/apiHandler";
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
            Billing Type
           </Label>
-          <p>{asset?.billingType?.amount==0? "None": asset?.billingType?.type==0? `Daily (R${asset?.billingType?.amount})` : asset?.billingType?.type==1?`Once off (R${asset?.billingType?.amount})`:  asset?.billingType?.type==2?"Once off + Usage":  asset?.billingType?.type==3?`Usage (R${asset?.billingType?.amount}) per unit`:"--"}</p>
+          <p>{billingText}</p>
         </span>
   <span className="flex flex-col gap-1 text-muted-foreground">
           <Label htmlFor="companyName" className="text-xs text-foreground uppercase tracking-wider">
