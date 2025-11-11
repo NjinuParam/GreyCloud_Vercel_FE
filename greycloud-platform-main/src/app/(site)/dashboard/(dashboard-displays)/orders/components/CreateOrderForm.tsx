@@ -74,7 +74,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getIronSessionData } from "@/lib/auth/auth";
 import { it } from "node:test";
 import { Checkbox } from "../../../../../../components/ui/checkbox";
@@ -135,6 +135,9 @@ function CreateOrderForm({
     resolver: zodResolver(FormSchema),
   });
 
+  const searchParams = useSearchParams();
+  const preselectCustomerId = searchParams?.get("customerId") ?? "";
+
   const [price, setPrice] = useState(0);
   const [customerId, setCustomerId] = useState("");
   const [discountPrice, setDiscountPrice] = useState(0);
@@ -184,8 +187,7 @@ function CreateOrderForm({
       const sageCompanyId = comp.companyProfile.companiesList.find((x:any)=>x.id ==compId).si
 setCompanyId(sageCompanyId);
       getCustomers(sageCompanyId);
-      GetAddresses(sageCompanyId);
-      debugger;
+  GetAddresses(sageCompanyId);
       setFilteredAssets(assets.filter((x:any)=>x.billingType !=null));
     });
   }, []);
@@ -195,8 +197,35 @@ setCompanyId(sageCompanyId);
       const response = await fetch(endpoint + `/${compId}`);
       const res = await response.json();
       setCusts(res.results);
+      // apply preselection immediately after customers load
+      try {
+        const preselect = searchParams?.get("customerId") ?? "";
+        if (preselect) {
+          const theCustomer = res.results.find((c: any) => String(c?.id) === String(preselect));
+          if (theCustomer) {
+            form.setValue("customerId", String(theCustomer?.id ?? ""));
+            setCustomerId(String(theCustomer?.id ?? ""));
+            const addressesList: string[] = [];
+            if (theCustomer?.deliveryAddress01) addressesList.push(theCustomer.deliveryAddress01);
+            if (theCustomer?.deliveryAddress02) addressesList.push(theCustomer.deliveryAddress02);
+            if (theCustomer?.deliveryAddress03) addressesList.push(theCustomer.deliveryAddress03);
+            if (theCustomer?.deliveryAddress04) addressesList.push(theCustomer.deliveryAddress04);
+            if (theCustomer?.deliveryAddress05) addressesList.push(theCustomer.deliveryAddress05);
+            if (theCustomer?.postalAddress01) addressesList.push(theCustomer.postalAddress01);
+            if (theCustomer?.postalAddress02) addressesList.push(theCustomer.postalAddress02);
+            if (theCustomer?.postalAddress03) addressesList.push(theCustomer.postalAddress03);
+            if (theCustomer?.postalAddress04) addressesList.push(theCustomer.postalAddress04);
+            if (theCustomer?.postalAddress05) addressesList.push(theCustomer.postalAddress05);
+            setSelectedCustomerAddresses(addressesList);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
     } catch (e) {}
   };
+
+  // preselection is applied after customers load inside getCustomers
 
   async function GetAddresses(_sageCompanyId:any){
     const endpoint = `${apiUrl}Address/Get/${_sageCompanyId}`;
@@ -227,6 +256,32 @@ setCompanyId(sageCompanyId);
       console.log(e);
     }
   }
+
+  // Defensive preselect: also run when custs or searchParams change
+  React.useEffect(() => {
+    try {
+      const pre = searchParams?.get("customerId") ?? "";
+      if (pre && custs && custs.length > 0) {
+        const theCustomer = custs.find((c: any) => String(c?.id) === String(pre));
+        if (theCustomer) {
+          form.setValue("customerId", String(theCustomer?.id ?? ""));
+          setCustomerId(String(theCustomer?.id ?? ""));
+          const addressesList: string[] = [];
+          if (theCustomer?.deliveryAddress01) addressesList.push(theCustomer.deliveryAddress01);
+          if (theCustomer?.deliveryAddress02) addressesList.push(theCustomer.deliveryAddress02);
+          if (theCustomer?.deliveryAddress03) addressesList.push(theCustomer.deliveryAddress03);
+          if (theCustomer?.deliveryAddress04) addressesList.push(theCustomer.deliveryAddress04);
+          if (theCustomer?.deliveryAddress05) addressesList.push(theCustomer.deliveryAddress05);
+          if (theCustomer?.postalAddress01) addressesList.push(theCustomer.postalAddress01);
+          if (theCustomer?.postalAddress02) addressesList.push(theCustomer.postalAddress02);
+          if (theCustomer?.postalAddress03) addressesList.push(theCustomer.postalAddress03);
+          if (theCustomer?.postalAddress04) addressesList.push(theCustomer.postalAddress04);
+          if (theCustomer?.postalAddress05) addressesList.push(theCustomer.postalAddress05);
+          setSelectedCustomerAddresses(addressesList);
+        }
+      }
+    } catch (e) {}
+  }, [custs, searchParams]);
 
   async function GetUnnavailableAssets(_sageCompanyId:any, start:string, endDate:string){
 
@@ -303,8 +358,7 @@ setCompanyId(sageCompanyId);
 
   function getTotal(_asset:any){
 
-    debugger;
-    const sDate = new Date(form.getValues("startDate"));
+  const sDate = new Date(form.getValues("startDate"));
     const eDate = new Date(form.getValues("endDate"));
     const days = Math.abs(eDate.getTime() - sDate.getTime()) / (1000 * 60 * 60 * 24);
     
@@ -500,69 +554,41 @@ setCompanyId(sageCompanyId);
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Customer</FormLabel>
-                    <Select
-                      onValueChange={(e) => {
-                        
-                      
-                        field.onChange;
+                      <Select
+                      value={field.value ?? ""}
+                      onValueChange={(val) => {
+                        // inform react-hook-form of the selected customer id
+                        field.onChange(val);
 
-                        const theCustomer = custs.find((c:any) => c?.name == e) as any;
-                        setCustomerId(theCustomer?.id??"");
-                        
+                        const theCustomer = custs.find((c:any) => String(c?.id) === String(val)) as any;
+                        setCustomerId(String(theCustomer?.id ?? ""));
+
                         setSelectedCustomerAddresses([]);
                         let addresses = [];
-                        if (theCustomer?.deliveryAddress01 !== "") {
-                          addresses.push(theCustomer?.deliveryAddress01);
-                        }
-
-                        if (theCustomer?.deliveryAddress02 !== "") {
-                          addresses.push(theCustomer?.deliveryAddress02);
-                        }
-
-                        if (theCustomer?.deliveryAddress03 !== "") {
-                          addresses.push(theCustomer?.deliveryAddress03);
-                        }
-
-                        if (theCustomer?.deliveryAddress04 !== "") {
-                          addresses.push(theCustomer?.deliveryAddress04);
-                        }
-
-                        if (theCustomer?.deliveryAddress05 !== "") {
-                          addresses.push(theCustomer?.deliveryAddress05);
-                        }
-
-                        if (theCustomer?.postalAddress01 !== "") {
-                          addresses.push(theCustomer?.postalAddress01);
-                        }
-
-                        if (theCustomer?.postalAddress02 !== "") {
-                          addresses.push(theCustomer?.postalAddress02);
-                        }
-
-                        if (theCustomer?.postalAddress03 !== "") {
-                          addresses.push(theCustomer?.postalAddress03);
-                        }
-
-                        if (theCustomer?.postalAddress04 !== "") {
-                          addresses.push(theCustomer?.postalAddress04);
-                        }
-
-                        if (theCustomer?.postalAddress05 !== "") {
-                          addresses.push(theCustomer?.postalAddress05);
-                        }
+                        if (theCustomer?.deliveryAddress01) addresses.push(theCustomer.deliveryAddress01);
+                        if (theCustomer?.deliveryAddress02) addresses.push(theCustomer.deliveryAddress02);
+                        if (theCustomer?.deliveryAddress03) addresses.push(theCustomer.deliveryAddress03);
+                        if (theCustomer?.deliveryAddress04) addresses.push(theCustomer.deliveryAddress04);
+                        if (theCustomer?.deliveryAddress05) addresses.push(theCustomer.deliveryAddress05);
+                        if (theCustomer?.postalAddress01) addresses.push(theCustomer.postalAddress01);
+                        if (theCustomer?.postalAddress02) addresses.push(theCustomer.postalAddress02);
+                        if (theCustomer?.postalAddress03) addresses.push(theCustomer.postalAddress03);
+                        if (theCustomer?.postalAddress04) addresses.push(theCustomer.postalAddress04);
+                        if (theCustomer?.postalAddress05) addresses.push(theCustomer.postalAddress05);
 
                         setSelectedCustomerAddresses(addresses);
                       }}
-                     
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Customer" />
+                          <SelectValue>
+                            {custs.find((c:any) => String(c?.id) === String(field.value))?.name ?? "Customer"}
+                          </SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {custs.map((c:any) => (
-                          <SelectItem value={c?.name}>{c?.name}</SelectItem>
+                          <SelectItem key={c?.id} value={String(c?.id)}>{c?.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

@@ -114,7 +114,10 @@ const columns: ColumnDef<any>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => {
+                // navigate to create order page with customer pre-selected
+                window.location.href = `/dashboard/orders/create?customerId=${encodeURIComponent(payment.id)}`;
+              }}
             >
               Create an order
             </DropdownMenuItem>
