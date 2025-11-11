@@ -31,8 +31,20 @@ export default function AssetTableContainer({ assets, depreciationGroups, sageCo
   // Pagination state (client-side)
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [search, setSearch] = useState<string>("");
 
-  const total = enrichedAssets.length;
+  // Filtered assets by search
+  const filteredAssets = useMemo(() => {
+    if (!search) return enrichedAssets;
+    const s = search.trim().toLowerCase();
+    return enrichedAssets.filter(a => {
+      const name = (a.description || a.name || "").toString().toLowerCase();
+      const code = (a.code || "").toString().toLowerCase();
+      return name.includes(s) || code.includes(s);
+    });
+  }, [enrichedAssets, search]);
+
+  const total = filteredAssets.length;
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
 
   // Ensure current page is valid when data or pageSize changes
@@ -42,26 +54,37 @@ export default function AssetTableContainer({ assets, depreciationGroups, sageCo
 
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize;
-    return enrichedAssets.slice(start, start + pageSize);
-  }, [enrichedAssets, page, pageSize]);
+    return filteredAssets.slice(start, start + pageSize);
+  }, [filteredAssets, page, pageSize]);
 
 
 
 
   return (
     <div className="min-w-full">
-      {assets?.length > 0 &&
-        <ExcelDownloder
-          data={{assets:enrichedAssets}}
-          filename={`AssetExport_${new Date().toDateString()}`}
-          type={Type.Button} // or type={'button'}
-        >
-          <a style={{ cursor: "pointer" }}>
-            <FileSpreadsheet style={{ float: "left" }} /> <small>Export spreadsheet</small>
-          </a>
-        </ExcelDownloder>
+      <div className="flex items-center justify-between">
+        <div className="w-1/3">
+          <input
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Search by name or code"
+            className="w-full border rounded px-2 py-1"
+          />
+        </div>
 
-      }
+        {assets?.length > 0 && (
+          <ExcelDownloder
+            data={{assets:enrichedAssets}}
+            filename={`AssetExport_${new Date().toDateString()}`}
+            type={Type.Button} // or type={'button'}
+          >
+            <a style={{ cursor: "pointer" }}>
+              <FileSpreadsheet style={{ float: "left" }} /> <small>Export spreadsheet</small>
+            </a>
+          </ExcelDownloder>
+        )}
+
+      </div>
       <br/><br/>
       {/* Table receives only the current page */}
       <DataTable columns={assetTableColumns} data={paginatedData} />
