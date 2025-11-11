@@ -81,7 +81,11 @@ export default function ShowOrder() {
   React.useEffect(() => {
     getIronSessionData().then((comp: any) => {
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
-     const com = comp.companyProfile.companiesList.find((x: any) => { return x.id == comp.companyId })?.si
+      // find matching company entry by loggedInCompanyId
+      const com = comp.companyProfile.companiesList.find((x: any) => x.id == currentCompanyId)?.si ?? comp.companyProfile?.companiesList?.[0]?.si ?? 14999;
+
+      // save the company id to state so later actions can re-fetch with the same id
+      setCompanyId(com);
 
       getOrders(com);
 
