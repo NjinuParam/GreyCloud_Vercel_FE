@@ -133,21 +133,21 @@ export default function UpdateSageOneAssetForm({
 
         // Fetch categories and asset details in parallel and wait for both to finish
         const [catRes, assetRes] = await Promise.all([
-          apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`).then((r) => r.json()),
-          apiFetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`).then((r) => r.json()),
+          apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${com}`).then((r) => r.json()).catch(() => null),
+          apiFetch(`${apiUrl}SageOneAsset/Asset/GetNewById/${p.assetid}/${com}`).then((r) => r.json()).catch(() => null),
         ]);
 
         if (!mounted) return;
 
-        // categories
-        setCategories(catRes.results);
+        // categories (guarded)
+        setCategories(catRes?.results ?? []);
         // keep previous behavior to set category after a short delay (preserve UX)
         setTimeout(() => {
           setCategory(asset?.category?.id?.toString());
         }, 1000);
 
-        // asset details
-        const data = assetRes;
+        // asset details - fall back to the incoming asset prop when API response is missing
+        const data = assetRes ?? p;
         setAssetName(data.description);
         setAssetCode(data.code);
         setAssetDescription(data.description);
@@ -159,9 +159,13 @@ export default function UpdateSageOneAssetForm({
         setBoughtFrom(data.boughtFrom);
         setPurchasePrice(data.purchasePrice?.toString() ?? "");
         setReplacementValue(data.replacementValue?.toString() ?? "");
-        setRecoverableAmount(data.residual?.toString() ?? "1");
+        // Treat 0/null/undefined residual as default 1
+        const residualVal = (data?.residual === undefined || data?.residual === null || Number(data?.residual) === 0)
+          ? "1"
+          : data.residual.toString();
+        setRecoverableAmount(residualVal);
         setUsage(data.usage?.toString() ?? "");
-        setCategory(data.catDescription || '');
+  setCategory(data.catDescription || '');
         setIsRental(!!data.rentalAsset);
         setCategoryId(data.catIid);
         setBillingType(data.billingType?.type?.toString()==0?"daily":data.billingType?.type?.toString()==1?"onceoff":data.billingType?.type?.toString()==2?"onceoffusage":data.billingType?.type?.toString()==3?"usage":"");
@@ -169,9 +173,9 @@ export default function UpdateSageOneAssetForm({
         setQty(0);
         setCreateAnother(false);
         setId(data.id);
-        setUsageType(data.billingType?.usageType ?? "");
-        setOnceOffAmount(data.billingType?.amount ?? 0);
-        setUsageOrDailyAmount(data.billingType?.usageRate ?? 0);
+  setUsageType(data.billingType?.usageType ?? "");
+  setOnceOffAmount(data.billingType?.amount ?? 0);
+  setUsageOrDailyAmount(data.billingType?.usageRate ?? 0);
 
       } catch (e: any) {
         console.log(e);
@@ -183,7 +187,7 @@ export default function UpdateSageOneAssetForm({
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [asset?.assetid]);
 
 
   const [isRental, setIsRental] = useState<boolean>(asset?.billingType?.amount !== 0);
@@ -393,7 +397,8 @@ export default function UpdateSageOneAssetForm({
             <br /> <input type="date"
               className="mt-2"
               onChange={(e: any) => {
-                setDatePurchased(e.target.value);
+                const v = e.target.value;
+                setDatePurchased(v ? new Date(v) : undefined);
               }}
               defaultValue={datePurchased ? format(datePurchased, "yyyy-MM-dd") : ""}
 
@@ -405,7 +410,8 @@ export default function UpdateSageOneAssetForm({
               className="mt-2"
 
               onChange={(e: any) => {
-                setDepreciationStart(e.target.value);
+                const v = e.target.value;
+                setDepreciationStart(v ? new Date(v) : undefined);
               }}
               defaultValue={depreciationStart ? format(depreciationStart, "yyyy-MM-dd") : ""}
 
