@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -38,6 +39,8 @@ import Select from 'react-select';
 import { apiFetch } from "../../../../actions/apiHandler";
 
 function AddDepreciationGroup() {
+  const router = useRouter();
+  
   useEffect(() => {
     getIronSessionData().then((comp: any) => {
       
@@ -131,14 +134,21 @@ debugger;
     
 
     try {
-      await fetch(`${apiUrl}Depreciation/Add-Company-Depreciation-Group`, {
+      const response = await fetch(`${apiUrl}Depreciation/Add-Company-Depreciation-Group`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(obj),
       });
-      toast.success("Depreciation saved!");
+      
+      if (response.ok) {
+        toast.success("Depreciation saved!");
+        // Navigate to manage depreciation groups page after successful save
+        router.push("/dashboard/company-user-admin/manage-depreciation-groups");
+      } else {
+        toast.error("Failed to save depreciation group");
+      }
     } catch (e: any) {
       toast.error(e.message);
     }

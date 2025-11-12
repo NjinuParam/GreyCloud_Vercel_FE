@@ -286,6 +286,7 @@ export default function ViewDepreciationHistoryView() {
 
 
   const closeButtonRef = useRef<any>(null);
+  const postJournalsCloseRef = useRef<any>(null);
 
   const close = () => {
     if (closeButtonRef.current) {
@@ -293,30 +294,43 @@ export default function ViewDepreciationHistoryView() {
     }
   };
 
+  const closePostJournalsModal = () => {
+    if (postJournalsCloseRef.current) {
+      postJournalsCloseRef.current?.click();
+    }
+  };
+
 
   async function postJournals(compId: any) {
     toast.info("Processing...");
     // setFetchingDeprecipostation(true);
-    const response = await apiFetch(`${apiUrl}Depreciation/PostJournals/${compId}`
-      //   , {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   }
-      // }
-    );
+    try {
+      const response = await apiFetch(`${apiUrl}Depreciation/PostJournals/${compId}`
+        //   , {
+        //   method: "GET",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   }
+        // }
+      );
 
-    if (response) {
-      toast.success(`Complete!`, {
-        description: "Journals posted succesfuly.",
+      if (response) {
+        toast.success(`Complete!`, {
+          description: "Journals posted succesfuly.",
+        });
+        const res = await response.json();
+      } else {
+        toast.error(`Failed!`, {
+          description: "Journals posting failed.",
+        });
+      }
+    } catch (e) {
+      toast.error(`Error!`, {
+        description: "An error occurred while posting journals.",
       });
-      const res = await response.json();
-
-
-    } else {
-      toast.error("Posting journals failed", {
-        description: "Please try again.",
-      });
+    } finally {
+      // Close the modal regardless of success/error
+      closePostJournalsModal();
     }
   }
 
@@ -587,6 +601,7 @@ export default function ViewDepreciationHistoryView() {
                   {/* <label className="text-muted-foreground"> <Checkbox id="pushtosage" checked={false} /> Push journals to SAGE? </label> */}
 
                   <DialogFooter>
+                    <DialogClose ref={postJournalsCloseRef} className="hidden" />
                     <Button
                       className="w-full"
                       type="submit"

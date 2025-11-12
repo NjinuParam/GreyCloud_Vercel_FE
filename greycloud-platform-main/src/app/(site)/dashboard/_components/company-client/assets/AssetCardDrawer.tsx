@@ -10,7 +10,7 @@ import { useRef } from "react";
 
 
 
-export default function AssetCardDrawer({ asset, depreciationGroups, sageCompanyId }: UpdateSageOneAssetFormProps) {
+export default function AssetCardDrawer({ asset, depreciationGroups, sageCompanyId, onAssetUpdated }: UpdateSageOneAssetFormProps) {
 
   const closeButtonRef =  useRef<any>(null);
 
@@ -37,7 +37,7 @@ export default function AssetCardDrawer({ asset, depreciationGroups, sageCompany
           </DrawerHeader>
 
           <div className="w-full mt-2">
-            <UpdateSageOneAssetForm closeFn={()=>close()} asset={asset} depreciationGroups={depreciationGroups ?? []} sageCompanyId={sageCompanyId} />
+            <UpdateSageOneAssetForm closeFn={()=>close()} asset={asset} depreciationGroups={depreciationGroups ?? []} sageCompanyId={sageCompanyId} onAssetUpdated={onAssetUpdated} />
           </div>
         </div>
       </DrawerContent>

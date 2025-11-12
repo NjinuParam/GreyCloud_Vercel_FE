@@ -30,6 +30,7 @@ export const AssetCardFooter = ({
   asset,
   depreciationGroups,
   sageCompanyId,
+  onAssetUpdated,
 }: UpdateSageOneAssetFormProps) => {
   const { execute: executeDeleteAsset, status: statusDeleteAsset } = useAction(
     deleteSpecificSageOneCompanyAsset,
@@ -81,6 +82,7 @@ export const AssetCardFooter = ({
         asset={asset}
         depreciationGroups={depreciationGroups}
         sageCompanyId={sageCompanyId}
+        onAssetUpdated={onAssetUpdated}
       />
 
       <Dialog>

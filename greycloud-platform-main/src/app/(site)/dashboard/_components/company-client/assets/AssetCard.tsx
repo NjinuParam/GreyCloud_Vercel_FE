@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import moment from "moment";
 import { apiFetch } from "../../../../../actions/apiHandler";
 
- export default function AssetCard({ asset, depreciationGroups, sageCompanyId,updateUsage, updateAddress, closeFn}: UpdateSageOneAssetFormProps){
+ export default function AssetCard({ asset, depreciationGroups, sageCompanyId,updateUsage, updateAddress, closeFn, onAssetUpdated}: UpdateSageOneAssetFormProps){
   let session ={}as any;
   let _asset= asset as any;
   useEffect(() => {
@@ -299,7 +299,8 @@ import { apiFetch } from "../../../../../actions/apiHandler";
         user={session} 
         asset={asset} 
         depreciationGroups={depreciationGroups} 
-        sageCompanyId={sageCompanyId} 
+        sageCompanyId={sageCompanyId}
+        onAssetUpdated={onAssetUpdated}
 
 
          />}

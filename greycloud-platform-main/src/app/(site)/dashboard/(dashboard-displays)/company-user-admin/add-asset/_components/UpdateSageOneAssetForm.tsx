@@ -51,13 +51,15 @@ export type UpdateSageOneAssetFormProps = {
   updateAddress?: Function;
   catDescription?: string;
   closeFn?: Function;
+  onAssetUpdated?: (updatedAsset: any) => void;
 };
 
 export default function UpdateSageOneAssetForm({
   asset,
   depreciationGroups,
   sageCompanyId,
-  closeFn
+  closeFn,
+  onAssetUpdated
 }: UpdateSageOneAssetFormProps) {
   // const [sageCompanyId, setSageCompanyId] = useState('');
   const [assetName, setAssetName] = useState('');
@@ -302,6 +304,35 @@ export default function UpdateSageOneAssetForm({
       toast.success(`Asset updated!`, {
         description: "The asset updated was stored successfully.",
       });
+
+      // Notify parent with updated asset data
+      if (onAssetUpdated) {
+        // For daily billing (type 0), the amount should be in usageRate for display
+        const updatedBillingType = {
+          ...payload.billingType,
+          // For daily, the UI shows amount field, so copy usageRate to amount
+          amount: payload.billingType.type === 0 ? payload.billingType.usageRate : payload.billingType.amount
+        };
+        
+        onAssetUpdated({
+          ...asset,
+          description: payload.description,
+          code: payload.code,
+          catDescription: payload.catDescription,
+          locName: payload.locName,
+          streetAddress: payload.streetAddress,
+          physicalLocation: payload.physicalLocation,
+          serialNumber: payload.serialNumber,
+          boughtFrom: payload.boughtFrom,
+          purchasePrice: payload.purchasePrice,
+          replacementValue: payload.replacementValue,
+          residual: payload.residual,
+          usage: payload.usage,
+          billingType: updatedBillingType,
+          category: payload.category,
+          location: payload.location,
+        });
+      }
 
       closeFn && closeFn();
 

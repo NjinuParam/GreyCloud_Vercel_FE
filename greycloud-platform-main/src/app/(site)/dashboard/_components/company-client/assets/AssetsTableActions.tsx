@@ -126,6 +126,7 @@ if (response) {
               sageCompanyId={(modalAsset ?? asset)?.sageCompanyId ?? 0}
               updateUsage = {(assetId:any, usage:any)=>{ updateAsset(assetId, usage)}}
               updateAddress = {(assetId:any, address:any)=>{ updateAddress(assetId, address )}}
+              onAssetUpdated={(updatedAsset:any) => setModalAsset(updatedAsset)}
             />
         
                         </div>
