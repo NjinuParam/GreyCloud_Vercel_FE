@@ -40,10 +40,19 @@ import { apiFetch } from "../../../../../actions/apiHandler";
     if(updateAddress!==undefined){
       
       var res = await  updateAddress(asset?.id, _address);
+      setNewAddress(_address);
+      
+      // Notify parent with updated location
+      if (onAssetUpdated) {
+        onAssetUpdated({
+          ...asset,
+          locName: _address,
+        });
+      }
+      
+      // Close the location dialog
+      locationDialogCloseRef.current?.click();
     }
-  
-    closeFn!=undefined && closeFn();
-     setNewAddress(_address); 
   }
   
 
@@ -56,6 +65,7 @@ import { apiFetch } from "../../../../../actions/apiHandler";
   const [newAddress, setNewAddress] = useState< string>(asset?.locName??"");
   const [_usage, _setUsage] = useState< number>(asset?.usage??0);
   const [prevUsage, setPrevUsage] = useState<any[]>([]);
+  const locationDialogCloseRef = React.useRef<HTMLButtonElement>(null);
 
   const billingText = (() => {
     const bt = asset?.billingType as any;
@@ -205,13 +215,9 @@ import { apiFetch } from "../../../../../actions/apiHandler";
           </DialogDescription>
 
           <DialogFooter>
+            <Button onClick={updateLocation} variant={"outline"}>Update location</Button>
             <DialogClose asChild>
-            <Button onClick={()=>{ updateLocation();
-         
-              
-              }
-               
-               } variant={"outline"}>Update location</Button>
+              <button ref={locationDialogCloseRef} style={{ display: 'none' }} />
             </DialogClose>
           </DialogFooter>
         </DialogContent>
