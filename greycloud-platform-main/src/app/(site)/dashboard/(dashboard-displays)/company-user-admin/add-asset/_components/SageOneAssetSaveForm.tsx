@@ -139,17 +139,34 @@ export default function SageOneAssetSaveForm({
   }, []);
 
 
-  function getCategories() {
+  async function getCategories() {
     
     close();
-    getIronSessionData().then((comp: any) => {
+    return getIronSessionData().then(async (comp: any) => {
       const compId = comp.companyProfile.loggedInCompanyId;
           
       const companyId = comp.companyProfile?.companiesList?.filter((y:any)=>{return y.id ==compId})[0]?.si;
  
-      fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${companyId}`)
-        .then((res) => res.json().then((data) => { setCategories(data.results); }))
-        .catch((e) => console.log(e));
+      const res = await fetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${companyId}`);
+      const data = await res.json();
+      setCategories(data.results);
+      return data.results;
+    }).catch((e) => {
+      console.log(e);
+      return [];
+    });
+  }
+
+  function handleCategoryAdded() {
+    // Refresh categories and set the newest one as selected
+    getCategories().then((updatedCategories) => {
+      if (updatedCategories && updatedCategories.length > 0) {
+        // Get the last added category (newest one)
+        const newestCategory = updatedCategories[updatedCategories.length - 1];
+        setCategory(newestCategory.id);
+        setIsDialogOpen(false);
+        toast.success("Category added and selected!");
+      }
     });
   }
 
@@ -283,6 +300,7 @@ export default function SageOneAssetSaveForm({
   const [usageType, setUsageType] = useState("");
   const [isRental, setIsRental] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const [usageOrDailyAmount, setUsageOrDailyAmount] = useState(0);
   const [onceOffAmount, setOnceOffAmount] = useState(0);
@@ -342,15 +360,13 @@ export default function SageOneAssetSaveForm({
 
 
 
-                <Dialog>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild className="grow">
                     <button className="text-sm text-blue-500 ml-2"><small>Add new category</small></button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[400px]">
 
-                    <SageOneAssetCategorySaveForm callBack={()=>{
-                      getCategories();
-                    }} />
+                    <SageOneAssetCategorySaveForm callBack={handleCategoryAdded} />
 
                     <DialogFooter>
                       <DialogClose asChild>
@@ -365,7 +381,7 @@ export default function SageOneAssetSaveForm({
 
                 <div style={{ marginTop: "7px" }}>
                   <Select
-
+                    value={categories.find((x: any) => x.id == category)?.description}
                     onValueChange={(e) => {
                       console.log(e);
                       const cat = categories && categories.find((x: any) => x.description == e).id;

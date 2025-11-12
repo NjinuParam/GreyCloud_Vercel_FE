@@ -59,9 +59,7 @@ setCompanyId(com);
 debugger;
       setUserId(comp.email);
       fetchAccounts(sageId);
-      apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`)
-        .then((res) => res.json().then((data) =>{ setCategories(data.results)}))
-        .catch((e) => console.log(e));
+      fetchCategories(sageId);
 
       setCompanyName(name);
     });
@@ -77,6 +75,7 @@ debugger;
   const [accounts, setAccounts] = useState([]);
   const [periodType, setPeriodType] = useState("0");
   const [type, setType] = useState("0");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const [
@@ -111,6 +110,31 @@ debugger;
       } else {
         
       }
+    }
+
+    async function fetchCategories(sageId:any){
+      try {
+        const response = await apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`);
+        const data = await response.json();
+        setCategories(data.results);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    function handleCategoryAdded() {
+      // Refresh categories after new one is added
+      getIronSessionData().then((comp: any) => {
+        const currentCompanyId = comp.companyProfile.loggedInCompanyId;
+        let sageId = comp.companyProfile.companiesList.find(
+          (x:any) => x.id == currentCompanyId
+        )?.si;
+        
+        fetchCategories(sageId).then(() => {
+          setIsDialogOpen(false);
+          toast.success("Category list refreshed!");
+        });
+      });
     }
     
   async function save() {
@@ -201,7 +225,7 @@ debugger;
 
             <div className="flex flex-col space-y-1.5">
             <Label >Category
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild className="grow">
          
             <small style={{marginLeft:"5%", color:"blue"}}>Add new asset category</small>
@@ -209,7 +233,7 @@ debugger;
         </DialogTrigger>
         <DialogContent className="md:max-w-[600px]">
         
-        <SageOneAssetCategorySaveForm  />
+        <SageOneAssetCategorySaveForm callBack={handleCategoryAdded} />
 
         </DialogContent>
             </Dialog>

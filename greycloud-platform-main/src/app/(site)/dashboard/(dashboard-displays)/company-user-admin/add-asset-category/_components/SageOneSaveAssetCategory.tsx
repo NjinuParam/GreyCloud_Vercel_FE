@@ -57,11 +57,15 @@ const form = useForm<SaveSageOneAssetCategoryType>({
                 description: "The asset category was stored successfully.",
               });
               
-              // router.refresh();
-              // callBack && callBack();
-              setTimeout(() => {
-                window?.location?.reload();
-              }, 4000);
+              // If callback is provided, use it instead of reloading
+              if (callBack) {
+                callBack();
+              } else {
+                // Fallback to reload if no callback provided
+                setTimeout(() => {
+                  window?.location?.reload();
+                }, 4000);
+              }
              
 
     } catch (e: any) {
