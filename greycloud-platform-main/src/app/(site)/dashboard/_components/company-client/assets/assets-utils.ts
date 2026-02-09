@@ -1,4 +1,4 @@
-import { SageOneAssetTypeType } from '@/lib/schemas/company';
+import { SageOneAssetTypeType } from '../../../../../../lib/schemas/company';
 
 export type AssetCategorySummary = {
   groupKey: string;
@@ -42,10 +42,10 @@ export function groupAssetsByCategory(assets: SageOneAssetTypeType[]): AssetCate
   }
 
   const out: AssetCategorySummary[] = [];
-  for (const v of map.values()) {
+  map.forEach((v) => {
     v.avgCurrentValue = v.count > 0 ? v.totalCurrentValue / v.count : 0;
     out.push(v);
-  }
+  });
 
   // Sort by count desc
   out.sort((a, b) => b.count - a.count);
