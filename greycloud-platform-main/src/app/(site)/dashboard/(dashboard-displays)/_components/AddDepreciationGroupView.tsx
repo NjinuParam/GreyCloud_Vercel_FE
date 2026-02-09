@@ -46,8 +46,9 @@ function AddDepreciationGroup() {
       
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      const com = comp.companyProfile.companiesList.find((x:any)=>x.id ==currentCompanyId).si
-setCompanyId(com);
+      const com = comp.companyProfile.companiesList.find((x:any) => x.id == currentCompanyId)?.si;
+      // store the GreyCloud company id
+      setCompanyId(currentCompanyId);
 
       let name = comp.companyProfile.companiesList.find(
         (x:any) => x.id == currentCompanyId
@@ -58,6 +59,11 @@ setCompanyId(com);
       )?.si;
 debugger;
       setUserId(comp.email);
+
+      // Load saved company settings (will set the Sage journal code states)
+      getCompanySettings(currentCompanyId);
+
+      // Fetch Sage accounts and categories so the select options are available
       fetchAccounts(sageId);
       fetchCategories(sageId);
 
@@ -87,6 +93,30 @@ debugger;
   const [sageDisposalJournalCode, setSageDisposalJournalCode] = useState("");
   const [sageRevaluationJournalCode, setSageRevaluationJournalCode] =
     useState("");
+
+  // Load company settings so saved Sage journal codes can be used as defaults
+  const getCompanySettings = async (id: string) => {
+    try {
+      const request = await fetch(`${apiUrl}GreyCloud/Admin/Get-Company/${id}`);
+      const response = await request.json();
+
+      // Normalize to strings so they match account id strings used by the selects
+      if (response.sageAccumilatedDepreciationJournalCode != null) {
+        setSageAccumilatedDepreciationJournalCode(String(response.sageAccumilatedDepreciationJournalCode));
+      }
+      if (response.sageDepreciationJournalCode != null) {
+        setSageDepreciationJournalCode(String(response.sageDepreciationJournalCode));
+      }
+      if (response.sageDisposalJournalCode != null) {
+        setSageDisposalJournalCode(String(response.sageDisposalJournalCode));
+      }
+      if (response.sageRevaluationJournalCode != null) {
+        setSageRevaluationJournalCode(String(response.sageRevaluationJournalCode));
+      }
+    } catch (e) {
+      console.log('Error loading company settings', e);
+    }
+  };
 
     async function fetchAccounts(id:any){
       toast.info("Fetching depreciation history...");
@@ -348,14 +378,11 @@ debugger;
               </Label>
              
                    <Select
-                      styles={customStyle}
-                      value = {
-                        p.filter(option => 
-                           option.value == sageAccumilatedDepreciationJournalCode )
-                     }
-                  onChange={(e:any)=>{setSageAccumilatedDepreciationJournalCode(e.value)}}
-                  options={p}
-                />
+                     styles={customStyle}
+                     value={p.find(option => option.value == sageAccumilatedDepreciationJournalCode) || null}
+                     onChange={(e:any)=>{setSageAccumilatedDepreciationJournalCode(e.value)}}
+                     options={p}
+                 />
             </div>
 
             <div className="flex flex-col space-y-1.5">
@@ -363,10 +390,7 @@ debugger;
            
                 <Select
                   styles={customStyle}
-                  value = {
-                    p.filter(option => 
-                       option.value == sageDepreciationJournalCode )
-                 }
+                  value={p.find(option => option.value == sageDepreciationJournalCode) || null}
                   onChange={(e:any)=>{setSageDepreciationJournalCode(e.value)}}
                   options={p}
                 />
@@ -377,10 +401,7 @@ debugger;
              
                        <Select
                   styles={customStyle}
-                  value = {
-                    p.filter(option => 
-                       option.value == sageDisposalJournalCode )
-                 }
+                  value={p.find(option => option.value == sageDisposalJournalCode) || null}
                   onChange={(e:any)=>{setSageDisposalJournalCode(e.value)}}
                   options={p}
                 />
@@ -409,10 +430,7 @@ debugger;
                   </Select> */}
                           <Select
                   styles={customStyle}
-                  value = {
-                    p.filter(option => 
-                       option.value == sageRevaluationJournalCode )
-                 }
+                  value={p.find(option => option.value == sageRevaluationJournalCode) || null}
                   onChange={(e:any)=>{setSageRevaluationJournalCode(e.value)}}
                   options={p}
                 />

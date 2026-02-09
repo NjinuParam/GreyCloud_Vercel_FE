@@ -246,16 +246,16 @@ const menuItems = {
     //   ],
     // },
    
-    // {
-    //   heading: "Company",
-    //   links: [
-    //     {
-    //       title: "Settings",
-    //       path: "/dashboard/company/settings",
-    //       icon: <Settings2 />,
-    //     },
-    //   ],
-    // },
+    {
+      heading: "Company",
+      links: [
+        {
+          title: "Settings",
+          path: "/dashboard/company/settings",
+          icon: <Settings2 />,
+        },
+      ],
+    },
   ],
 };
 

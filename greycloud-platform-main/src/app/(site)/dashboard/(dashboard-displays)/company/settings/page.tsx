@@ -12,29 +12,35 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import ReactSelect from "react-select";
 import { getIronSessionData } from "@/lib/auth/auth";
 import { toast } from "sonner";
 
 function Settings() {
   React.useEffect(() => {
     getIronSessionData().then((comp: any) => {
+      const currentCompanyId = comp.companyId;
       console.log(comp);
-      let currentCompanyId = comp.companyId;
+
+      // Find the matching company entry (some payloads use `companyId`, others `id`)
+      const companyEntry = comp.companyProfile?.companiesList?.find(
+        (x: any) => x.companyId === currentCompanyId || x.id === currentCompanyId
+      );
+
+      // Try common fields for the Sage company id (different APIs may use different keys)
+      const sageId =
+        companyEntry?.sageCompanyId ?? companyEntry?.si ?? companyEntry?.sageCompany ?? null;
+
       setCompanyId(currentCompanyId);
+      setCompanyName(companyEntry?.companyName ?? companyEntry?.company ?? "");
+
+      // Load saved settings for this company (sets the select state values)
       getCompanySettings(currentCompanyId);
 
-      let name = comp.companyProfile.companiesList.find(
-        (x:any) => x.companyId == currentCompanyId
-      )?.companyName;
-
-      setCompanyName(name);
+      // Fetch Sage accounts for the company so dropdown options are available
+      if (sageId) {
+        fetchAccounts(sageId);
+      }
     });
   }, []);
 
@@ -48,10 +54,21 @@ function Settings() {
       setSageDepreciationJournalCode(response.sageDepreciationJournalCode);
       setSageDisposalJournalCode(response.sageDisposalJournalCode);
       setSageRevaluationJournalCode(response.sageRevaluationJournalCode);
+      // map depreciation start date (convert to datetime-local format if present)
+      if (response.depreciationStartDate) {
+        try {
+          const dt = new Date(response.depreciationStartDate);
+          setDepreciationStartDate(dt.toISOString().slice(0, 16));
+        } catch (e) {
+          setDepreciationStartDate("");
+        }
+      }
     } catch (e: any) {
       toast.error(e.message);
     }
   };
+
+  const [accounts, setAccounts] = useState<any[]>([]);
 
   const [companyName, setCompanyName] = useState("");
   const [companyId, setCompanyId] = useState("");
@@ -64,23 +81,70 @@ function Settings() {
   const [sageDisposalJournalCode, setSageDisposalJournalCode] = useState("");
   const [sageRevaluationJournalCode, setSageRevaluationJournalCode] =
     useState("");
+  const [depreciationStartDate, setDepreciationStartDate] = useState("");
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+  const customStyle = {
+    option: (base: any) => ({
+      ...base,
+      backgroundColor: "white",
+      color: "black",
+      zIndex: 999999,
+    }),
+    menuPortal: (base: any) => ({ ...base, zIndex: 999999 }),
+  };
+
+  const p = accounts.map((x: any) => ({ value: x.id?.toString() ?? "", label: x.name })) as any[];
+
+  async function fetchAccounts(id: any) {
+    try {
+      const res = await fetch(`${apiUrl}GreyCloud/Admin/Get-Accounts/${id}`);
+      const json = await res.json();
+      debugger;
+      setAccounts(json.results || []);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async function saveSettings() {
-    let settings = {
-      id: companyId,
+    // Log individual state values to help debug duplicate/null issue
+    console.log("Saving company settings - states:", {
       sageAccumilatedDepreciationJournalCode,
       sageDepreciationJournalCode,
       sageDisposalJournalCode,
       sageRevaluationJournalCode,
+      depreciationStartDate,
+    });
+
+
+    // Build settings payload explicitly and add both spellings of the
+    // accumulated depreciation property to be compatible with API variations.
+    const settings: any = {
+      id: companyId,
+      sageDepreciationJournalCode: sageDepreciationJournalCode,
+      sageDisposalJournalCode: sageDisposalJournalCode,
+      sageRevaluationJournalCode: sageRevaluationJournalCode,
+      sageAccumilatedDepreciationJournalCode: sageAccumilatedDepreciationJournalCode,
+      // send ISO datetime if set, otherwise null
+      depreciationStartDate: depreciationStartDate
+        ? new Date(depreciationStartDate).toISOString()
+        : null,
     };
+
+    debugger;
+    const payload = JSON.stringify(settings);
+
+  
+    // log payload to help debug missing/duplicated fields
+    console.log("UpdateCompanySettings payload:", settings);
     try {
       await fetch(`${apiUrl}GreyCloud/Admin/UpdateCompanySettings`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(settings),
+        body:payload,
       });
       toast.success("Settings saved!");
     } catch (e: any) {
@@ -96,48 +160,56 @@ function Settings() {
       </CardHeader>
       <CardContent>
         <form>
-          <div className="grid w-full items-center gap-4">
+          <div className="grid w-full items-center gap-4 grid-cols-1 md:grid-cols-2">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">
+              <Label htmlFor="accumulated">
                 Sage Accumilated Depreciation Journal Code
               </Label>
-              <Input
-                id="name"
-                placeholder="Sage Accumilated Depreciation Journal Code"
-                value={sageAccumilatedDepreciationJournalCode}
-                onChange={(e) =>
-                  setSageAccumilatedDepreciationJournalCode(e.target.value)
-                }
+              <ReactSelect
+                styles={customStyle}
+                value={p.find((o: any) => o.value === sageAccumilatedDepreciationJournalCode) || null}
+                onChange={(e: any) => setSageAccumilatedDepreciationJournalCode(e?.value || "")}
+                options={p}
               />
             </div>
 
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">Sage Depreciation Journal Code</Label>
-              <Input
-                id="name"
-                placeholder="Sage Depreciation Journal Code"
-                value={sageDepreciationJournalCode}
-                onChange={(e) => setSageDepreciationJournalCode(e.target.value)}
+              <Label htmlFor="depreciation">Sage Depreciation Journal Code</Label>
+              <ReactSelect
+                styles={customStyle}
+                value={p.find((o: any) => o.value === sageDepreciationJournalCode) || null}
+                onChange={(e: any) => setSageDepreciationJournalCode(e?.value || "")}
+                options={p}
               />
             </div>
 
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">Sage Disposal Journal Code</Label>
-              <Input
-                id="name"
-                placeholder="Sage Disposal Journal Code"
-                value={sageDisposalJournalCode}
-                onChange={(e) => setSageDisposalJournalCode(e.target.value)}
+              <Label htmlFor="disposal">Sage Disposal Journal Code</Label>
+              <ReactSelect
+                styles={customStyle}
+                value={p.find((o: any) => o.value === sageDisposalJournalCode) || null}
+                onChange={(e: any) => setSageDisposalJournalCode(e?.value || "")}
+                options={p}
               />
             </div>
 
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">Sage Revaluation Journal Code</Label>
+              <Label htmlFor="revaluation">Sage Revaluation Journal Code</Label>
+              <ReactSelect
+                styles={customStyle}
+                value={p.find((o: any) => o.value === sageRevaluationJournalCode) || null}
+                onChange={(e: any) => setSageRevaluationJournalCode(e?.value || "")}
+                options={p}
+              />
+            </div>
+
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="depreciationStart">Depreciation Start Date</Label>
               <Input
-                id="name"
-                placeholder="Sage Revaluation Journal Code"
-                value={sageRevaluationJournalCode}
-                onChange={(e) => setSageRevaluationJournalCode(e.target.value)}
+                id="depreciationStart"
+                type="datetime-local"
+                value={depreciationStartDate}
+                onChange={(e) => setDepreciationStartDate(e.target.value)}
               />
             </div>
           </div>

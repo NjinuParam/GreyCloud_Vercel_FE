@@ -8,6 +8,9 @@ import { assetTableColumns } from "./assets-columns";
 import { DataTable } from "@/components/ui/data-table";
 import { FileSpreadsheet } from "lucide-react";
 import { useExcelDownloder } from 'react-xls';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import AssetsSummary from "./AssetsSummary";
+import { groupAssetsByCategory } from "./assets-utils";
 
 export type AssetTableProps = {
   assets: SageOneAssetTypeType[];
@@ -57,6 +60,13 @@ export default function AssetTableContainer({ assets, depreciationGroups, sageCo
     return filteredAssets.slice(start, start + pageSize);
   }, [filteredAssets, page, pageSize]);
 
+  // View mode: 'list' = atomic rows, 'summary' = grouped view
+  const [viewMode, setViewMode] = useState<'list' | 'summary'>('list');
+
+  const groupedByCategory = useMemo(() => {
+    return groupAssetsByCategory(filteredAssets || []);
+  }, [filteredAssets]);
+
 
 
 
@@ -72,22 +82,38 @@ export default function AssetTableContainer({ assets, depreciationGroups, sageCo
           />
         </div>
 
-        {assets?.length > 0 && (
-          <ExcelDownloder
-            data={{assets:enrichedAssets}}
-            filename={`AssetExport_${new Date().toDateString()}`}
-            type={Type.Button} // or type={'button'}
-          >
-            <a style={{ cursor: "pointer" }}>
-              <FileSpreadsheet style={{ float: "left" }} /> <small>Export spreadsheet</small>
-            </a>
-          </ExcelDownloder>
-        )}
+        <div className="flex items-center gap-2">
+          <ToggleGroup type="single" value={viewMode} onValueChange={(v: any) => setViewMode(v || 'list')} aria-label="View mode">
+            <ToggleGroupItem value="list">List</ToggleGroupItem>
+            <ToggleGroupItem value="summary">Summary</ToggleGroupItem>
+          </ToggleGroup>
+
+          {assets?.length > 0 && (
+            <ExcelDownloder
+              data={viewMode === 'summary' ? { summary: groupedByCategory } : { assets: enrichedAssets }}
+              filename={`AssetExport_${new Date().toDateString()}`}
+              type={Type.Button} // or type={'button'}
+            >
+              <a style={{ cursor: "pointer" }}>
+                <FileSpreadsheet style={{ float: "left" }} /> <small>Export spreadsheet</small>
+              </a>
+            </ExcelDownloder>
+          )}
+        </div>
 
       </div>
       <br/><br/>
-      {/* Table receives only the current page */}
-      <DataTable columns={assetTableColumns} data={paginatedData} />
+      {/* Table receives only the current page or summary rows depending on viewMode */}
+      {viewMode === 'list' ? (
+        <DataTable columns={assetTableColumns} data={paginatedData} />
+      ) : (
+        <AssetsSummary data={groupedByCategory} onGroupClick={(groupKey) => {
+          // Switch to list view filtered by the clicked group
+          setViewMode('list');
+          setSearch(groupKey);
+          setPage(1);
+        }} />
+      )}
 
       {/* Pagination controls */}
       {total > 0 && (

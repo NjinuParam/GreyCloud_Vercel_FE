@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/table";
-
+import { Switch } from "@/components/ui/switch"; 
 
 import { getGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greycloud-admin-actions";
 import { getAllAssetDepreciationHistory } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
@@ -68,6 +68,7 @@ export default function ViewDepreciationHistoryView() {
   const [summaryData, setSummaryData] = useState<any>();
   const [canDepr, setCanDepreciate] = useState<any[]>([]);
   const [updatedUsageAssets, setUpdatedUsageAssets] = useState<any[]>([]);
+  const [isGroupedView, setIsGroupedView] = useState(true);
 
   const [audit, setAudit] = useState<any[]>([]);
   const { ExcelDownloder, Type } = useExcelDownloder();
@@ -112,6 +113,10 @@ export default function ViewDepreciationHistoryView() {
 
               const depGroup = depreciationGroups.data?.find((dg: any) => dg.depGroupId === depHistory.depGroupId);
 
+              const purchasePrice = asset?.purchasePrice || 0;
+              const totalDepreciation = depHistory.totalDepreciation || 0;
+              const currentYearDepreciation = depHistory?.depreciationThisYear || 0;
+              const bookValue = purchasePrice - totalDepreciation;
 
               return {
                 ...depHistory,
@@ -125,7 +130,13 @@ export default function ViewDepreciationHistoryView() {
                 totalDepreciation: depHistory.totalDepreciation,
                 depreciationThisYear: depHistory?.depreciationThisYear,
                 depreciationThisMonth: depHistory?.depreciationThisMonth,
-                depGroupDetails: `${depGroup.type == 0 ? " Straight Line" : depGroup.type == 1 ? "Reducing Balance" : " Usage"} (${depGroup?.depAmount}${depGroup.type == 0 ? " years write off" : depGroup.type == 1 ? "% per year" : " units"})`
+                depGroupDetails: `${depGroup.type == 0 ? " Straight Line" : depGroup.type == 1 ? "Reducing Balance" : " Usage"} (${depGroup?.depAmount}${depGroup.type == 0 ? " years write off" : depGroup.type == 1 ? "% per year" : " units"})`,
+                
+                purchaseDate: asset?.datePurchased ? moment(asset.datePurchased).format('DD-MMM-YY') : "NA",
+                depreciationStartDate: asset?.dateDepreciationStart ? moment(asset?.dateDepreciationStart).format('DD-MMM-YY') : "NA", 
+                revaluedValue: "NA",
+                priorYearsDepreciation: totalDepreciation - currentYearDepreciation,
+                bookValue: bookValue
               };
             }) as AssetDepreciationHistoryTableTypes[];
 
@@ -628,7 +639,37 @@ export default function ViewDepreciationHistoryView() {
 
             {filteredData?.length > 0 &&
               <ExcelDownloder
-                data={summaryData}
+                data={(() => {
+                  const dataToExport = filteredData || transformedData || [];
+                  const formatItem = (item: any) => ({
+                    "Asset Code": item.code,
+                    "Asset Description": item.assetName,
+                    "Category": item.category,
+                    "Purchase Date": item.purchaseDate,
+                    "Depreciation Start Date": item.depreciationStartDate,
+                    "Purchase Price": item.purchasePrice,
+                    "Revalued Value": item.revaluedValue,
+                    "Total Depreciation": item.totalDepreciation,
+                    "Prior Years": item.priorYearsDepreciation,
+                    "Current Year": item.depreciationThisYear,
+                    "Current Period": item.depreciationThisMonth,
+                    "Book Value": item.bookValue
+                  });
+
+                  if (isGroupedView) {
+                    const groups: Record<string, any[]> = {};
+                    dataToExport.forEach((item: any) => {
+                      const cat = item.category || "Uncategorized";
+                      if (!groups[cat]) groups[cat] = [];
+                      groups[cat].push(formatItem(item));
+                    });
+                    return groups;
+                  } else {
+                    return {
+                      "Depreciation History": dataToExport.map(formatItem)
+                    };
+                  }
+                })()}
                 filename={`DepreciationExport_${new Date().toDateString()}`}
                 type={Type.Button} // or type={'button'}
               >
@@ -644,24 +685,33 @@ export default function ViewDepreciationHistoryView() {
         </div>
 
 
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <small>Showing</small>
-            <select value={pageSize} onChange={(e) => { setPageSize(parseInt(e.target.value)); setPage(1); }} className="p-1 border rounded">
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-            <small>of {totalItems} records</small>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="px-2 py-1 border rounded disabled:opacity-50">Prev</button>
-            <span>Page {page} / {totalPages}</span>
-            <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} className="px-2 py-1 border rounded disabled:opacity-50">Next</button>
-          </div>
+        <div className="flex items-center space-x-2 mb-4">
+          <Switch id="grouped-view" checked={isGroupedView} onCheckedChange={setIsGroupedView} />
+          <label htmlFor="grouped-view" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Grouped List View
+          </label>
         </div>
+
+        {!isGroupedView && (
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <small>Showing</small>
+              <select value={pageSize} onChange={(e) => { setPageSize(parseInt(e.target.value)); setPage(1); }} className="p-1 border rounded">
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+              <small>of {totalItems} records</small>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="px-2 py-1 border rounded disabled:opacity-50">Prev</button>
+              <span>Page {page} / {totalPages}</span>
+              <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} className="px-2 py-1 border rounded disabled:opacity-50">Next</button>
+            </div>
+          </div>
+        )}
 
         {loading ? (
           <div className="grid grid-cols-3 gap-4">
@@ -673,6 +723,58 @@ export default function ViewDepreciationHistoryView() {
                 <Skeleton className="h-8 w-full rounded-md" />
               </div>
             ))}
+          </div>
+        ) : isGroupedView ? (
+          <div className="overflow-x-auto space-y-8">
+            {(() => {
+              const data = filteredData || transformedData || [];
+              const groups: Record<string, any[]> = {};
+              data.forEach((item: any) => {
+                const cat = item.category || "Uncategorized";
+                if (!groups[cat]) groups[cat] = [];
+                groups[cat].push(item);
+              });
+
+              return Object.keys(groups).sort().map(category => (
+                <div key={category} className="border rounded-md p-4">
+                  <h4 className="font-bold mb-4">Asset Type: {category}</h4>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Asset Code</TableHead>
+                        <TableHead>Asset Description</TableHead>
+                        <TableHead>Purchase Date</TableHead>
+                        <TableHead>Depreciation Start Date</TableHead>
+                        <TableHead className="text-right">Purchase Price</TableHead>
+                        <TableHead className="text-right">Revalued Value</TableHead>
+                        <TableHead className="text-right">Total Depr.</TableHead>
+                        <TableHead className="text-right">Prior Years</TableHead>
+                        <TableHead className="text-right">Current Year</TableHead>
+                        <TableHead className="text-right">Current Period</TableHead>
+                        <TableHead className="text-right">Book Value</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {groups[category].map((item: any, idx: number) => (
+                        <TableRow key={idx}>
+                          <TableCell>{item.code}</TableCell>
+                          <TableCell>{item.assetName}</TableCell>
+                          <TableCell>{item.purchaseDate}</TableCell>
+                          <TableCell>{item.depreciationStartDate}</TableCell>
+                          <TableCell className="text-right">{item.purchasePrice?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                          <TableCell className="text-right">{item.revaluedValue === "NA" ? "NA" : item.revaluedValue}</TableCell>
+                          <TableCell className="text-right">{item.totalDepreciation?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                          <TableCell className="text-right">{item.priorYearsDepreciation?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                          <TableCell className="text-right">{item.depreciationThisYear?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                          <TableCell className="text-right">{item.depreciationThisMonth?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                          <TableCell className="text-right">{item.bookValue?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ));
+            })()}
           </div>
         ) : (
           <DataTable columns={assetDepreciationHistoryColumns} data={paginatedData} />
