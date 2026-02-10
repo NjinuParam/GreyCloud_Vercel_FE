@@ -2,8 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AddDepreciationHistoryForm from "../company-user-admin/manage-depreciation-history/_components/AddDepreciationHistoryForm";
 import { getIronSessionData } from "@/lib/auth/auth";
 import { getSageOneCompanyAssets } from "@/app/actions/sage-one-assets-actions/sage-one-assets-actions";
-import { getGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greycloud-admin-actions";
-import { getAllCompanyDepreciationGroups } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
+import { SAGE_ONE_DEPRECIATION } from "@/lib/api-endpoints/sage-one-company-depreciation";
 import { GetCompanyDepreciationGroupResponseType } from "@/lib/schemas/depreciation";
 
 export default async function AddDepreciationHistoryView() {
@@ -13,17 +12,16 @@ export default async function AddDepreciationHistoryView() {
     return null;
   }
 
-  const myCompany = session.companyProfile?.companiesList?.find((company) => company.id === session.companyProfile.loggedInCompanyId);
-
-  // const { data: myCompany } = await getGreyCloudCompany({
-  //   id: session.companyId as string,
-  // });
+  const myCompany = session.companyProfile?.companiesList?.find((company: any) => company.id === session.companyProfile.loggedInCompanyId);
 
   const { data: assets } = await getSageOneCompanyAssets({
     SageCompanyId: Number(myCompany?.si),
   });
 
-  const { data: depreciationGroups } = await getAllCompanyDepreciationGroups({});
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const groupsResponse = await fetch(`${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_COMPANY_DEPRECIATION_GROUP_ALL}`, { cache: "no-store" });
+  const depreciationGroupsData = await groupsResponse.json();
+  const depreciationGroups: any[] = Array.isArray(depreciationGroupsData) ? depreciationGroupsData : (depreciationGroupsData.data || []);
 
   return (
     <Card className="flex flex-col w-[600px] mx-auto justify-between mt-8">

@@ -218,7 +218,7 @@ export const loginCompanyUser = action(
         loggedInCompanyId: user.companyId,
         companiesList: user.companyInfo
       };
-      session.token=user.token;
+      session.token = user.token;
       session.isLoggedIn = true;
       session.companyId = user.companyId;
       await session.save();
@@ -240,6 +240,7 @@ export const assignCompanyProfileToCompanyUser = action(
       loggedInCompanyId: companyId,
       companiesList: session.companyProfile?.companiesList,
     };
+    session.companyId = companyId;
 
     await session.save();
     const selectedCompany = session.companyProfile?.companiesList?.find(
@@ -265,9 +266,8 @@ export const updateCompanyUserPassword = action(
     // Convert password to base64
     rest.newPassword = toBase64(rest.newPassword);
 
-    const endpoint = `${apiUrl}${
-      SAGE_ONE_USER_COMPANY.PUT.UPDATE_COMPANY_USER_PASSWORD
-    }?email=${encodeURIComponent(email)}&newPassword=${rest.newPassword}`;
+    const endpoint = `${apiUrl}${SAGE_ONE_USER_COMPANY.PUT.UPDATE_COMPANY_USER_PASSWORD
+      }?email=${encodeURIComponent(email)}&newPassword=${rest.newPassword}`;
 
     try {
       if (API_LOGGING) console.log(`[action][PUT] ${endpoint}`);
@@ -298,9 +298,8 @@ export const updateCompanyUserPassword = action(
 export const resetCompanyUserAccountPassword = action(
   EmailOnlySchema,
   async ({ email }) => {
-    const endpoint = `${apiUrl}${
-      SAGE_ONE_USER_COMPANY.POST.RESET_COMPANY_USER_PASSWORD
-    }?email=${encodeURIComponent(email)}`;
+    const endpoint = `${apiUrl}${SAGE_ONE_USER_COMPANY.POST.RESET_COMPANY_USER_PASSWORD
+      }?email=${encodeURIComponent(email)}`;
 
     try {
       if (API_LOGGING) console.log(`[action][POST] ${endpoint}`);
@@ -329,9 +328,8 @@ export const resetCompanyUserAccountPassword = action(
 export const verifyCompanyUserOTP = action(
   OTPCompanyUserSchema,
   async ({ email, code }) => {
-    const endpoint = `${apiUrl}${
-      SAGE_ONE_USER_COMPANY.PUT.VERIFY_COMPANY_USER_OTP
-    }?email=${encodeURIComponent(email)}&code=${code}`;
+    const endpoint = `${apiUrl}${SAGE_ONE_USER_COMPANY.PUT.VERIFY_COMPANY_USER_OTP
+      }?email=${encodeURIComponent(email)}&code=${code}`;
 
     try {
       if (API_LOGGING) console.log(`[action][PUT] ${endpoint}`);

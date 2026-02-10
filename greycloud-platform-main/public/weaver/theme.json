@@ -1,0 +1,23 @@
+{
+    "primary": "#2d4a2d",
+    "secondary": "#3e613e",
+    "bgDark": "#1b2e1b",
+    "chatBg": "#f5f8f5",
+    "sidebarGreen": "#203a20",
+    "gradient": [
+        "#2d4a2d",
+        "#10b981",
+        "#3e613e"
+    ],
+    "buttonRadius": "12px",
+    "buttonWidth": "56px",
+    "buttonHeight": "48px",
+    "widgetWidth": "420px",
+    "widgetHeight": "600px",
+    "collapsedHeight": "84px",
+    "headerTitle": "Weaver AI",
+    "headerSubtitle": "Universal Execution Agent",
+    "borderStyle": "gradw",
+    "animateBorder": true,
+    "borderWidth": "4px"
+}

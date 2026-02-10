@@ -10,6 +10,16 @@ export const API_LOGGING = (() => {
   }
 })();
 
+export const WEAVER_ENABLED = (() => {
+  try {
+    const val = process.env.NEXT_PUBLIC_ENABLE_WEAVER ?? "false";
+    return String(val).toLowerCase() === "true";
+  } catch (e) {
+    return false;
+  }
+})();
+
 export default {
   API_LOGGING,
+  WEAVER_ENABLED,
 };

@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/table";
-import { Switch } from "@/components/ui/switch"; 
+import { Switch } from "@/components/ui/switch";
 
 import { getGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greycloud-admin-actions";
 import { getAllAssetDepreciationHistory } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
@@ -23,6 +23,7 @@ import { getSageOneCompanyAssets } from "@/app/actions/sage-one-assets-actions/s
 import { CheckCircle, FileSpreadsheet, FileWarning, FileWarningIcon, LucideMessageSquareWarning, MailWarning, PowerCircle, Timer, UploadCloud } from "lucide-react";
 import { Badge } from "../../../../../components/ui/badge";
 import { getAllCompanyDepreciationGroups } from "../../../../actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
+import { SAGE_ONE_DEPRECIATION } from "@/lib/api-endpoints/sage-one-company-depreciation";
 import { toast } from "sonner";
 import { useExcelDownloder } from 'react-xls';
 import {
@@ -77,92 +78,91 @@ export default function ViewDepreciationHistoryView() {
   useEffect(() => {
     setLoading(true);
 
-    const session = getIronSessionData().then((comp: any) => {
-      if (!comp.isLoggedIn) {
-        return null;
-      }
-      const _myCompany = comp.companyProfile.companiesList?.find((company: any) => company.id === comp.companyProfile.loggedInCompanyId);
+    const fetchData = async () => {
+      try {
+        const comp: any = await getIronSessionData();
+        if (!comp.isLoggedIn) {
+          setLoading(false);
+          return;
+        }
 
-      ;
-      setMyCompany(_myCompany)
+        const _myCompany = comp.companyProfile.companiesList?.find(
+          (company: any) => company.id === comp.companyProfile.loggedInCompanyId
+        );
+        setMyCompany(_myCompany);
 
-      fetchAudit(Number(_myCompany?.si));
+        const sageCompanyId = Number(_myCompany?.si);
+        fetchAudit(sageCompanyId);
+        canDepreciate(sageCompanyId || 14999);
 
-      canDepreciate(_myCompany?.si ?? 14999);
-      getAllAssetDepreciationHistory({ sageCompanyId: Number(_myCompany?.si) }).then((depreHistoryFull: any) => {
-
+        const depreHistoryFull: any = await getAllAssetDepreciationHistory({ sageCompanyId });
         const depreHistory = depreHistoryFull.data.data;
         const summary = depreHistoryFull.data.summary;
         const audit = depreHistoryFull.data.audit.filter((x: any) => x.posted == true);
 
         const full = { fullExport: depreHistory, summary: summary, audit: audit };
-
-
         setSummaryData(full);
+        setDepreciationHistoryAll(depreHistory);
 
-        setDepreciationHistoryAll(depreHistory)
-        getSageOneCompanyAssets({ SageCompanyId: Number(_myCompany?.si) }).then((_assets: any) => {
+        const _assets: any = await getSageOneCompanyAssets({ SageCompanyId: sageCompanyId });
+        setAssets(_assets);
 
-          setAssets(_assets)
+        // Fetch groups using direct fetch as requested
+        const groupsUrl = `${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_COMPANY_DEPRECIATION_GROUP_ALL}`;
+        const groupsResponse = await fetch(groupsUrl, { cache: "no-store" });
+        const depreciationGroupsData = await groupsResponse.json();
+        const depreciationGroups = Array.isArray(depreciationGroupsData) ? depreciationGroupsData : (depreciationGroupsData.data || []);
 
-          getAllCompanyDepreciationGroups({}).then((depreciationGroups: any) => {
+        const _transformedData = depreHistory?.map((depHistory: any) => {
+          const asset = _assets.data?.find((a: any) => a.assetid === depHistory.assetId);
+          const depGroup = depreciationGroups?.find((dg: any) => dg.depGroupId === depHistory.depGroupId);
 
-            let _transformedData = depreHistory?.map((depHistory: any) => {
+          const purchasePrice = asset?.purchasePrice || 0;
+          const totalDepreciation = depHistory.totalDepreciation || 0;
+          const currentYearDepreciation = depHistory?.depreciationThisYear || 0;
+          const bookValue = purchasePrice - totalDepreciation;
 
-              const asset = _assets.data?.find((a: any) => a.assetid === depHistory.assetId);
+          return {
+            ...depHistory,
+            code: asset?.code,
+            assetName: asset ? asset.description : "Unknown Asset",
+            category: asset?.catDescription ?? asset?.category?.description ?? "Uncategorized",
+            companyName: _myCompany?.companyName,
+            purchasePrice: asset?.purchasePrice,
+            residual: asset?.residual ? (asset.residual == 0 ? 1 : asset.residual) : 1,
+            depGroupName: depGroup ? `${depGroup?.depName}` : "Unknown",
+            totalDepreciation: depHistory.totalDepreciation,
+            depreciationThisYear: depHistory?.depreciationThisYear,
+            depreciationThisMonth: depHistory?.depreciationThisMonth,
+            depGroupDetails: depGroup
+              ? `${depGroup.type == 0 ? " Straight Line" : depGroup.type == 1 ? "Reducing Balance" : " Usage"} (${depGroup?.depAmount}${depGroup.type == 0 ? " years write off" : depGroup.type == 1 ? "% per year" : " units"})`
+              : "Unknown Group",
+            purchaseDate: asset?.datePurchased ? moment(asset.datePurchased).format("DD-MMM-YY") : "NA",
+            depreciationStartDate: asset?.dateDepreciationStart ? moment(asset?.dateDepreciationStart).format("DD-MMM-YY") : "NA",
+            revaluedValue: "NA",
+            priorYearsDepreciation: totalDepreciation - currentYearDepreciation,
+            bookValue: bookValue,
+          };
+        }) as AssetDepreciationHistoryTableTypes[];
 
-              const depGroup = depreciationGroups.data?.find((dg: any) => dg.depGroupId === depHistory.depGroupId);
+        setTransformedData(_transformedData);
+        setFilteredData(_transformedData);
 
-              const purchasePrice = asset?.purchasePrice || 0;
-              const totalDepreciation = depHistory.totalDepreciation || 0;
-              const currentYearDepreciation = depHistory?.depreciationThisYear || 0;
-              const bookValue = purchasePrice - totalDepreciation;
+        try {
+          const cats = Array.from(new Set((_transformedData || []).map((x: any) => x.category).filter(Boolean)));
+          setCategoriesList(cats as string[]);
+        } catch (e) {
+          setCategoriesList([]);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading depreciation history:", error);
+        setLoading(false);
+      }
+    };
 
-              return {
-                ...depHistory,
-                code: asset?.code,
-                assetName: asset ? asset.description : "Unknown Asset",
-                category: asset?.catDescription ?? asset?.category?.description ?? "Uncategorized",
-                companyName: myCompany?.companyName,
-                purchasePrice: asset?.purchasePrice,
-                residual: asset?.residual ? asset.residual == 0 ? 1 : asset.residual : 1,
-                depGroupName: `${depGroup?.depName}`,
-                totalDepreciation: depHistory.totalDepreciation,
-                depreciationThisYear: depHistory?.depreciationThisYear,
-                depreciationThisMonth: depHistory?.depreciationThisMonth,
-                depGroupDetails: `${depGroup.type == 0 ? " Straight Line" : depGroup.type == 1 ? "Reducing Balance" : " Usage"} (${depGroup?.depAmount}${depGroup.type == 0 ? " years write off" : depGroup.type == 1 ? "% per year" : " units"})`,
-                
-                purchaseDate: asset?.datePurchased ? moment(asset.datePurchased).format('DD-MMM-YY') : "NA",
-                depreciationStartDate: asset?.dateDepreciationStart ? moment(asset?.dateDepreciationStart).format('DD-MMM-YY') : "NA", 
-                revaluedValue: "NA",
-                priorYearsDepreciation: totalDepreciation - currentYearDepreciation,
-                bookValue: bookValue
-              };
-            }) as AssetDepreciationHistoryTableTypes[];
-
-
-            setTransformedData(_transformedData);
-            filteredData?.data == undefined && setFilteredData(_transformedData)
-            // build category list for filter
-            try {
-              const cats = Array.from(new Set((_transformedData || []).map((x: any) => x.category).filter(Boolean)));
-              setCategoriesList(cats);
-            } catch (e) {
-              setCategoriesList([]);
-            }
-            setLoading(false);
-
-          });
-        });
-
-
-      });
-
-
-
-    });
-
-  }, []);
+    fetchData();
+  }, [apiUrl]);
 
 
 
@@ -599,8 +599,8 @@ export default function ViewDepreciationHistoryView() {
                             <TableCell>{x.categoryName}</TableCell>
                             <TableCell>
                               R{x.totalCategoryDepreciation}.00</TableCell>
-                              <TableCell>{x.debitJournalCode}</TableCell>
-                              <TableCell>{x.creditJournalCode}</TableCell>
+                            <TableCell>{x.debitJournalCode}</TableCell>
+                            <TableCell>{x.creditJournalCode}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -770,6 +770,13 @@ export default function ViewDepreciationHistoryView() {
                           <TableCell className="text-right">{item.bookValue?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                         </TableRow>
                       ))}
+                      <TableRow className="font-bold bg-muted/50">
+                        <TableCell colSpan={6} className="text-right">Total Depreciation for {category}</TableCell>
+                        <TableCell className="text-right">
+                          {groups[category].reduce((sum: number, item: any) => sum + (item.totalDepreciation || 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell colSpan={4}></TableCell>
+                      </TableRow>
                     </TableBody>
                   </Table>
                 </div>

@@ -1,12 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAllCompanyDepreciationGroups } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
+import { SAGE_ONE_DEPRECIATION } from "@/lib/api-endpoints/sage-one-company-depreciation";
 import SageOneAssetSaveForm from "../company-user-admin/add-asset/_components/SageOneAssetSaveForm";
 import { getIronSessionData } from "@/lib/auth/auth";
-import { getGreyCloudCompany } from "@/app/actions/greycloud-admin-actions/greycloud-admin-actions";
 import AddAssetDepreciationGroupToNewAsset from "../company-user-admin/add-asset/_components/AddAssetDepreciationGroupToNewAsset";
 
 export default async function AddAssetView() {
-  const { data: depreciationGroups } = await getAllCompanyDepreciationGroups({});
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const groupsResponse = await fetch(`${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_COMPANY_DEPRECIATION_GROUP_ALL}`, { cache: "no-store" });
+  const depreciationGroupsData = await groupsResponse.json();
+  const depreciationGroups = Array.isArray(depreciationGroupsData) ? depreciationGroupsData : (depreciationGroupsData.data || []);
 
   const session = await getIronSessionData();
 
@@ -14,11 +16,7 @@ export default async function AddAssetView() {
     return null;
   }
 
-  // const { data: myCompany } = await getGreyCloudCompany({
-  //   id: session.companyId as string,
-  // });
-
-  const myCompany = session.companyProfile?.companiesList?.find((company:any) => company.id === session.companyProfile.loggedInCompanyId);
+  const myCompany = session.companyProfile?.companiesList?.find((company: any) => company.id === session.companyProfile.loggedInCompanyId);
 
   return (
     <Card className="flex flex-col w-[600px] mx-auto justify-between mt-8">

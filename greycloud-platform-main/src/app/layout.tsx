@@ -5,6 +5,9 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "./components/theme-provider";
+import Script from "next/script";
+
+import { WEAVER_ENABLED } from "../lib/config";
 
 const fontSans = FontSans({ subsets: ["latin"] });
 
@@ -19,8 +22,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isWeaverDebug = process.env.NEXT_PUBLIC_WEAVER_DEBUG === "true";
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {WEAVER_ENABLED && !isWeaverDebug && (
+          <link rel="stylesheet" href="/weaver/weaver.css" />
+        )}
+      </head>
       <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
         <body
           className={cn(
@@ -30,6 +40,13 @@ export default function RootLayout({
         >
           <main>{children}</main>
           <Toaster />
+          {WEAVER_ENABLED && (
+            <Script
+              src={isWeaverDebug ? "http://localhost:5173/src/main.ts" : "/weaver/weaver.iife.js"}
+              strategy="lazyOnload"
+              type={isWeaverDebug ? "module" : undefined}
+            />
+          )}
         </body>
       </ThemeProvider>
     </html>

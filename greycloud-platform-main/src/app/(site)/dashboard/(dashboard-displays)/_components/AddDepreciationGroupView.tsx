@@ -40,24 +40,24 @@ import { apiFetch } from "../../../../actions/apiHandler";
 
 function AddDepreciationGroup() {
   const router = useRouter();
-  
+
   useEffect(() => {
     getIronSessionData().then((comp: any) => {
-      
+
       const currentCompanyId = comp.companyProfile.loggedInCompanyId;
 
-      const com = comp.companyProfile.companiesList.find((x:any) => x.id == currentCompanyId)?.si;
+      const com = comp.companyProfile.companiesList.find((x: any) => x.id == currentCompanyId)?.si;
       // store the GreyCloud company id
       setCompanyId(currentCompanyId);
 
       let name = comp.companyProfile.companiesList.find(
-        (x:any) => x.id == currentCompanyId
+        (x: any) => x.id == currentCompanyId
       )?.nm;
 
       let sageId = comp.companyProfile.companiesList.find(
-        (x:any) => x.id == currentCompanyId
+        (x: any) => x.id == currentCompanyId
       )?.si;
-debugger;
+      debugger;
       setUserId(comp.email);
 
       // Load saved company settings (will set the Sage journal code states)
@@ -81,6 +81,7 @@ debugger;
   const [accounts, setAccounts] = useState([]);
   const [periodType, setPeriodType] = useState("0");
   const [type, setType] = useState("0");
+  const [depreciationStartDate, setDepreciationStartDate] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -113,15 +114,25 @@ debugger;
       if (response.sageRevaluationJournalCode != null) {
         setSageRevaluationJournalCode(String(response.sageRevaluationJournalCode));
       }
+
+      // Prefill depreciation start date from company settings
+      if (response.depreciationStartDate) {
+        try {
+          const dt = new Date(response.depreciationStartDate);
+          setDepreciationStartDate(dt.toISOString().slice(0, 16));
+        } catch (e) {
+          setDepreciationStartDate("");
+        }
+      }
     } catch (e) {
       console.log('Error loading company settings', e);
     }
   };
 
-    async function fetchAccounts(id:any){
-      toast.info("Fetching depreciation history...");
+  async function fetchAccounts(id: any) {
+    toast.info("Fetching depreciation history...");
 
-      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}GreyCloud/Admin/Get-Accounts/${id}`, 
+    const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}GreyCloud/Admin/Get-Accounts/${id}`,
       //   {
       //   method: "GET",
       //   headers: {
@@ -129,50 +140,50 @@ debugger;
       //   }
       // }
     );
-    
-      if (response) {
-        const res = await response.json();
-        var data = res.results;
-        
-        setAccounts(data);
-        
-       
-      } else {
-        
-      }
-    }
 
-    async function fetchCategories(sageId:any){
-      try {
-        const response = await apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`);
-        const data = await response.json();
-        setCategories(data.results);
-      } catch (e) {
-        console.log(e);
-      }
-    }
+    if (response) {
+      const res = await response.json();
+      var data = res.results;
 
-    function handleCategoryAdded() {
-      // Refresh categories after new one is added
-      getIronSessionData().then((comp: any) => {
-        const currentCompanyId = comp.companyProfile.loggedInCompanyId;
-        let sageId = comp.companyProfile.companiesList.find(
-          (x:any) => x.id == currentCompanyId
-        )?.si;
-        
-        fetchCategories(sageId).then(() => {
-          setIsDialogOpen(false);
-          toast.success("Category list refreshed!");
-        });
+      setAccounts(data);
+
+
+    } else {
+
+    }
+  }
+
+  async function fetchCategories(sageId: any) {
+    try {
+      const response = await apiFetch(`${apiUrl}SageOneAsset/AssetCategory/Get?Companyid=${sageId}`);
+      const data = await response.json();
+      setCategories(data.results);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  function handleCategoryAdded() {
+    // Refresh categories after new one is added
+    getIronSessionData().then((comp: any) => {
+      const currentCompanyId = comp.companyProfile.loggedInCompanyId;
+      let sageId = comp.companyProfile.companiesList.find(
+        (x: any) => x.id == currentCompanyId
+      )?.si;
+
+      fetchCategories(sageId).then(() => {
+        setIsDialogOpen(false);
+        toast.success("Category list refreshed!");
       });
-    }
-    
+    });
+  }
+
   async function save() {
-    
+
     let obj = {
-      companyId:`${companyId}`,  
+      companyId: `${companyId}`,
       categoryId: parseInt(category),
-      depAmount:writeOffPeriod,// write off period
+      depAmount: writeOffPeriod,// write off period
       depName,
       period: parseInt(periodType), // km/hours/years
       type: parseInt(type), //depreciation type
@@ -182,10 +193,13 @@ debugger;
       sageAccumilatedDepreciationJournalCode,
       sageDepreciationJournalCode,
       sageDisposalJournalCode,
-      sageRevaluationJournalCode     
+      sageRevaluationJournalCode,
+      depreciationStartDate: depreciationStartDate
+        ? new Date(depreciationStartDate).toISOString()
+        : null,
     };
 
-    
+
 
     try {
       const response = await fetch(`${apiUrl}Depreciation/Add-Company-Depreciation-Group`, {
@@ -195,7 +209,7 @@ debugger;
         },
         body: JSON.stringify(obj),
       });
-      
+
       if (response.ok) {
         toast.success("Depreciation saved!");
         // Navigate to manage depreciation groups page after successful save
@@ -210,25 +224,25 @@ debugger;
 
 
 
-  
-   const customStyle = {
-    option: (base:any) => ({
+
+  const customStyle = {
+    option: (base: any) => ({
       ...base,
       backgroundColor: "white",
-      font:"black !important",
-      zIndex:999999999999999
+      font: "black !important",
+      zIndex: 999999999999999
     }),
-     menuPortal: (base:any) => ({ ...base, zIndex: 999999999999999999 }) 
+    menuPortal: (base: any) => ({ ...base, zIndex: 999999999999999999 })
   }
 
   interface IOption {
-    label:string, 
+    label: string,
     value: string;
   }
- 
 
-   const p = accounts.map((x:any)=>{return {value:x.id.toString() as string, label:x.name as string} as IOption});
-  const dep = categories.map(x=>{return {value:x.id as string, label:x.description as string} as IOption});
+
+  const p = accounts.map((x: any) => { return { value: x.id.toString() as string, label: x.name as string } as IOption });
+  const dep = categories.map(x => { return { value: x.id as string, label: x.description as string } as IOption });
 
 
   return (
@@ -242,90 +256,97 @@ debugger;
       <CardContent>
         <form>
           <div className="grid grid-cols-2 gap-4">
-        
+
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Group Name</Label>
               <Input
                 id="name"
                 placeholder="Name"
                 value={depName}
-                onChange={(e:any) => setDepName(e.target.value)}
+                onChange={(e: any) => setDepName(e.target.value)}
               />
             </div>
 
             <div className="flex flex-col space-y-1.5">
-            <Label >Category
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild className="grow">
-         
-            <small style={{marginLeft:"5%", color:"blue"}}>Add new asset category</small>
-        
-        </DialogTrigger>
-        <DialogContent className="md:max-w-[600px]">
-        
-        <SageOneAssetCategorySaveForm callBack={handleCategoryAdded} />
+              <Label >Category
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild className="grow">
 
-        </DialogContent>
-            </Dialog>
-            </Label>
-            
-            <Select
-                  styles={customStyle}
-                  // defaultValue={categories.find(x=>x.id == category)?.description as string}
-                  //  value={category }
-                  defaultValue = {
-                    category
-                 }
-                  onChange={(e:any)=>{
-                    const cat =  dep.filter(option => 
-                      option.value == e.value )
-                      
-                    setCategory(cat[0]?.value?.toString());
-                  }}
-                  options={dep}
-                />
+                    <small style={{ marginLeft: "5%", color: "blue" }}>Add new asset category</small>
+
+                  </DialogTrigger>
+                  <DialogContent className="md:max-w-[600px]">
+
+                    <SageOneAssetCategorySaveForm callBack={handleCategoryAdded} />
+
+                  </DialogContent>
+                </Dialog>
+              </Label>
+
+              <Select
+                styles={customStyle}
+                // defaultValue={categories.find(x=>x.id == category)?.description as string}
+                //  value={category }
+                defaultValue={
+                  category
+                }
+                onChange={(e: any) => {
+                  const cat = dep.filter(option =>
+                    option.value == e.value)
+
+                  setCategory(cat[0]?.value?.toString());
+                }}
+                options={dep}
+              />
             </div>
-          
+
             <div className="flex flex-col space-y-1.5">
-            <Label> Depreciation Type</Label>
-          
-               <Select
-                  styles={customStyle}
-                  defaultValue={type=="0"?"Straight Line":type=="1"?"Reducing Amount":"Usage" }
-                  onChange={(e:any)=>{
-                    setType(e.value)
-                  }}
-                  options={[{value:"0", label:"Straight Line"}, {value:"1", label:"Reducing Amount"}, {value:"2", label:"Usage"}] as IOption[]}
-                />
+              <Label> Depreciation Type</Label>
+
+              <Select
+                styles={customStyle}
+                defaultValue={type == "0" ? "Straight Line" : type == "1" ? "Reducing Amount" : "Usage"}
+                onChange={(e: any) => {
+                  setType(e.value)
+                }}
+                options={[{ value: "0", label: "Straight Line" }, { value: "1", label: "Reducing Amount" }, { value: "2", label: "Usage" }] as IOption[]}
+              />
             </div>
-            
+
             <div className="flex flex-col space-y-1.5">
-              <br/>
-              </div>
+              <Label htmlFor="depreciationStartDate">Depreciation Start Date</Label>
+              <Input
+                id="depreciationStartDate"
+                type="datetime-local"
+                value={depreciationStartDate}
+                onChange={(e: any) => setDepreciationStartDate(e.target.value)}
+              />
+            </div>
+
             <div className="flex flex-col space-y-1.5">
-            { type=="0" &&<Label>Write off period</Label>}
-            { type=="1" &&<Label>Amount (%)</Label>}
-            { type=="2" &&<Label>Total Units </Label>}
+              {type == "0" && <Label>Write off period</Label>}
+              {type == "1" && <Label>Amount (%)</Label>}
+              {type == "2" && <Label>Total Units </Label>}
               <Input
                 placeholder={"0"}
                 type="number"
                 min={1}
                 value={writeOffPeriod}
-                onChange={(e:any) => setWriteOffPeriod(parseFloat(e.target.value))}
+                onChange={(e: any) => setWriteOffPeriod(parseFloat(e.target.value))}
               />
             </div>
-            <div className="flex flex-col space-y-1.5" style={{width:"30%"}}>
-            <Label> <br/></Label>
-                
-                  <Label style={{marginTop:"20px"}}>
-                   
-                    { type=="0" &&  "Years" }  
-                      { type=="1" && "Per Year" }
-                      { type=="2" && "Units"}
-                    </Label>
-                </div>
+            <div className="flex flex-col space-y-1.5" style={{ width: "30%" }}>
+              <Label> <br /></Label>
 
-        
+              <Label style={{ marginTop: "20px" }}>
+
+                {type == "0" && "Years"}
+                {type == "1" && "Per Year"}
+                {type == "2" && "Units"}
+              </Label>
+            </div>
+
+
             {type === "2" ? (
               <>
                 {/* <div className="flex flex-col space-y-1.5">
@@ -362,55 +383,55 @@ debugger;
             ) : (
               <></>
             )}
-        </div>
-        {/* <CardHeader> */}
-        
-          <CardDescription className="mt-10 mb-5">
-           Depreciation journal settings (Sage)
-          </CardDescription>
-        {/* </CardHeader> */}
+          </div>
+          {/* <CardHeader> */}
 
-        <div className="grid grid-cols-2 gap-4">
-        
-        <div className="flex flex-col space-y-1.5">
+          <CardDescription className="mt-10 mb-5">
+            Depreciation journal settings (Sage)
+          </CardDescription>
+          {/* </CardHeader> */}
+
+          <div className="grid grid-cols-2 gap-4">
+
+            <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">
                 Sage Accumilated Depreciation Journal Code
               </Label>
-             
-                   <Select
-                     styles={customStyle}
-                     value={p.find(option => option.value == sageAccumilatedDepreciationJournalCode) || null}
-                     onChange={(e:any)=>{setSageAccumilatedDepreciationJournalCode(e.value)}}
-                     options={p}
-                 />
+
+              <Select
+                styles={customStyle}
+                value={p.find(option => option.value == sageAccumilatedDepreciationJournalCode) || null}
+                onChange={(e: any) => { setSageAccumilatedDepreciationJournalCode(e.value) }}
+                options={p}
+              />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Sage Depreciation Journal Code</Label>
-           
-                <Select
-                  styles={customStyle}
-                  value={p.find(option => option.value == sageDepreciationJournalCode) || null}
-                  onChange={(e:any)=>{setSageDepreciationJournalCode(e.value)}}
-                  options={p}
-                />
+
+              <Select
+                styles={customStyle}
+                value={p.find(option => option.value == sageDepreciationJournalCode) || null}
+                onChange={(e: any) => { setSageDepreciationJournalCode(e.value) }}
+                options={p}
+              />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Sage Disposal Journal Code</Label>
-             
-                       <Select
-                  styles={customStyle}
-                  value={p.find(option => option.value == sageDisposalJournalCode) || null}
-                  onChange={(e:any)=>{setSageDisposalJournalCode(e.value)}}
-                  options={p}
-                />
+
+              <Select
+                styles={customStyle}
+                value={p.find(option => option.value == sageDisposalJournalCode) || null}
+                onChange={(e: any) => { setSageDisposalJournalCode(e.value) }}
+                options={p}
+              />
             </div>
 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Sage Revaluation Journal Code</Label>
-             
-               {/* <Select value={sageRevaluationJournalCode}  onValueChange={(e) =>  { setSageRevaluationJournalCode(e)}}>
+
+              {/* <Select value={sageRevaluationJournalCode}  onValueChange={(e) =>  { setSageRevaluationJournalCode(e)}}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
@@ -428,21 +449,21 @@ debugger;
                       </SelectGroup>
                     </SelectContent>
                   </Select> */}
-                          <Select
-                  styles={customStyle}
-                  value={p.find(option => option.value == sageRevaluationJournalCode) || null}
-                  onChange={(e:any)=>{setSageRevaluationJournalCode(e.value)}}
-                  options={p}
-                />
+              <Select
+                styles={customStyle}
+                value={p.find(option => option.value == sageRevaluationJournalCode) || null}
+                onChange={(e: any) => { setSageRevaluationJournalCode(e.value) }}
+                options={p}
+              />
             </div>
-      </div>
+          </div>
 
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button onClick={() => save()}>Save</Button>
       </CardFooter>
-      <br/><br/><br/><br/><br/><br/>
+      <br /><br /><br /><br /><br /><br />
     </Card>
   );
 }

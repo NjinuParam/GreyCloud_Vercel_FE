@@ -27,7 +27,7 @@ import { apiFetch } from "../../../../../actions/apiHandler";
 
 export const CompanySelectionCard = ({ company }: { company: CompanyResponseTypeForUser }) => {
   const router = useRouter();
-  const [accounts, setAccounts] = useState([]);  
+  const [accounts, setAccounts] = useState([]);
   const [username, setUsername] = useState("");
   const [companyId, setCompanyId] = useState(14999);
   const [password, setPassword] = useState("");
@@ -39,13 +39,13 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
     });
   };
 
-  async function addCompany(){
+  async function addCompany() {
     const payload = {
-      Email:username,
-      password:password,
+      Email: username,
+      password: password,
       SageCompanyId: companyId
     };
-    
+
     const response = await fetch(`${apiUrl}SageOneCompany/Company/OnBoardNewCompany`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.     
       headers: {
@@ -59,17 +59,17 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
     const res = await response.json();
     ;
 
-    if(res?.error){
+    if (res?.error) {
       toast.error(`Error adding company`, {
         description: "Please check your sage credentials and try again",
       });
-      
-    
-    }else{
+
+
+    } else {
       toast.success(`Company has been created!`, {
         description: "The order was created successfully.",
       });
-     
+
       router.push("/company-picker");
     }
 
@@ -77,36 +77,63 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
   }
 
 
-  async function onboard(companyId:string){
+  async function onboard(companyId: string) {
     toast.info("Fetching depreciation history...");
-    
+
     const response = await apiFetch(`${apiUrl}GreyCloud/Admin/Get-Accounts/${companyId}`,
-    //    {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   }
-    // }
-  );
-  
+      //    {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   }
+      // }
+    );
+
     if (response) {
       const res = await response.json();
       var data = res.results;
-      
+
       setAccounts(data);
-      
-     
+
+
     } else {
-      
+
     }
   }
 
   const { execute, status } = useAction(assignCompanyProfileToCompanyUser, {
-    onSuccess(data:any) {
-      router.push("/dashboard");
-      toast.success(`You're now signed into company: ${data?.nm ?? "Unknown"}.`, {
-        description: "You can now access company's dashboard.",
-      });
+    async onSuccess(data: any) {
+      try {
+        // Fetch company settings to see if it's configured
+        const response = await apiFetch(`${apiUrl}GreyCloud/Admin/Get-Company/${company.id}`);
+        const settings = await response.json();
+
+        // Check if essential settings are present (journal codes and start date)
+        const hasSettings = !!(
+          settings &&
+          settings.sageAccumilatedDepreciationJournalCode &&
+          settings.sageDepreciationJournalCode &&
+          settings.sageDisposalJournalCode &&
+          settings.sageRevaluationJournalCode &&
+          settings.depreciationStartDate
+        );
+
+        if (!hasSettings) {
+          toast.info(`Please complete settings for ${data?.nm ?? "the company"}.`, {
+            description: "Redirecting to company settings.",
+          });
+          router.push("/dashboard/company/settings");
+        } else {
+          toast.success(`Signed into ${data?.nm ?? "company"}.`, {
+            description: "Accessing dashboard...",
+          });
+          router.push("/dashboard");
+        }
+      } catch (error) {
+        console.error("Error checking company settings:", error);
+        // Fallback to dashboard if check fails or API error
+        router.push("/dashboard");
+      }
     },
 
     onError(error) {
@@ -131,13 +158,13 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
       >
         <CardHeader className="flex flex-col gap-2 pb-0">
           <CardTitle>{company.nm}
-<br/><br/>
+            <br /><br />
             {!company?.id ?
               <Dialog>
                 <DialogTrigger asChild className="grow">
 
                   <Button
-                    onClick={()=>{setCompanyId(company?.si??0)}}
+                    onClick={() => { setCompanyId(company?.si ?? 0) }}
                     size={"sm"}
                     type="submit"
                     className={cn("w-full", status === "executing" ? "animate-pulse" : null)}
@@ -153,46 +180,46 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
                     Please note, adding a new company will add to your monthly bill.
 
                     {/* <form> */}
-                      <div className="grid grid-cols-2 ">
+                    <div className="grid grid-cols-2 ">
 
-                        <div className="flex flex-col space-y-1.5 p-4">
-                          <>
-                            <Label style={{ float: 'left' }} htmlFor="name">Sage username</Label>
-                            <Input
-                              id="name"
-                              style={{ float: 'left' }}
-                              placeholder="Name"
+                      <div className="flex flex-col space-y-1.5 p-4">
+                        <>
+                          <Label style={{ float: 'left' }} htmlFor="name">Sage username</Label>
+                          <Input
+                            id="name"
+                            style={{ float: 'left' }}
+                            placeholder="Name"
                             // value={depName}
-                             onChange={(e:any) => setUsername(e.target.value)}
-                            />
-                          </>
+                            onChange={(e: any) => setUsername(e.target.value)}
+                          />
+                        </>
 
-                        </div>
-                        <div className="flex flex-col space-y-1.5 p-4">
-
-                          <>
-                            <Label style={{ float: 'left' }} htmlFor="password">Sage password</Label>
-                            <Input
-                              style={{ float: 'left' }}
-                              id="password"
-                              type="password"
-                              placeholder="Password"
-                            // value={depName}
-                             onChange={(e:any) => setPassword(e.target.value)}
-                            />
-                          </>
-                        </div>
                       </div>
-                      
-                  <Button
-                  onClick={()=>{addCompany()}}
-                  size={"sm"}
-                  // type="submit"
-                  className={cn("w-full  mt-5 pl-4 pr-4", status === "executing" ? "animate-pulse" : null)}
-                  disabled={status === "executing"}
-                  >
-                  Add company
-                  </Button>
+                      <div className="flex flex-col space-y-1.5 p-4">
+
+                        <>
+                          <Label style={{ float: 'left' }} htmlFor="password">Sage password</Label>
+                          <Input
+                            style={{ float: 'left' }}
+                            id="password"
+                            type="password"
+                            placeholder="Password"
+                            // value={depName}
+                            onChange={(e: any) => setPassword(e.target.value)}
+                          />
+                        </>
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={() => { addCompany() }}
+                      size={"sm"}
+                      // type="submit"
+                      className={cn("w-full  mt-5 pl-4 pr-4", status === "executing" ? "animate-pulse" : null)}
+                      disabled={status === "executing"}
+                    >
+                      Add company
+                    </Button>
                     {/* </form> */}
 
                   </>
@@ -214,7 +241,7 @@ export const CompanySelectionCard = ({ company }: { company: CompanyResponseType
 
 
         <div style={{ opacity: cId ? "1" : "0.3", cursor: cId ? "pointer" : "not-allowed" }}>
-          <CardContent onClick={cId ? handleCompanySelection : ()=>{}} className="flex flex-col gap-6 py-2">
+          <CardContent onClick={cId ? handleCompanySelection : () => { }} className="flex flex-col gap-6 py-2">
             <span className="flex flex-col gap-1 text-muted-foreground">
               <Label htmlFor="email" className="text-xs text-foreground uppercase tracking-wider">
                 Email

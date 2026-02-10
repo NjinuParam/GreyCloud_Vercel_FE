@@ -1,6 +1,6 @@
 import React from "react";
 
-import { getAllCompanyDepreciationGroups } from "@/app/actions/sage-one-company-depreciation-actions/sage-one-company-depreciation-actions";
+import { SAGE_ONE_DEPRECIATION } from "@/lib/api-endpoints/sage-one-company-depreciation";
 import { DepreciationGroupCard } from "./DepreciationGroupCard";
 import { DataTable } from "../../../../../../components/ui/data-table";
 import { depreciationGroupColumns } from "../assets/assets-columns";
@@ -18,13 +18,10 @@ export const DepreciationGroupList = async () => {
   const companyId = payload.companyProfile?.companiesList?.filter((x: any) => { return x.id == user })[0];
   //  const [compId, setCompanyId] = useState<any[]>([]);
   ;
-
-
-
-  const { data: depreciationGroup } = await getAllCompanyDepreciationGroups({});
-
-  const filtered = depreciationGroup?.filter((x: any) => { return x.companyId == companyId?.si });
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const response = await fetch(`${apiUrl}${SAGE_ONE_DEPRECIATION.GET.GET_COMPANY_DEPRECIATION_GROUP_ALL}`, { cache: "no-store" });
+  const depreciationGroup: any[] = await response.json();
+  const filtered = depreciationGroup?.filter((x: any) => { return x.companyId == companyId?.id });
 
 
   return (
