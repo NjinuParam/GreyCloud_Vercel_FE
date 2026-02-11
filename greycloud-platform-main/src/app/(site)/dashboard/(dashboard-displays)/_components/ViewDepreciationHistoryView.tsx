@@ -421,12 +421,118 @@ export default function ViewDepreciationHistoryView() {
               {categoriesList.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-          <div>
-            <small>By date</small><br />
-            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(1) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 1} /> <label style={{ fontSize: "12px" }}>This month</label> </label><br />
-            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(2) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 2} /> <label style={{ fontSize: "12px" }}>Last 4 months</label> </label><br />
-            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(3) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 3} /> <label style={{ fontSize: "12px" }}>Last 6 months</label> </label><br />
-            <label className="text-muted-foreground"> <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(4) } else { filter(0) } }} id="pushtosage" style={{ fontSize: "10px" }} checked={selectedDateFilter == 4} /> <label style={{ fontSize: "12px" }}>Year to date</label> </label>
+          <div className="flex items-center" style={{ marginTop: "15px" }}>
+            <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
+              <CheckCircle size={16} style={{ paddingRight: "1%" }} /> <small> Last run: --</small>
+            </Badge>
+
+            <Dialog>
+              <DialogTrigger asChild className="grow">
+                <Badge style={{ padding: "2%", cursor: "pointer" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
+                  <MailWarning style={{ paddingRight: "1%" }} size={16} />
+                  {canDepr.length}
+                </Badge>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[400px]">
+                <DialogHeader>
+                  <DialogTitle>Assets pending usage update</DialogTitle>
+                </DialogHeader>
+                <DialogDescription className="text-base">
+                  {canDepr.map((x: any) => (
+                    <React.Fragment key={x.id}>
+                      <Label>Asset: {x.name}</Label> <br />
+                    </React.Fragment>
+                  ))}
+                </DialogDescription>
+                <DialogFooter>
+                  <DialogClose asChild></DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog>
+              <DialogTrigger ref={closeButtonRef} asChild>
+                <Badge style={{ padding: "2%", cursor: "pointer" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
+                  <PowerCircle size={16} style={{ paddingRight: "1%" }} /><small> Trigger run</small>
+                </Badge>
+              </DialogTrigger>
+              <DialogContent className="">
+                <DialogHeader>
+                  <DialogTitle>Run Depreciation</DialogTitle>
+                  <DialogDescription>Please update the usage on the following assets to proceed</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  {canDepr.map((x: any) => (
+                    <div key={x.id}>
+                      <label style={{ fontSize: "12px", float: "left", width: "60%" }}>Asset: {x.name}</label>
+                      <input
+                        onChange={(e: any) => {
+                          var up = {
+                            assetId: x.id,
+                            usage: e.target.value,
+                            sageCompanyId: myCompany?.si,
+                            categoryId: x.categoryId
+                          };
+                          var newUp = updatedUsageAssets.filter((a: any) => a.assetId !== x.id);
+                          setUpdatedUsageAssets([...newUp, up]);
+                        }}
+                        style={{ fontSize: "10px", float: "left", width: "40%" }}
+                        type="text" placeholder="0"
+                        className="w-1/2 p-1 border border-gray-300 rounded-md" />
+                    </div>
+                  ))}
+                </div>
+                <label className="text-muted-foreground flex items-center gap-1">
+                  <Checkbox id="pushtosage" style={{ fontSize: "10px" }} checked={false} />
+                  <label style={{ fontSize: "12px" }}>Push journals to SAGE?</label>
+                </label>
+                <DialogFooter>
+                  <Button type="submit" onClick={() => POST_depreciationRun(updatedUsageAssets)}>Run</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Badge style={{ padding: "2%", cursor: "pointer" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
+                  <UploadCloud size={16} style={{ paddingRight: "1%" }} /><small> Post journals</small>
+                </Badge>
+              </DialogTrigger>
+              <DialogContent className="md:max-w-[1000px] mt-10">
+                <DialogHeader>
+                  <DialogTitle>Post journals</DialogTitle>
+                  <DialogDescription>Proceeding will post the following entries to SAGE</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Depreciation Date</TableHead>
+                        <TableHead>Category Name</TableHead>
+                        <TableHead>Depreciation amount</TableHead>
+                        <TableHead>Debit Account</TableHead>
+                        <TableHead>Credit Account</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {auditData.filter(x => x.posted == false)?.map((x: any) => (
+                        <TableRow key={x.id || Math.random()}>
+                          <TableCell>{moment(x.createdDate).format('DD/MM/YYYY')}</TableCell>
+                          <TableCell>{x.categoryName}</TableCell>
+                          <TableCell>R{x.totalCategoryDepreciation}.00</TableCell>
+                          <TableCell>{x.debitJournalCode}</TableCell>
+                          <TableCell>{x.creditJournalCode}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <DialogFooter>
+                  <DialogClose ref={postJournalsCloseRef} className="hidden" />
+                  <Button className="w-full" type="submit" onClick={() => postJournals(myCompany.si)}>Upload journals</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
 
         </div>
@@ -453,186 +559,26 @@ export default function ViewDepreciationHistoryView() {
 
 
 
-          <div className="" style={{ marginTop: "3%" }}>
-
-            <a >
-              <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
-                <CheckCircle size={16} style={{ paddingRight: "1%" }} /> <small> Last run: --</small>
-              </Badge>
-
-
-
-            </a>
-            <a style={{ cursor: canDepr.length == 0 ? "pointer" : "none" }}>
-
-              <Dialog>
-                <DialogTrigger asChild className="grow">
-
-                  <Badge style={{ padding: "2%" }} variant="outline" className={`bg-orange-100 text-orange-700 mr-2`}>
-                    <MailWarning style={{ paddingRight: "1%" }} size={16} />
-
-
-
-                    {canDepr.length}
-                    {/* assets need to be updated           */}
-                  </Badge>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[400px]">
-                  <DialogHeader>
-                    <DialogTitle>
-                      Assets pending usage update
-                    </DialogTitle>
-                  </DialogHeader>
-                  <DialogDescription className="text-base">
-
-                    {canDepr.map((x: any) => {
-                      return <> <Label>Asset: {x.name}</Label> <br /></>
-                    })}
-
-
-                  </DialogDescription>
-
-                  <DialogFooter>
-                    <DialogClose asChild>
-
-                    </DialogClose>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-
-
-              <Dialog>
-                <DialogTrigger ref={closeButtonRef} asChild>
-
-                  <Badge style={{ padding: "2%" }} variant="outline" className={`bg-red-100 text-red-700 mr-2`}>
-
-
-                    <PowerCircle size={16} style={{ paddingRight: "1%" }} /><small>  Trigger run</small>
-                  </Badge>
-
-                </DialogTrigger>
-                <DialogContent className="">
-                  <DialogHeader>
-                    <DialogTitle>Run Depreciation</DialogTitle>
-                    <DialogDescription>
-                      Please update the usage on the following assets to proceed
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    {canDepr.map((x: any) => {
-
-                      return <>
-                        <div>
-
-
-                          <label style={{ fontSize: "12px", float: "left", width: "60%" }}>Asset: {x.name}</label>
-                          <input
-                            onChange={(e: any) => {
-                              ;
-                              var up = {
-                                assetId: x.id,
-                                usage: e.target.value,
-                                sageCompanyId: myCompany?.si,
-                                categoryId: x.categoryId
-                              };
-
-                              var newUp = updatedUsageAssets.filter((a: any) => { return a.assetId !== x.id });
-
-                              setUpdatedUsageAssets([...newUp, up]);
-                              ;
-                            }}
-                            style={{ fontSize: "10px", float: "left", width: "40%" }}
-                            type="text" placeholder="0"
-                            className="w-1/2 p-1 border border-gray-300 rounded-md" />
-                        </div>
-                      </>
-                    })}
-                  </div>
-                  <label className="text-muted-foreground"> <Checkbox id="pushtosage" style={{ fontSize: "10px" }} checked={false} /> <label style={{ fontSize: "12px" }}>Push journals to SAGE?</label> </label>
-
-                  <DialogFooter>
-                    <Button
-                      type="submit"
-                      onClick={
-                        () => { POST_depreciationRun(updatedUsageAssets) }
-                      }
-                    >
-                      Run
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-
-
-              <Dialog>
-                <DialogTrigger asChild>
-
-                  <Badge style={{ padding: "2%" }} variant="outline" className={`bg-green-100 text-green-700 mr-2`}>
-                    <UploadCloud size={16} style={{ paddingRight: "1%" }} /><small>  Post journals</small>
-                  </Badge>
-
-                </DialogTrigger>
-                <DialogContent className="md:max-w-[1000px] mt-10">
-                  <DialogHeader>
-                    <DialogTitle>Post journals</DialogTitle>
-                    <DialogDescription>
-                      Proceeding will post the following entries to SAGE
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead >Depreciation Date</TableHead>
-                          <TableHead>Category Name</TableHead>
-                          <TableHead>Depreciation amount</TableHead>
-                          <TableHead>Debit Account</TableHead>
-                          <TableHead>Credit Account</TableHead>
-                        </TableRow>
-
-                      </TableHeader>
-                      <TableBody>
-                        {auditData.filter(x => x.posted == false)?.map((x: any) => (
-                          <TableRow>
-                            <TableCell>{moment(x.createdDate).format('DD/MM/YYYY')}</TableCell>
-                            <TableCell>{x.categoryName}</TableCell>
-                            <TableCell>
-                              R{x.totalCategoryDepreciation}.00</TableCell>
-                            <TableCell>{x.debitJournalCode}</TableCell>
-                            <TableCell>{x.creditJournalCode}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-
-
-
-                  </div>
-                  {/* <label className="text-muted-foreground"> <Checkbox id="pushtosage" checked={false} /> Push journals to SAGE? </label> */}
-
-                  <DialogFooter>
-                    <DialogClose ref={postJournalsCloseRef} className="hidden" />
-                    <Button
-                      className="w-full"
-                      type="submit"
-                      onClick={() => { postJournals(myCompany.si) }}
-                    >
-                      Upload journals
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-
-
-
-
-
-
-
-
-            </a>
-
+          <div>
+            <small>By date</small>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+              <label className="text-muted-foreground flex items-center gap-1 cursor-pointer">
+                <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(1) } else { filter(0) } }} id="date-filter-1" className="size-4" checked={selectedDateFilter == 1} />
+                <span style={{ fontSize: "12px" }}>This month</span>
+              </label>
+              <label className="text-muted-foreground flex items-center gap-1 cursor-pointer">
+                <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(2) } else { filter(0) } }} id="date-filter-2" className="size-4" checked={selectedDateFilter == 2} />
+                <span style={{ fontSize: "12px" }}>Last 4 months</span>
+              </label>
+              <label className="text-muted-foreground flex items-center gap-1 cursor-pointer">
+                <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(3) } else { filter(0) } }} id="date-filter-3" className="size-4" checked={selectedDateFilter == 3} />
+                <span style={{ fontSize: "12px" }}>Last 6 months</span>
+              </label>
+              <label className="text-muted-foreground flex items-center gap-1 cursor-pointer">
+                <Checkbox onCheckedChange={(e: any) => { if (e == true) { filter(4) } else { filter(0) } }} id="date-filter-4" className="size-4" checked={selectedDateFilter == 4} />
+                <span style={{ fontSize: "12px" }}>Year to date</span>
+              </label>
+            </div>
           </div>
           <div style={{ marginTop: "3%" }}>
 
@@ -723,6 +669,75 @@ export default function ViewDepreciationHistoryView() {
                 <Skeleton className="h-8 w-full rounded-md" />
               </div>
             ))}
+          </div>
+        ) : !transformedData || transformedData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-20 bg-slate-50 dark:bg-slate-900/20 rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-800">
+            <div className="bg-amber-100 p-3 rounded-full mb-4">
+              <FileWarning size={32} className="text-amber-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-200 mb-2">Depreciation history not found</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-6 text-center max-w-md">
+              It looks like no depreciation runs have been performed for this company yet.
+              Perform a run now to generate history.
+            </p>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-2 rounded-md flex items-center gap-2">
+                  <PowerCircle size={18} />
+                  Run Now
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="">
+                <DialogHeader>
+                  <DialogTitle>Run Depreciation</DialogTitle>
+                  <DialogDescription>
+                    Please update the usage on the following assets to proceed
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  {canDepr.map((x: any) => {
+
+                    return <>
+                      <div key={x.id}>
+
+
+                        <label style={{ fontSize: "12px", float: "left", width: "60%" }}>Asset: {x.name}</label>
+                        <input
+                          onChange={(e: any) => {
+                            ;
+                            var up = {
+                              assetId: x.id,
+                              usage: e.target.value,
+                              sageCompanyId: myCompany?.si,
+                              categoryId: x.categoryId
+                            };
+
+                            var newUp = updatedUsageAssets.filter((a: any) => { return a.assetId !== x.id });
+
+                            setUpdatedUsageAssets([...newUp, up]);
+                            ;
+                          }}
+                          style={{ fontSize: "10px", float: "left", width: "40%" }}
+                          type="text" placeholder="0"
+                          className="w-1/2 p-1 border border-gray-300 rounded-md" />
+                      </div>
+                    </>
+                  })}
+                </div>
+                <label className="text-muted-foreground"> <Checkbox id="pushtosage-empty" style={{ fontSize: "10px" }} checked={false} /> <label style={{ fontSize: "12px" }}>Push journals to SAGE?</label> </label>
+
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    onClick={
+                      () => { POST_depreciationRun(updatedUsageAssets) }
+                    }
+                  >
+                    Run
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         ) : isGroupedView ? (
           <div className="overflow-x-auto space-y-8">

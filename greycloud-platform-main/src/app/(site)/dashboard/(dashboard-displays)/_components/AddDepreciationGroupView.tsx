@@ -213,6 +213,7 @@ function AddDepreciationGroup() {
       if (response.ok) {
         toast.success("Depreciation saved!");
         // Navigate to manage depreciation groups page after successful save
+        router.refresh();
         router.push("/dashboard/company-user-admin/manage-depreciation-groups");
       } else {
         toast.error("Failed to save depreciation group");

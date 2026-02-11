@@ -10,6 +10,7 @@ import { BookOpen } from "lucide-react";
 import ArchiveDepreciationButton from "./ArchiveDepreciationButton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../../../../../components/ui/dialog";
 import { getIronSessionData } from "../../../../../../lib/auth/auth";
+import Link from "next/link";
 
 export const DepreciationGroupList = async () => {
 
@@ -23,6 +24,18 @@ export const DepreciationGroupList = async () => {
   const depreciationGroup: any[] = await response.json();
   const filtered = depreciationGroup?.filter((x: any) => { return x.companyId == companyId?.id });
 
+  if (!filtered || filtered.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center p-10 bg-white dark:bg-slate-800 rounded-lg shadow-md border border-slate-200 dark:border-slate-700">
+        <p className="text-lg font-semibold text-slate-600 dark:text-slate-300 mb-4">No depreciation groups found</p>
+        <Link href="/dashboard/company-user-admin/add-depreciation-group">
+          <Button className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-md transition-all">
+            Create
+          </Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <>
