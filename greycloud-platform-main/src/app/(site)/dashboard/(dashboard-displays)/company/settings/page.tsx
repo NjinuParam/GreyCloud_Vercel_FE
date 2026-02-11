@@ -1,7 +1,7 @@
-"use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Skeleton } from "../../../../../../components/ui/skeleton";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../../../../../../components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,15 +9,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "../../../../../../components/ui/card";
+import { Input } from "../../../../../../components/ui/input";
+import { Label } from "../../../../../../components/ui/label";
 import ReactSelect from "react-select";
-import { getIronSessionData } from "@/lib/auth/auth";
+import { getIronSessionData } from "../../../../../../lib/auth/auth";
 import { toast } from "sonner";
 
 function Settings() {
-  React.useEffect(() => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
     getIronSessionData().then((comp: any) => {
       const currentCompanyId = comp.companyId;
       console.log(comp);
@@ -39,7 +42,9 @@ function Settings() {
 
       // Fetch Sage accounts for the company so dropdown options are available
       if (sageId) {
-        fetchAccounts(sageId);
+        fetchAccounts(sageId).finally(() => setLoading(false));
+      } else {
+        setLoading(false);
       }
     });
   }, []);
@@ -135,7 +140,7 @@ function Settings() {
     debugger;
     const payload = JSON.stringify(settings);
 
-  
+
     // log payload to help debug missing/duplicated fields
     console.log("UpdateCompanySettings payload:", settings);
     try {
@@ -144,7 +149,7 @@ function Settings() {
         headers: {
           "Content-Type": "application/json",
         },
-        body:payload,
+        body: payload,
       });
       toast.success("Settings saved!");
     } catch (e: any) {
@@ -159,61 +164,74 @@ function Settings() {
         <CardDescription>These are settings for {companyName}</CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
-          <div className="grid w-full items-center gap-4 grid-cols-1 md:grid-cols-2">
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="accumulated">
-                Sage Accumilated Depreciation Journal Code
-              </Label>
-              <ReactSelect
-                styles={customStyle}
-                value={p.find((o: any) => o.value === sageAccumilatedDepreciationJournalCode) || null}
-                onChange={(e: any) => setSageAccumilatedDepreciationJournalCode(e?.value || "")}
-                options={p}
-              />
-            </div>
-
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="depreciation">Sage Depreciation Journal Code</Label>
-              <ReactSelect
-                styles={customStyle}
-                value={p.find((o: any) => o.value === sageDepreciationJournalCode) || null}
-                onChange={(e: any) => setSageDepreciationJournalCode(e?.value || "")}
-                options={p}
-              />
-            </div>
-
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="disposal">Sage Disposal Journal Code</Label>
-              <ReactSelect
-                styles={customStyle}
-                value={p.find((o: any) => o.value === sageDisposalJournalCode) || null}
-                onChange={(e: any) => setSageDisposalJournalCode(e?.value || "")}
-                options={p}
-              />
-            </div>
-
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="revaluation">Sage Revaluation Journal Code</Label>
-              <ReactSelect
-                styles={customStyle}
-                value={p.find((o: any) => o.value === sageRevaluationJournalCode) || null}
-                onChange={(e: any) => setSageRevaluationJournalCode(e?.value || "")}
-                options={p}
-              />
-            </div>
-
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="depreciationStart">Depreciation Start Date</Label>
-              <Input
-                id="depreciationStart"
-                type="datetime-local"
-                value={depreciationStartDate}
-                onChange={(e) => setDepreciationStartDate(e.target.value)}
-              />
+        {loading ? (
+          <div className="space-y-6">
+            <div className="grid w-full items-center gap-4 grid-cols-1 md:grid-cols-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex flex-col space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
             </div>
           </div>
-        </form>
+        ) : (
+          <form>
+            <div className="grid w-full items-center gap-4 grid-cols-1 md:grid-cols-2">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="accumulated">
+                  Sage Accumilated Depreciation Journal Code
+                </Label>
+                <ReactSelect
+                  styles={customStyle}
+                  value={p.find((o: any) => o.value === sageAccumilatedDepreciationJournalCode) || null}
+                  onChange={(e: any) => setSageAccumilatedDepreciationJournalCode(e?.value || "")}
+                  options={p}
+                />
+              </div>
+
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="depreciation">Sage Depreciation Journal Code</Label>
+                <ReactSelect
+                  styles={customStyle}
+                  value={p.find((o: any) => o.value === sageDepreciationJournalCode) || null}
+                  onChange={(e: any) => setSageDepreciationJournalCode(e?.value || "")}
+                  options={p}
+                />
+              </div>
+
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="disposal">Sage Disposal Journal Code</Label>
+                <ReactSelect
+                  styles={customStyle}
+                  value={p.find((o: any) => o.value === sageDisposalJournalCode) || null}
+                  onChange={(e: any) => setSageDisposalJournalCode(e?.value || "")}
+                  options={p}
+                />
+              </div>
+
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="revaluation">Sage Revaluation Journal Code</Label>
+                <ReactSelect
+                  styles={customStyle}
+                  value={p.find((o: any) => o.value === sageRevaluationJournalCode) || null}
+                  onChange={(e: any) => setSageRevaluationJournalCode(e?.value || "")}
+                  options={p}
+                />
+              </div>
+
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="depreciationStart">Depreciation Start Date</Label>
+                <Input
+                  id="depreciationStart"
+                  type="datetime-local"
+                  value={depreciationStartDate}
+                  onChange={(e) => setDepreciationStartDate(e.target.value)}
+                />
+              </div>
+            </div>
+          </form>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button onClick={() => saveSettings()}>Save</Button>

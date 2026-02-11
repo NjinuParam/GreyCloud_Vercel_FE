@@ -580,7 +580,7 @@ export default function ViewDepreciationHistoryView() {
               </label>
             </div>
           </div>
-          <div style={{ marginTop: "3%" }}>
+          <div style={{ marginTop: "6%", marginLeft: "15%" }}>
 
 
             {filteredData?.length > 0 &&
@@ -786,11 +786,28 @@ export default function ViewDepreciationHistoryView() {
                         </TableRow>
                       ))}
                       <TableRow className="font-bold bg-muted/50">
-                        <TableCell colSpan={6} className="text-right">Total Depreciation for {category}</TableCell>
+                        <TableCell colSpan={4} className="text-left py-4">Total for {category}</TableCell>
+                        <TableCell className="text-right">
+                          {groups[category].reduce((sum: number, item: any) => sum + (item.purchasePrice || 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {groups[category].reduce((sum: number, item: any) => sum + (typeof item.revaluedValue === 'number' ? item.revaluedValue : 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
                         <TableCell className="text-right">
                           {groups[category].reduce((sum: number, item: any) => sum + (item.totalDepreciation || 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </TableCell>
-                        <TableCell colSpan={4}></TableCell>
+                        <TableCell className="text-right">
+                          {groups[category].reduce((sum: number, item: any) => sum + (item.priorYearsDepreciation || 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {groups[category].reduce((sum: number, item: any) => sum + (item.depreciationThisYear || 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {groups[category].reduce((sum: number, item: any) => sum + (item.depreciationThisMonth || 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {groups[category].reduce((sum: number, item: any) => sum + (item.bookValue || 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
