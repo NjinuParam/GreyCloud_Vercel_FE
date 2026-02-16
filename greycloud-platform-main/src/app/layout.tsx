@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "./components/theme-provider";
 import Script from "next/script";
-
 import { WEAVER_ENABLED } from "../lib/config";
+
 
 const fontSans = FontSans({ subsets: ["latin"] });
 
@@ -41,11 +41,30 @@ export default function RootLayout({
           <main>{children}</main>
           <Toaster />
           {WEAVER_ENABLED && (
-            <Script
-              src={isWeaverDebug ? "http://localhost:5173/src/main.ts" : "/weaver/weaver.iife.js"}
-              strategy="lazyOnload"
-              type={isWeaverDebug ? "module" : undefined}
-            />
+            <>
+              <Script id="weaver-navigate" strategy="afterInteractive">
+                {`
+                    window.weaverNavigate = (url) => {
+                        console.log('[Weaver] Navigating to:', url);
+                        if (url.startsWith('http')) {
+                            window.location.href = url;
+                        } else {
+                            const target = url.startsWith('/') ? url : '/' + url;
+                            window.location.href = target;
+                        }
+                    };
+                `}
+              </Script>
+              <Script
+                src={isWeaverDebug ? "http://localhost:5173/src/main.ts" : "/weaver/weaver.iife.js"}
+                strategy="lazyOnload"
+                type={isWeaverDebug ? "module" : undefined}
+              />
+              <Script
+                src="/weaver/weaver-test.js"
+                strategy="lazyOnload"
+              />
+            </>
           )}
         </body>
       </ThemeProvider>
