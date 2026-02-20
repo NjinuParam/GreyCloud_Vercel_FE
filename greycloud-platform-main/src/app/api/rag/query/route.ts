@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const response = await fetch('https://light-rag-sandbox.lemongrass-84d35018.westus2.azurecontainerapps.io/query', {
+        const response = await fetch('http://52.151.192.107:8000/query', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

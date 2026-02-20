@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
         // We must forward this to the external API as FormData
         // fetch handles boundary automatically if we pass FormData body
-        const response = await fetch('https://light-rag-sandbox.lemongrass-84d35018.westus2.azurecontainerapps.io/ingest', {
+        const response = await fetch('http://52.151.192.107:8000/ingest', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer your_api_token_here'
