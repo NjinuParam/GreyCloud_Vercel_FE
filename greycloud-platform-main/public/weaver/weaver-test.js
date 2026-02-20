@@ -4,6 +4,7 @@
 const WEAVER_CONFIG = {
     LIGHTRAG_API: "http://52.151.192.107:8000",
     API_TOKEN: "your_api_token_here",
+    COLLECTION: "greycloud_main",
     DEBUG: true
 };
 
@@ -18,7 +19,7 @@ async function weaverIngest(text) {
     const formData = new FormData();
     formData.append('document_id', `gc-${Date.now()}`);
     formData.append('text', text);
-    formData.append('collection', 'greycloud_main');
+    formData.append('collection', WEAVER_CONFIG.COLLECTION);
     try {
         const response = await fetch(`${WEAVER_CONFIG.LIGHTRAG_API}/ingest_text`, {
             method: 'POST',
@@ -41,7 +42,7 @@ async function weaverQuery(question) {
         const response = await fetch(`${WEAVER_CONFIG.LIGHTRAG_API}/query`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${WEAVER_CONFIG.API_TOKEN}` },
-            body: JSON.stringify({ query: question, k: 3, collection: 'greycloud_main' })
+            body: JSON.stringify({ query: question, k: 3, collection: WEAVER_CONFIG.COLLECTION })
         });
         if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         const result = await response.json();
