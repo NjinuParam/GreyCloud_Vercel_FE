@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const response = await fetch('http://52.151.192.107:8000/query', {
+        const response = await fetch('https://52.151.192.107.nip.io/query', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

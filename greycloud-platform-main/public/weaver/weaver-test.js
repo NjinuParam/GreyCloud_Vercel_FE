@@ -2,7 +2,7 @@
 // Target: Sandbox Environment 
 
 const WEAVER_CONFIG = {
-    LIGHTRAG_API: "http://52.151.192.107:8000",
+    LIGHTRAG_API: "https://52.151.192.107.nip.io",
     API_TOKEN: "your_api_token_here",
     COLLECTION: "greycloud_main",
     DEBUG: true
